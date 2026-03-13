@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Amis — Biketory{% endblock %}
+
+{% block extra_css %}
+#page { padding: 2rem 1.5rem; max-width: 760px; margin: 0 auto; }
+
+h1 { color: var(--bg); font-size: 1.4rem; margin-bottom: 2rem; }
+h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
+     letter-spacing: 0.08em; margin: 1.75rem 0 0.75rem; }
+
+/* Search bar */
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.search-row input[type=text] {
+  flex: 1;
+  background: var(--surface);
+  border: 1.5px solid #ccc6bc;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: var(--bg);
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.search-row input[type=text]::placeholder { color: var(--muted); }
+.search-row input[type=text]:focus { outline: none; border-color: var(--accent); }
+
+/* Buttons */
+.btn-accent {
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn-accent:hover { opacity: 0.88; }
+
+.btn-ghost {
+  background: none;
+  border: 1.5px solid #c8c0b4;
+  border-radius: 6px;
+  color: var(--bg);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.75;
+}
+.btn-ghost:hover { opacity: 1; border-color: #a09890; }
+
+.btn-danger {
+  background: none;
+  border: 1.5px solid #d4a0a0;
+  border-radius: 6px;
+  color: #c0392b;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn-danger:hover { background: #c0392b; color: white; border-color: #c0392b; }
+
+/* Cards */
+.card-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.user-card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+
+.user-card .name { font-weight: 700; color: var(--bg); font-size: 0.92rem; }
+.user-card .meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+
+.user-card .actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+.tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.tag-pending { background: #fef3cc; color: #8a6500; }
+.tag-friend  { background: #d4edda; color: #155724; }
+
+.hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+{% endblock %}
+
+{% block content %}
+<h1>Amis</h1>
+
+<!-- Search -->
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="search">
+  <div class="search-row">
+    <input type="text" name="q" value="{{ query }}" placeholder="Nom d'utilisateur ou UUID secret…" autofocus>
+    <button type="submit" class="btn-accent">Rechercher</button>
+  </div>
+</form>
+
+{% if search_results is not None %}
+  <h2>Résultats</h2>
+  {% if search_results %}
+    <div class="card-list">
+    {% for r in search_results %}
+      <div class="user-card">
+        <div>
+          <div class="name">{{ r.user.username }}</div>
+        </div>
+        <div class="actions">
+          {% if r.rel == "friend" %}
+            <span class="tag tag-friend">Ami ✓</span>
+            <form method="post" style="margin:0">{% csrf_token %}
+              <input type="hidden" name="action" value="remove">
+              <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
+              <button class="btn-danger" type="submit">Retirer</button>
+            </form>
+          {% elif r.rel == "sent" %}
+            <span class="tag tag-pending">Demande envoyée</span>
+            <form method="post" style="margin:0">{% csrf_token %}
+              <input type="hidden" name="action" value="cancel">
+              <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
+              <button class="btn-ghost" type="submit">Annuler</button>
+            </form>
+          {% elif r.rel == "received" %}
+            <form method="post" style="margin:0">{% csrf_token %}
+              <input type="hidden" name="action" value="accept">
+              <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
+              <button class="btn-accent" type="submit">Accepter</button>
+            </form>
+            <form method="post" style="margin:0">{% csrf_token %}
+              <input type="hidden" name="action" value="decline">
+              <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
+              <button class="btn-ghost" type="submit">Refuser</button>
+            </form>
+          {% else %}
+            <form method="post" style="margin:0">{% csrf_token %}
+              <input type="hidden" name="action" value="send">
+              <input type="hidden" name="to_user_id" value="{{ r.user.pk }}">
+              <button class="btn-accent" type="submit">Ajouter</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  {% else %}
+    <p class="hint">Aucun utilisateur trouvé pour « {{ query }} ».</p>
+  {% endif %}
+{% endif %}
+
+<!-- Pending received -->
+{% if pending_received %}
+  <h2>Demandes reçues</h2>
+  <div class="card-list">
+  {% for f in pending_received %}
+    <div class="user-card">
+      <div>
+        <div class="name">{{ f.from_user.username }}</div>
+        <div class="meta">reçue le {{ f.created_at|date:"d/m/Y" }}</div>
+      </div>
+      <div class="actions">
+        <form method="post" style="margin:0">{% csrf_token %}
+          <input type="hidden" name="action" value="accept">
+          <input type="hidden" name="friendship_id" value="{{ f.pk }}">
+          <button class="btn-accent" type="submit">Accepter</button>
+        </form>
+        <form method="post" style="margin:0">{% csrf_token %}
+          <input type="hidden" name="action" value="decline">
+          <input type="hidden" name="friendship_id" value="{{ f.pk }}">
+          <button class="btn-ghost" type="submit">Refuser</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Pending sent -->
+{% if pending_sent %}
+  <h2>Demandes envoyées</h2>
+  <div class="card-list">
+  {% for f in pending_sent %}
+    <div class="user-card">
+      <div>
+        <div class="name">{{ f.to_user.username }}</div>
+        <div class="meta">envoyée le {{ f.created_at|date:"d/m/Y" }}</div>
+      </div>
+      <div class="actions">
+        <span class="tag tag-pending">En attente</span>
+        <form method="post" style="margin:0">{% csrf_token %}
+          <input type="hidden" name="action" value="cancel">
+          <input type="hidden" name="friendship_id" value="{{ f.pk }}">
+          <button class="btn-ghost" type="submit">Annuler</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Friends list -->
+<h2>Mes amis ({{ friends_data|length }})</h2>
+{% if friends_data %}
+  <div class="card-list">
+  {% for fd in friends_data %}
+    <div class="user-card">
+      <div>
+        <div class="name">{{ fd.user.username }}</div>
+        {% if fd.stats %}
+          <div class="meta">{{ fd.stats.total_area|floatformat:4 }} deg²</div>
+        {% endif %}
+      </div>
+      <div class="actions">
+        <form method="post" style="margin:0">{% csrf_token %}
+          <input type="hidden" name="action" value="remove">
+          <input type="hidden" name="friendship_id" value="{{ fd.friendship_id }}">
+          <button class="btn-danger" type="submit">Retirer</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% else %}
+  <p class="hint">Tu n'as pas encore d'amis. Recherche un utilisateur ci-dessus !</p>
+{% endif %}
+{% endblock %}

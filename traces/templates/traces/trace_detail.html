@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}{{ trace.gpx_file.name|cut:"gpx/" }} — Biketory{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_css %}
+.surface-tooltip {
+  background: #1b2d1e;
+  color: #f0a500;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.surface-tooltip::before { display: none; }
+
+#page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.meta-card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.meta-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.meta-card .value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+#map {
+  width: 100%;
+  height: 520px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  margin-bottom: 1.5rem;
+}
+
+.back {
+  display: inline-block;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+}
+.back:hover { color: var(--accent); }
+
+.layer-toggles {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.layer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  border: 2px solid var(--c);
+  background: transparent;
+  color: var(--bg);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  opacity: 0.5;
+  font-family: inherit;
+}
+
+.layer-btn.active {
+  background: var(--c);
+  color: white;
+  opacity: 1;
+}
+
+.layer-btn::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c);
+  flex-shrink: 0;
+}
+
+.layer-btn.active::before { background: white; }
+
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.btn-nav {
+  display: inline-block;
+  padding: 0.55rem 1.2rem;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.btn-nav:hover { opacity: 0.8; }
+.btn-nav.disabled { opacity: 0.25; pointer-events: none; }
+{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'trace_list' %}">← Back to traces</a>
+<h1>{{ trace.gpx_file.name|cut:"gpx/" }}</h1>
+
+<div class="meta-grid">
+  <div class="meta-card">
+    <div class="label">Uploaded by</div>
+    <div class="value">{{ trace.uploaded_by.username|default:"—" }}</div>
+  </div>
+  <div class="meta-card">
+    <div class="label">First point date</div>
+    <div class="value">{{ trace.first_point_date|date:"Y-m-d H:i"|default:"—" }}</div>
+  </div>
+  <div class="meta-card">
+    <div class="label">Uploaded at</div>
+    <div class="value">{{ trace.uploaded_at|date:"Y-m-d H:i" }}</div>
+  </div>
+  <div class="meta-card">
+    <div class="label">Extracted surfaces</div>
+    <div class="value">{{ surfaces_count }}</div>
+  </div>
+  <div class="meta-card">
+    <div class="label">Hexagons</div>
+    <div class="value">{{ hexagons_count }}</div>
+  </div>
+</div>
+
+<div class="layer-toggles">
+  <button class="layer-btn active" id="btn-trace"    style="--c:#e74c3c">Trace</button>
+  <button class="layer-btn active" id="btn-surfaces" style="--c:#2980b9">Surfaces</button>
+  <button class="layer-btn active" id="btn-hexagons" style="--c:#27ae60">Hexagons</button>
+</div>
+
+<div id="map"></div>
+
+<div class="nav-bar">
+  {% if prev_trace %}
+    <a class="btn-nav" href="{% url 'trace_detail' prev_trace.pk %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
+  {% else %}
+    <span class="btn-nav disabled">← Previous</span>
+  {% endif %}
+
+  {% if next_trace %}
+    <a class="btn-nav" href="{% url 'trace_detail' next_trace.pk %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
+  {% else %}
+    <span class="btn-nav disabled">Next →</span>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map');
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  const traceGroup   = L.layerGroup().addTo(map);
+  const surfaceGroup = L.layerGroup().addTo(map);
+  const hexGroup     = L.layerGroup().addTo(map);
+
+  const boundsLayers = [];
+
+  const route = {{ route_geojson|safe }};
+  if (route) {
+    const l = L.geoJSON(route, { style: { color: '#e74c3c', weight: 3, opacity: 0.9 } });
+    l.addTo(traceGroup);
+    boundsLayers.push(l);
+  }
+
+  const surfaces = {{ surfaces_geojson|safe }};
+  if (surfaces.features.length > 0) {
+    const l = L.geoJSON(surfaces, {
+      style: { color: '#2980b9', weight: 2, opacity: 0.9, fillColor: '#2980b9', fillOpacity: 0.3 }
+    });
+    l.addTo(surfaceGroup);
+    boundsLayers.push(l);
+  }
+
+  const currentUser  = {% if user.is_authenticated %}"{{ user.username }}"{% else %}null{% endif %};
+  const ownerUsername = "{{ owner_username }}";
+  const hexColor = currentUser === ownerUsername ? '#2980b9' : '#f0a500';
+
+  const hexagons = {{ hexagons_geojson|safe }};
+  if (hexagons.features.length > 0) {
+    const l = L.geoJSON(hexagons, {
+      style: { color: hexColor, weight: 1, opacity: 0.7, fillColor: hexColor, fillOpacity: 0.45 },
+      onEachFeature: (feature, layer) => {
+        const pts = feature.properties.points;
+        layer.bindTooltip(`${ownerUsername} · ${pts}pt`, { sticky: true, className: 'surface-tooltip' });
+      },
+    });
+    l.addTo(hexGroup);
+    boundsLayers.push(l);
+  }
+
+  if (boundsLayers.length > 0) {
+    map.fitBounds(L.featureGroup(boundsLayers).getBounds(), { padding: [40, 40] });
+  } else {
+    map.setView([0, 0], 2);
+  }
+
+  function makeToggle(btnId, group) {
+    const btn = document.getElementById(btnId);
+    btn.addEventListener('click', () => {
+      const active = btn.classList.toggle('active');
+      if (active) group.addTo(map); else group.remove();
+    });
+  }
+  makeToggle('btn-trace',    traceGroup);
+  makeToggle('btn-surfaces', surfaceGroup);
+  makeToggle('btn-hexagons', hexGroup);
+</script>
+{% endblock %}

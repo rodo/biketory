@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Upload GPX — Biketory{% endblock %}
+
+{% block extra_css %}
+#page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.card-header svg { color: var(--bg); flex-shrink: 0; }
+
+.card h1 { color: var(--bg); font-size: 1.5rem; }
+.card p.subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
+
+.drop-zone {
+  border: 2px dashed var(--accent);
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.drop-zone:hover { background: rgba(224,123,0,0.06); }
+
+.drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.drop-zone .icon { margin-bottom: 0.75rem; }
+.drop-zone .label { color: var(--bg); font-weight: 600; font-size: 0.95rem; }
+.drop-zone .hint { color: var(--muted); font-size: 0.8rem; margin-top: 0.25rem; }
+.file-name { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-top: 0.5rem; min-height: 1.2em; }
+
+/* GPX route decoration */
+.route-deco {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  opacity: 0.35;
+}
+
+/* Quota bar */
+.quota-bar-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.quota-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.quota-label strong { color: var(--bg); }
+
+.quota-track {
+  height: 6px;
+  background: #ddd6c9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.quota-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+  background: var(--accent);
+}
+
+.quota-fill.full { background: #c0392b; }
+
+.quota-reset {
+  font-size: 0.76rem;
+  color: #c0392b;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+/* Disabled drop-zone */
+.drop-zone.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: #bbb;
+}
+
+.drop-zone.disabled input[type="file"] { pointer-events: none; }
+
+button[type="submit"] {
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button[type="submit"]:hover { opacity: 0.88; }
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <!-- bicycle icon -->
+    <svg width="32" height="22" viewBox="0 0 44 30" fill="none" aria-hidden="true">
+      <circle cx="9"  cy="22" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+      <circle cx="35" cy="22" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M9 22 L19 8 M19 8 L35 22 M19 22 L19 8 M9 22 L19 22"
+            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M35 15 L35 11 M33 11 L37 11" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+      <path d="M19 8 L16 5 M14 5 L20 5"    stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+      <circle cx="19" cy="22" r="2" fill="currentColor"/>
+    </svg>
+    <h1>Upload a trace</h1>
+  </div>
+  <p class="subtitle">Drop your GPX file to add it to the map.</p>
+
+  <!-- Quota bar -->
+  <div class="quota-bar-wrap">
+    <div class="quota-label">
+      <span>Uploads aujourd'hui</span>
+      <strong>{{ uploads_today }}&thinsp;/&thinsp;{{ daily_limit }}</strong>
+    </div>
+    <div class="quota-track">
+      <div class="quota-fill {% if limit_reached %}full{% endif %}"
+           style="width:{% widthratio uploads_today daily_limit 100 %}%">
+      </div>
+    </div>
+    {% if limit_reached %}
+      <div class="quota-reset">
+        Limite atteinte — prochain slot disponible dans {{ next_slot|timeuntil }}
+        ({{ next_slot|date:"H:i" }})
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Decorative GPX route squiggle -->
+  <svg class="route-deco" viewBox="0 0 340 28" fill="none" aria-hidden="true">
+    <path d="M0 14 C20 4 35 24 55 14 C75 4 90 24 110 14 C130 4 145 24 165 14 C185 4 200 24 220 14 C240 4 255 24 275 14 C295 4 310 24 340 14"
+          stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- waypoint dots -->
+    <circle cx="55"  cy="14" r="3.5" fill="var(--bg)"/>
+    <circle cx="165" cy="14" r="3.5" fill="var(--bg)"/>
+    <circle cx="275" cy="14" r="3.5" fill="var(--bg)"/>
+  </svg>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="drop-zone{% if limit_reached %} disabled{% endif %}">
+      <input type="file" name="gpx_file" accept=".gpx" id="gpx-input"
+             {% if limit_reached %}disabled{% endif %}>
+      <div class="icon">
+        <!-- GPX file icon -->
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect x="6" y="2" width="22" height="28" rx="3" fill="#c8d9c8" stroke="var(--bg)" stroke-width="1.5"/>
+          <rect x="22" y="2" width="6"  height="6"  rx="1" fill="var(--bg)" opacity="0.4"/>
+          <path d="M22 2 L28 8 L22 8 Z" fill="var(--bg)" opacity="0.2"/>
+          <path d="M11 16 C14 10 20 12 20 18 C20 24 26 22 29 18"
+                stroke="var(--accent)" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <circle cx="11" cy="16" r="2" fill="var(--accent)"/>
+          <circle cx="29" cy="18" r="2" fill="var(--accent)"/>
+        </svg>
+      </div>
+      <div class="label">Click or drag &amp; drop</div>
+      <div class="hint">.gpx files only</div>
+      <div class="file-name" id="file-name"></div>
+    </div>
+    {% if form.gpx_file.errors %}
+      {% for error in form.gpx_file.errors %}
+        <p style="color:#c0392b;font-size:0.85rem;margin-bottom:0.75rem;">{{ error }}</p>
+      {% endfor %}
+    {% endif %}
+    <button type="submit" {% if limit_reached %}disabled style="opacity:0.4;cursor:not-allowed;"{% endif %}>
+      Upload
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const input = document.getElementById('gpx-input');
+  const label = document.getElementById('file-name');
+  input.addEventListener('change', () => {
+    label.textContent = input.files[0]?.name ?? '';
+  });
+</script>
+{% endblock %}

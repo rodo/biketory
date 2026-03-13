@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Surfaces — Biketory{% endblock %}
+
+{% block extra_css %}
+#page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+
+thead {
+  background: var(--bg);
+  border-bottom: 2px solid var(--accent);
+}
+
+thead th {
+  color: var(--accent);
+  text-align: left;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ddd6c9;
+  transition: background 0.15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #edeae5; }
+
+tbody td {
+  padding: 0.8rem 1.1rem;
+  color: var(--bg);
+  font-size: 0.9rem;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  text-align: center;
+}
+{% endblock %}
+
+{% block content %}
+<h1>Extracted surfaces</h1>
+
+{% if surfaces %}
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Owner</th>
+      <th>Trace</th>
+      <th>Area (deg²)</th>
+      <th>Centroid</th>
+      <th>Detected at</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for surface in surfaces %}
+    <tr>
+      <td>{{ surface.pk }}</td>
+      <td>{{ surface.owner.username|default:"—" }}</td>
+      <td># {{ surface.trace_id }}</td>
+      <td>{{ surface.polygon.area|floatformat:6 }}</td>
+      <td>{{ surface.polygon.centroid.x|floatformat:5 }}, {{ surface.polygon.centroid.y|floatformat:5 }}</td>
+      <td>{{ surface.detected_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">No surfaces extracted yet. Run <code>python manage.py extract_closed_surfaces</code>.</p>
+{% endif %}
+{% endblock %}

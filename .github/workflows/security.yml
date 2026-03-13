@@ -1,0 +1,65 @@
+name: Security Checks
+
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+  security-events: write  # required to upload SARIF results
+
+jobs:
+  trivy-fs:
+    name: Trivy — filesystem (deps, secrets, misconfig)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: MEDIUM,HIGH,CRITICAL
+          format: sarif
+          output: trivy-fs.sarif
+          exit-code: "1"          # fail the job if issues are found
+          ignore-unfixed: true    # skip vulns with no available fix
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always()              # upload even if the scan step fails
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs
+
+  trivy-image:
+    name: Trivy — Docker image (OS + app packages)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t biketory:pr-${{ github.event.pull_request.number }} .
+
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: image
+          image-ref: biketory:pr-${{ github.event.pull_request.number }}
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          format: sarif
+          output: trivy-image.sarif
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-image.sarif
+          category: trivy-image

@@ -1,0 +1,52 @@
+# Editor
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Django
+settings.py
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+# Uploaded media files
+media/
+gpx/
+
+# Collected static files
+staticfiles/
+
+# Tests & coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/

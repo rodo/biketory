@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Biketory{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% block head %}{% endblock %}
+  <style>
+    :root {
+      --bg:      #1c3520;   /* dark forest green — topbar, text on cards */
+      --page:    #edf2ed;   /* light sage — page backgrounds */
+      --accent:  #e07b00;   /* warm amber */
+      --surface: #f8f5f0;   /* warm off-white — cards, tables */
+      --muted:   #6b8c73;
+      --bar-h:   52px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      scrollbar-gutter: stable;
+      background: var(--page);
+    }
+
+    #topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--bar-h);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.25rem;
+      z-index: 2000;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    #topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    #topbar .brand svg { flex-shrink: 0; }
+
+    #topbar nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #topbar nav a {
+      color: var(--surface);
+      text-decoration: none;
+      font-size: 0.85rem;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    #topbar nav a:hover { opacity: 1; }
+
+    #topbar nav .btn {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+      padding: 0.35rem 0.9rem;
+      border-radius: 6px;
+      opacity: 1;
+    }
+
+    #topbar nav .btn:hover { opacity: 0.88; }
+
+    #topbar nav button {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: normal;
+      line-height: inherit;
+      color: var(--surface);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    #topbar nav button:hover { opacity: 1; }
+
+    #page {
+      padding-top: var(--bar-h);
+      min-height: 100vh;
+    }
+
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body>
+
+<div id="topbar">
+  <a class="brand" href="{% url 'landing' %}">
+    <!-- bicycle icon -->
+    <svg width="22" height="16" viewBox="0 0 44 30" fill="none" aria-hidden="true">
+      <circle cx="9"  cy="22" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+      <circle cx="35" cy="22" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M9 22 L19 8 M19 8 L35 22 M19 22 L19 8 M9 22 L19 22"
+            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M35 15 L35 11 M33 11 L37 11"
+            stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+      <path d="M19 8 L16 5 M14 5 L20 5"
+            stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+      <circle cx="19" cy="22" r="2" fill="currentColor"/>
+    </svg>
+    Biketory
+  </a>
+  <span style="font-size:0.7rem;font-weight:700;color:var(--bg);background:var(--accent);padding:0.15rem 0.5rem;border-radius:4px;letter-spacing:0.08em;">BETA</span>
+  <nav>
+    {% block topbar_extra %}{% endblock %}
+    {% if user.is_authenticated %}
+      <a href="{% url 'profile' %}" style="color:var(--surface);font-size:0.85rem;opacity:0.6;">{{ user.username }}</a>
+      <a href="{% url 'friends' %}">Amis</a>
+      <a href="{% url 'trace_list' %}">Traces</a>
+      <a href="{% url 'surface_list' %}">Surfaces</a>
+      <a href="{% url 'hexagon_stats' %}">Hexagons</a>
+      <a href="{% url 'stats' %}">Stats</a>
+      <a href="{% url 'upload_trace' %}">Upload</a>
+      <form method="post" action="{% url 'logout' %}" style="margin:0">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+      </form>
+    {% else %}
+      <a href="{% url 'stats' %}">Stats</a>
+      <a href="{% url 'login' %}">Sign in</a>
+      <a class="btn" href="{% url 'register' %}">Register</a>
+    {% endif %}
+  </nav>
+</div>
+
+<div id="page">
+  {% block content %}{% endblock %}
+  <footer style="text-align:center;padding:1.5rem;font-size:0.78rem;">
+    <a href="{% url 'legal' %}" style="color:var(--muted);text-decoration:none;">Legal &amp; Cookies</a>
+  </footer>
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
