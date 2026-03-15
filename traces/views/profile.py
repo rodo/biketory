@@ -1,14 +1,23 @@
 import json
+from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.utils import timezone
 
-from traces.models import Friendship, Hexagon, HexagonScore, Trace, UserSurfaceStats
+from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, UserSurfaceStats
 
 
 @login_required
 def profile(request):
+    if request.method == "POST" and request.POST.get("action") == "generate_token":
+        ApiToken.objects.filter(user=request.user).delete()
+        ApiToken.objects.create(
+            user=request.user,
+            expires_at=timezone.now() + timedelta(days=31),
+        )
+        return redirect("profile")
     user = request.user
 
     traces_count = Trace.objects.filter(uploaded_by=user).count()
@@ -58,6 +67,8 @@ def profile(request):
         Q(to_user=user, status=Friendship.STATUS_ACCEPTED)
     ).count()
 
+    api_token = ApiToken.objects.filter(user=user).first()
+
     return render(request, "traces/profile.html", {
         "traces_count": traces_count,
         "first_trace_date": first_trace_date,
@@ -67,4 +78,5 @@ def profile(request):
         "secret_uuid": stats.secret_uuid,
         "friends_count": friends_count,
         "pending_received": pending_received,
+        "api_token": api_token,
     })

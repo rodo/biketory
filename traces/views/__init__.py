@@ -1,3 +1,4 @@
+from .api_upload import api_upload_trace
 from .delete_trace import delete_trace
 from .friends import friends
 from .hexagon_detail import hexagon_detail
@@ -9,6 +10,7 @@ from .register import register
 from .surface_list import surface_list
 from .trace_detail import trace_detail
 from .stats import stats
+from .stats_monthly import stats_monthly
 from .trace_list import trace_list
 from .trace_surfaces import trace_surfaces
 from .upload import upload_trace

@@ -9,6 +9,36 @@
   padding: 2rem 1.5rem;
 }
 
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid var(--bg);
+}
+
+.tabs a {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  opacity: 0.55;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid transparent;
+  border-bottom: none;
+  margin-bottom: -2px;
+  transition: opacity 0.15s;
+}
+
+.tabs a:hover { opacity: 0.85; }
+
+.tabs a.active {
+  opacity: 1;
+  border-color: var(--bg);
+  border-bottom-color: var(--surface);
+  background: var(--surface);
+}
+
 h1 {
   color: var(--bg);
   font-size: 1.4rem;
@@ -112,6 +142,10 @@ h1 {
 
 {% block content %}
 <div id="page-inner">
+  <nav class="tabs">
+    <a href="{% url 'stats_monthly' %}">Par mois</a>
+    <a href="{% url 'stats' %}" class="active">Par utilisateur</a>
+  </nav>
   <h1>Hexagons gained per month</h1>
 
   <div class="card">

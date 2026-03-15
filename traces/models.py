@@ -1,4 +1,6 @@
+import secrets
 import uuid
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models
@@ -120,3 +122,36 @@ class UserSurfaceStats(models.Model):
 
     def __str__(self):
         return f"{self.user.username} — {self.total_area:.6f} deg²"
+
+
+class ApiToken(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="api_tokens"
+    )
+    token = models.CharField(max_length=64, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = secrets.token_hex(32)
+        super().save(*args, **kwargs)
+
+    @property
+    def is_valid(self):
+        from django.utils import timezone
+        return timezone.now() < self.expires_at
+
+    def __str__(self):
+        return f"{self.user.username} — expires {self.expires_at:%Y-%m-%d}"
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class MonthlyStatsRefresh(models.Model):
+    """Singleton row tracking when the hexagon_monthly_stats matview was last refreshed."""
+    refreshed_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "traces_monthlystatsrefresh"

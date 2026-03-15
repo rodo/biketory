@@ -70,6 +70,27 @@ tbody td {
   text-align: center;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.88rem;
+}
+
+.pagination a, .pagination span {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--bg);
+  border: 1px solid #ccc5b8;
+  background: var(--surface);
+}
+
+.pagination a:hover { background: #edeae5; }
+.pagination .current { background: var(--bg); color: var(--accent); border-color: var(--bg); font-weight: 700; }
+
 .btn-delete {
   background: none;
   border: 1px solid #c0392b;
@@ -127,24 +148,21 @@ tbody td {
 {% block content %}
 <h1>All traces</h1>
 
-{% if traces %}
+{% if page.object_list %}
 <table>
   <thead>
     <tr>
-      <th>#</th>
       <th>File</th>
       <th>First point date</th>
       <th>Length</th>
-      <th>Uploaded by</th>
       <th>Uploaded at</th>
       <th>Extracted</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
-    {% for trace in traces %}
+    {% for trace in page %}
     <tr>
-      <td>{{ trace.pk }}</td>
       <td><a href="{% url 'trace_detail' trace.pk %}" style="color:var(--bg);font-weight:600;text-decoration:none;">{{ trace.gpx_file.name|cut:"gpx/" }}</a></td>
       <td>{{ trace.first_point_date|date:"Y-m-d H:i"|default:"—" }}</td>
       <td>
@@ -156,7 +174,6 @@ tbody td {
           {% endif %}
         {% else %}—{% endif %}
       </td>
-      <td>{{ trace.uploaded_by.username|default:"—" }}</td>
       <td>{{ trace.uploaded_at|date:"Y-m-d H:i" }}</td>
       <td>
         {% if trace.extracted %}
@@ -183,6 +200,18 @@ tbody td {
 </table>
 {% else %}
   <p class="empty">No traces uploaded yet.</p>
+{% endif %}
+
+{% if page.paginator.num_pages > 1 %}
+<nav class="pagination">
+  {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}">&lsaquo;</a>
+  {% endif %}
+  <span class="current">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}
+    <a href="?page={{ page.next_page_number }}">&rsaquo;</a>
+  {% endif %}
+</nav>
 {% endif %}
 
 <div id="confirm-modal">

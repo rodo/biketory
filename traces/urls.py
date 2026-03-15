@@ -14,7 +14,9 @@ urlpatterns = [
     path("hexagons/", views.hexagon_stats, name="hexagon_stats"),
     path("legal/", views.legal, name="legal"),
     path("stats/", views.stats, name="stats"),
+    path("stats/monthly/", views.stats_monthly, name="stats_monthly"),
     path("hexagons/<int:pk>/", views.hexagon_detail, name="hexagon_detail"),
     path("profile/", views.profile, name="profile"),
     path("friends/", views.friends, name="friends"),
+    path("api/upload/", views.api_upload_trace, name="api_upload_trace"),
 ]

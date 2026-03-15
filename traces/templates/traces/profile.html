@@ -151,6 +151,29 @@ h1 {
         <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ secret_uuid }}')">Copier</button>
       </div>
     </div>
+    <div class="stat-card">
+      <div class="label">Token API</div>
+      {% if api_token %}
+        {% if api_token.is_valid %}
+          <div class="uuid-row" style="margin-bottom:0.4rem;">
+            <code id="api-token-val">{{ api_token.token }}</code>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ api_token.token }}')">Copier</button>
+          </div>
+          <div style="font-size:0.75rem;color:var(--muted);">Expire le {{ api_token.expires_at|date:"d/m/Y" }}</div>
+        {% else %}
+          <div style="font-size:0.82rem;color:#c0392b;margin-bottom:0.5rem;">Token expiré</div>
+        {% endif %}
+      {% else %}
+        <div style="font-size:0.82rem;color:var(--muted);margin-bottom:0.5rem;">Aucun token actif.</div>
+      {% endif %}
+      <form method="post" style="margin-top:0.6rem;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="generate_token">
+        <button type="submit" class="copy-btn" style="font-size:0.78rem;">
+          {% if api_token %}Régénérer{% else %}Générer{% endif %}
+        </button>
+      </form>
+    </div>
   </div>
 
   <div id="map"></div>
