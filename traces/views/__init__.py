@@ -1,16 +1,16 @@
-from .api_upload import api_upload_trace
-from .delete_trace import delete_trace
-from .friends import friends
-from .hexagon_detail import hexagon_detail
-from .profile import profile
-from .hexagon_stats import hexagon_stats
-from .legal import legal
-from .landing import landing
-from .register import register
-from .surface_list import surface_list
-from .trace_detail import trace_detail
-from .stats import stats
-from .stats_monthly import stats_monthly
-from .trace_list import trace_list
-from .trace_surfaces import trace_surfaces
-from .upload import upload_trace
+from .api_upload import api_upload_trace  # noqa: F401
+from .delete_trace import delete_trace  # noqa: F401
+from .friends import friends  # noqa: F401
+from .hexagon_detail import hexagon_detail  # noqa: F401
+from .hexagon_stats import hexagon_stats  # noqa: F401
+from .landing import landing  # noqa: F401
+from .legal import legal  # noqa: F401
+from .profile import profile  # noqa: F401
+from .register import register  # noqa: F401
+from .stats import stats  # noqa: F401
+from .stats_monthly import stats_monthly  # noqa: F401
+from .surface_list import surface_list  # noqa: F401
+from .trace_detail import trace_detail  # noqa: F401
+from .trace_list import trace_list  # noqa: F401
+from .trace_surfaces import trace_surfaces  # noqa: F401
+from .upload import upload_trace  # noqa: F401

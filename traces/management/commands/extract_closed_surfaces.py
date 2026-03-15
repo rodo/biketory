@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.management.base import BaseCommand
 
@@ -17,7 +16,9 @@ class Command(BaseCommand):
     help = "List all traces and extract closed surfaces from them"
 
     def handle(self, *args, **options):
-        traces = Trace.objects.select_related("uploaded_by").exclude(route=None).filter(extracted=False).order_by("uploaded_at")
+        traces = (
+            Trace.objects.select_related("uploaded_by").exclude(route=None).filter(extracted=False).order_by("uploaded_at")
+        )
 
         if not traces.exists():
             self.stdout.write("No traces found.")
@@ -28,7 +29,10 @@ class Command(BaseCommand):
 
         for trace in traces:
             total_segments = trace.route.num_geom
-            self.stdout.write(f"\nTrace #{trace.pk} — {trace.gpx_file.name} — {trace.uploaded_at:%Y-%m-%d %H:%M} — {total_segments} segment(s)")
+            self.stdout.write(
+                f"\nTrace #{trace.pk} — {trace.gpx_file.name}"
+                f" — {trace.uploaded_at:%Y-%m-%d %H:%M} — {total_segments} segment(s)"
+            )
 
             for idx, segment in enumerate(trace.route):
                 start = segment[0]

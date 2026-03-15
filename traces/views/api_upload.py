@@ -1,11 +1,9 @@
-import json
 
 from django.http import JsonResponse
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from traces.models import ApiToken
+from traces.models import ApiToken, Trace
 from traces.views.upload import (
     MAX_TRACE_LENGTH_KM,
     _create_trace_hexagons,
@@ -13,7 +11,6 @@ from traces.views.upload import (
     _parse_route,
     _upload_quota,
 )
-from traces.models import Trace
 
 
 def _authenticate(request):

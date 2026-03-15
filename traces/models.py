@@ -1,6 +1,5 @@
 import secrets
 import uuid
-from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models

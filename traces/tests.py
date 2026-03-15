@@ -5,13 +5,12 @@ from django.urls import reverse
 
 from traces.models import ClosedSurface, Hexagon, HexagonScore, Trace
 from traces.views.upload import (
+    _HEX_SIDE_M,
+    MAX_TRACE_LENGTH_KM,
     _award_hexagon_points,
     _create_trace_hexagons,
     _distance_m,
-    _HEX_SIDE_M,
-    MAX_TRACE_LENGTH_KM,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -67,6 +66,7 @@ class ParseRouteMergeTest(TestCase):
 
     def test_endpoints_within_threshold_are_merged(self):
         from io import BytesIO
+
         from traces.views.upload import _parse_route
         # Shift last point by ~10 m northward (≈ 0.00009 deg)
         gpx = self._make_gpx([(2.0, 48.0), (2.1, 48.05), (2.0, 48.0 + 0.00009)])
@@ -76,6 +76,7 @@ class ParseRouteMergeTest(TestCase):
 
     def test_endpoints_beyond_threshold_are_not_merged(self):
         from io import BytesIO
+
         from traces.views.upload import _parse_route
         # Shift last point by ~200 m northward (≈ 0.0018 deg)
         gpx = self._make_gpx([(2.0, 48.0), (2.1, 48.05), (2.0, 48.0 + 0.0018)])
@@ -206,7 +207,7 @@ class LandingViewTest(TestCase):
         self.assertIsNone(resp.context["current_user"])
 
     def test_current_user_set_when_authenticated(self):
-        user = make_user()
+        make_user()
         self.client.login(username="alice", password="pass")
         resp = self.client.get(reverse("landing"))
         self.assertEqual(resp.context["current_user"], "alice")
@@ -226,7 +227,7 @@ class RegisterViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post_creates_user(self):
-        resp = self.client.post(reverse("register"), {
+        self.client.post(reverse("register"), {
             "username": "newuser",
             "password1": "Str0ngPass!",
             "password2": "Str0ngPass!",
@@ -259,7 +260,7 @@ class TraceLengthLimitTest(TestCase):
 
     def test_short_trace_is_accepted(self):
         gpx = self._gpx_with_length(10)
-        resp = self.client.post(
+        self.client.post(
             reverse("upload_trace"),
             {"gpx_file": ("short.gpx", gpx.encode(), "application/gpx+xml")},
         )
@@ -267,7 +268,7 @@ class TraceLengthLimitTest(TestCase):
 
     def test_long_trace_is_rejected(self):
         gpx = self._gpx_with_length(MAX_TRACE_LENGTH_KM + 50)
-        resp = self.client.post(
+        self.client.post(
             reverse("upload_trace"),
             {"gpx_file": ("long.gpx", gpx.encode(), "application/gpx+xml")},
         )
