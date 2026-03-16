@@ -75,6 +75,54 @@
 
     #topbar nav .btn:hover { opacity: 0.88; }
 
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-toggle {
+      color: var(--surface);
+      font-size: 0.85rem;
+      opacity: 0.85;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      line-height: inherit;
+      padding: 0;
+      transition: opacity 0.2s;
+    }
+
+    .dropdown-toggle:hover { opacity: 1; }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      min-width: 180px;
+      overflow: hidden;
+      z-index: 3000;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 0.65rem 1rem;
+      color: var(--bg) !important;
+      font-size: 0.85rem;
+      opacity: 1 !important;
+      text-decoration: none;
+      border-bottom: 1px solid #e8e2d9;
+      transition: background 0.15s;
+    }
+
+    .dropdown-menu a:last-child { border-bottom: none; }
+    .dropdown-menu a:hover { background: #edeae5; }
+
+    .dropdown.open .dropdown-menu { display: block; }
+
     #topbar nav button {
       font-family: inherit;
       font-size: 0.85rem;
@@ -120,6 +168,7 @@
   <span style="font-size:0.7rem;font-weight:700;color:var(--bg);background:var(--accent);padding:0.15rem 0.5rem;border-radius:4px;letter-spacing:0.08em;">BETA</span>
   <nav>
     {% block topbar_extra %}{% endblock %}
+
     {% if user.is_authenticated %}
       <a href="{% url 'profile' %}" style="color:var(--surface);font-size:0.85rem;opacity:0.6;">{{ user.username }}</a>
       <a href="{% url 'friends' %}">Amis</a>
@@ -137,16 +186,29 @@
       <a href="{% url 'login' %}">Sign in</a>
       <a class="btn" href="{% url 'register' %}">Register</a>
     {% endif %}
+    <div class="dropdown" id="dropdown-more">
+      <button class="dropdown-toggle" onclick="toggleDropdown()">Plus ▾</button>
+      <div class="dropdown-menu">
+        <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
+        <a href="{% url 'legal' %}">Legal &amp; Cookies</a>
+      </div>
+    </div>
   </nav>
 </div>
 
 <div id="page">
   {% block content %}{% endblock %}
-  <footer style="text-align:center;padding:1.5rem;font-size:0.78rem;">
-    <a href="{% url 'legal' %}" style="color:var(--muted);text-decoration:none;">Legal &amp; Cookies</a>
-  </footer>
 </div>
 
 {% block extra_js %}{% endblock %}
+<script>
+  function toggleDropdown() {
+    document.getElementById('dropdown-more').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    const dd = document.getElementById('dropdown-more');
+    if (!dd.contains(e.target)) dd.classList.remove('open');
+  });
+</script>
 </body>
 </html>

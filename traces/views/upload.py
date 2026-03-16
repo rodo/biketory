@@ -3,11 +3,11 @@ from datetime import timedelta
 from pathlib import Path
 
 import gpxpy
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry, LineString, MultiLineString
-from django.conf import settings
 from django.db import connection
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from traces.forms import TraceUploadForm
