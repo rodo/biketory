@@ -177,10 +177,6 @@
       <a href="{% url 'hexagon_stats' %}">Hexagons</a>
       <a href="{% url 'stats' %}">Stats</a>
       <a href="{% url 'upload_trace' %}">Upload</a>
-      <form method="post" action="{% url 'logout' %}" style="margin:0">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-      </form>
     {% else %}
       <a href="{% url 'stats' %}">Stats</a>
       <a href="{% url 'login' %}">Sign in</a>
@@ -191,6 +187,12 @@
       <div class="dropdown-menu">
         <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
         <a href="{% url 'legal' %}">Legal &amp; Cookies</a>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" style="margin:0">
+          {% csrf_token %}
+          <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #e8e2d9;cursor:pointer;font-family:inherit;">Logout</button>
+        </form>
+        {% endif %}
       </div>
     </div>
   </nav>
