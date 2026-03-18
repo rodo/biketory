@@ -1,3 +1,10 @@
+proxy_cache_path /var/cache/nginx/osm_tiles
+    levels=1:2
+    keys_zone=osm_tiles:16m
+    inactive=30d
+    max_size=10g
+    use_temp_path=off;
+
 upstream gunicorn {
     server web:8000;
 }
@@ -18,6 +25,21 @@ server {
         alias /app/media/;
         expires 30d;
         add_header Cache-Control "public";
+    }
+
+    location /tiles/ {
+        proxy_pass https://tile.openstreetmap.org/;
+        proxy_cache osm_tiles;
+        proxy_cache_valid 200 30d;
+        proxy_cache_use_stale error timeout updating;
+        proxy_cache_lock on;
+
+        proxy_set_header Host tile.openstreetmap.org;
+        proxy_set_header User-Agent "biketory tile cache (+https://biketory.example.com)";
+        proxy_ssl_server_name on;
+
+        add_header X-Cache-Status $upstream_cache_status;
+        expires 30d;
     }
 
     location / {

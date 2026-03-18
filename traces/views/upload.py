@@ -138,6 +138,13 @@ def upload_trace(request):
                         "gpx_file",
                         f"Trace too long ({length_km:.0f} km). Maximum allowed is {MAX_TRACE_LENGTH_KM} km.",
                     )
+                elif first_point_date and Trace.objects.filter(
+                    uploaded_by=request.user, first_point_date=first_point_date
+                ).exists():
+                    form.add_error(
+                        "gpx_file",
+                        "Cette trace a déjà été uploadée (même date de départ détectée).",
+                    )
                 else:
                     trace = Trace.objects.create(
                         gpx_file=gpx_file,

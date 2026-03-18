@@ -150,7 +150,7 @@ html, body { overflow: hidden; }
     document.cookie = `map_pos=${c.lat},${c.lng},${map.getZoom()};path=/;max-age=31536000`;
   });
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('/tiles/{z}/{x}/{y}.png', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 

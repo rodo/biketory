@@ -196,7 +196,7 @@ h1 {
 <script>
   const map = L.map('map');
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('/tiles/{z}/{x}/{y}.png', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 

@@ -11,13 +11,35 @@ from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, Us
 
 @login_required
 def profile(request):
-    if request.method == "POST" and request.POST.get("action") == "generate_token":
-        ApiToken.objects.filter(user=request.user).delete()
-        ApiToken.objects.create(
-            user=request.user,
-            expires_at=timezone.now() + timedelta(days=31),
-        )
-        return redirect("profile")
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "generate_token":
+            ApiToken.objects.filter(user=request.user).delete()
+            ApiToken.objects.create(
+                user=request.user,
+                expires_at=timezone.now() + timedelta(days=31),
+            )
+            return redirect("profile")
+
+        if action == "update_email":
+            new_email = request.POST.get("email", "").strip()
+            email_error = None
+            if not new_email:
+                email_error = "L'adresse email ne peut pas être vide."
+            elif "@" not in new_email:
+                email_error = "Adresse email invalide."
+            else:
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                if User.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+                    email_error = "Cette adresse email est déjà utilisée."
+                else:
+                    request.user.email = new_email
+                    request.user.save(update_fields=["email"])
+                    return redirect("profile")
+            # Fall through to render with error
+            request.email_error = email_error
     user = request.user
 
     traces_count = Trace.objects.filter(uploaded_by=user).count()
@@ -68,6 +90,7 @@ def profile(request):
     ).count()
 
     api_token = ApiToken.objects.filter(user=user).first()
+    email_error = getattr(request, "email_error", None)
 
     return render(request, "traces/profile.html", {
         "traces_count": traces_count,
@@ -79,4 +102,5 @@ def profile(request):
         "friends_count": friends_count,
         "pending_received": pending_received,
         "api_token": api_token,
+        "email_error": email_error,
     })
