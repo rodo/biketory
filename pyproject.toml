@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "biketory.settings"
+pythonpath = ["."]
 python_files = ["tests.py", "test_*.py"]
 addopts = "--cov=traces --cov-report=xml --cov-report=term-missing"
 
