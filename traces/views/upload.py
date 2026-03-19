@@ -19,6 +19,7 @@ _INSERT_HEXAGONS_SQL = (_SQL_DIR / "insert_hexagons.sql").read_text()
 _DISTANCE_M_SQL = (_SQL_DIR / "distance_m.sql").read_text()
 _AWARD_HEXAGON_POINTS_SQL = (_SQL_DIR / "award_hexagon_points.sql").read_text()
 _EXTRACT_SURFACES_SQL = (_SQL_DIR / "extract_surfaces.sql").read_text()
+_DELETE_ISLAND_SURFACES_SQL = (_SQL_DIR / "delete_island_surfaces.sql").read_text()
 
 # Regular hexagon with area = 1 km²: side = sqrt(2 / (3√3)) ≈ 620.4 m
 _HEX_SIDE_M = math.sqrt(2 / (3 * math.sqrt(3))) * 1000  # metres (SRID 3857)
@@ -84,9 +85,12 @@ def _extract_surfaces(trace):
                 polygon=geom,
             ))
     if surfaces:
-        created = ClosedSurface.objects.bulk_create(surfaces)
+        ClosedSurface.objects.bulk_create(surfaces)
+        with connection.cursor() as cursor:
+            cursor.execute(_DELETE_ISLAND_SURFACES_SQL, [trace.pk, trace.pk])
+        surviving = list(ClosedSurface.objects.filter(trace=trace))
         earned_at = trace.first_point_date or trace.uploaded_at
-        _award_hexagon_points(created, trace.uploaded_by, earned_at)
+        _award_hexagon_points(surviving, trace.uploaded_by, earned_at)
 
     trace.extracted = True
     trace.save(update_fields=["extracted"])

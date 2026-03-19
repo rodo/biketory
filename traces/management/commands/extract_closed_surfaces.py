@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from django.conf import settings
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.management.base import BaseCommand
+from django.db import connection
 
 from traces.models import ClosedSurface, Trace, UserSurfaceStats
 
@@ -10,6 +13,12 @@ CLOSURE_THRESHOLD = 0.001
 # 10 metres expressed in degrees (1 deg ≈ 111 320 m); used to merge adjacent surfaces
 ADJACENCY_THRESHOLD_DEG = 10 / 111_320
 HALF_ADJACENCY = ADJACENCY_THRESHOLD_DEG / 2
+
+# Douglas-Peucker tolerance for trace simplification (~10 m in WGS84)
+SIMPLIFY_TOLERANCE = 0.0001
+
+_SQL_DIR = Path(__file__).resolve().parent.parent.parent / "sql"
+_DELETE_ISLAND_SURFACES_SQL = (_SQL_DIR / "delete_island_surfaces.sql").read_text()
 
 
 class Command(BaseCommand):
@@ -40,7 +49,8 @@ class Command(BaseCommand):
                 distance = ((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2) ** 0.5
 
                 if segment.closed or distance <= CLOSURE_THRESHOLD:
-                    coords = list(segment.coords)
+                    simplified = segment.simplify(SIMPLIFY_TOLERANCE)
+                    coords = list(simplified.coords)
                     if coords[0] != coords[-1]:
                         coords.append(coords[0])
                     polygon = Polygon(coords)
@@ -69,6 +79,9 @@ class Command(BaseCommand):
                     closed_count += 1
                 else:
                     self.stdout.write(f"  [seg {idx}] Open segment (gap: {distance:.5f}°)")
+
+            with connection.cursor() as cursor:
+                cursor.execute(_DELETE_ISLAND_SURFACES_SQL, [trace.pk, trace.pk])
 
             trace.extracted = True
             trace.save(update_fields=["extracted"])
