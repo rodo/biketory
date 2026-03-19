@@ -1,12 +1,15 @@
 name: Security Checks
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: ["**"]
 
 permissions:
   contents: read
   security-events: write  # required to upload SARIF results
+  actions: read           # required by CodeQL
 
 jobs:
   trivy-fs:
@@ -35,31 +38,45 @@ jobs:
           sarif_file: trivy-fs.sarif
           category: trivy-fs
 
-  trivy-image:
-    name: Trivy — Docker image (OS + app packages)
+  codeql:
+    name: CodeQL — SAST Python
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Build Docker image
-        run: docker build -t biketory:pr-${{ github.event.pull_request.number }} .
-
-      - name: Run Trivy image scan
-        uses: aquasecurity/trivy-action@0.29.0
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
         with:
-          scan-type: image
-          image-ref: biketory:pr-${{ github.event.pull_request.number }}
-          scanners: vuln
-          severity: HIGH,CRITICAL
-          format: sarif
-          output: trivy-image.sarif
-          exit-code: "1"
-          ignore-unfixed: true
+          languages: python
 
-      - name: Upload SARIF to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
         with:
-          sarif_file: trivy-image.sarif
-          category: trivy-image
+          category: codeql-python
+
+  pip-audit:
+    name: pip-audit — CVE dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run pip-audit
+        uses: pypa/gh-action-pip-audit@v1
+        with:
+          inputs: requirements.txt
+
+  gitleaks:
+    name: Gitleaks — secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
