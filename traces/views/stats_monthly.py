@@ -1,11 +1,16 @@
 import json
 from datetime import date, timedelta
+from pathlib import Path
 
 from django.db import connection
 from django.shortcuts import render
 from django.utils import timezone
 
 from traces.models import MonthlyStatsRefresh
+
+_SQL_DIR = Path(__file__).resolve().parent.parent / "sql"
+_REFRESH_MONTHLY_STATS_SQL = (_SQL_DIR / "refresh_monthly_stats.sql").read_text()
+_SELECT_MONTHLY_STATS_SQL = (_SQL_DIR / "select_monthly_stats.sql").read_text()
 
 
 def _all_months(first: date, last: date) -> list[str]:
@@ -25,7 +30,7 @@ def _ensure_fresh():
     record = MonthlyStatsRefresh.objects.first()
     if record is None or (now - record.refreshed_at) > timedelta(hours=24):
         with connection.cursor() as cursor:
-            cursor.execute("REFRESH MATERIALIZED VIEW hexagon_monthly_stats")
+            cursor.execute(_REFRESH_MONTHLY_STATS_SQL)
         if record:
             record.refreshed_at = now
             record.save(update_fields=["refreshed_at"])
@@ -37,7 +42,7 @@ def stats_monthly(request):
     _ensure_fresh()
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT month, count FROM hexagon_monthly_stats ORDER BY month")
+        cursor.execute(_SELECT_MONTHLY_STATS_SQL)
         rows = cursor.fetchall()
 
     if not rows:

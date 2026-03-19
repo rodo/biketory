@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}{{ user.username }} — Biketory{% endblock %}
-
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endblock %}
@@ -11,6 +9,49 @@
   padding: 2rem 1.5rem;
 }
 
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Tabs ── */
+.profile-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--bg);
+}
+
+.profile-tabs button {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--bg);
+  background: none;
+  border: 2px solid transparent;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: -2px;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.profile-tabs button:hover { opacity: 0.85; }
+
+.profile-tabs button.active {
+  opacity: 1;
+  border-color: var(--bg);
+  border-bottom-color: var(--surface);
+  background: var(--surface);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Layout ── */
 .layout {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -18,12 +59,11 @@
   align-items: start;
 }
 
-h1 {
-  color: var(--bg);
-  font-size: 1.4rem;
-  margin-bottom: 1.5rem;
+.settings-layout {
+  max-width: 520px;
 }
 
+/* ── Cards ── */
 .stat-card {
   background: var(--surface);
   border-radius: 8px;
@@ -46,10 +86,9 @@ h1 {
   color: var(--bg);
 }
 
-.stat-card .value.small {
-  font-size: 1rem;
-}
+.stat-card .value.small { font-size: 1rem; }
 
+/* ── Map ── */
 #map {
   width: 100%;
   height: 600px;
@@ -70,6 +109,7 @@ h1 {
 }
 .surface-tooltip::before { display: none; }
 
+/* ── Misc ── */
 .uuid-row {
   display: flex;
   align-items: center;
@@ -100,50 +140,67 @@ h1 {
 {% block content %}
 <h1>{{ user.username }}</h1>
 
-<div class="layout">
-  <div class="stats">
-    <div class="stat-card">
-      <div class="label">Traces uploadées</div>
-      <div class="value">{{ traces_count }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Hexagons</div>
-      <div class="value">{{ hexagons_count }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Points totaux</div>
-      <div class="value">{{ total_points }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Première trace</div>
-      <div class="value small">{{ first_trace_date|date:"Y-m-d"|default:"—" }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Amis</div>
-      <div class="value">{{ friends_count }} <a href="{% url 'friends' %}" style="font-size:0.75rem;font-weight:400;color:var(--muted);text-decoration:none;">gérer →</a></div>
-    </div>
-    {% if pending_received %}
-    <div class="stat-card" style="border-left:3px solid var(--accent);">
-      <div class="label">Demandes reçues</div>
-      {% for f in pending_received %}
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.4rem;gap:0.5rem;">
-          <span style="font-size:0.88rem;color:var(--bg);font-weight:600;">{{ f.from_user.username }}</span>
-          <div style="display:flex;gap:0.4rem;">
-            <form method="post" action="{% url 'friends' %}" style="margin:0">{% csrf_token %}
-              <input type="hidden" name="action" value="accept">
-              <input type="hidden" name="friendship_id" value="{{ f.pk }}">
-              <button style="background:var(--accent);border:none;border-radius:4px;padding:0.2rem 0.5rem;font-size:0.72rem;font-weight:700;cursor:pointer;color:white;">✓</button>
-            </form>
-            <form method="post" action="{% url 'friends' %}" style="margin:0">{% csrf_token %}
-              <input type="hidden" name="action" value="decline">
-              <input type="hidden" name="friendship_id" value="{{ f.pk }}">
-              <button style="background:none;border:1px solid #bbb;border-radius:4px;padding:0.2rem 0.5rem;font-size:0.72rem;cursor:pointer;color:var(--muted);">✗</button>
-            </form>
+<nav class="profile-tabs">
+  <button id="tab-btn-profil"    onclick="switchTab('profil')">Profil</button>
+  <button id="tab-btn-settings"  onclick="switchTab('settings')">Paramètres</button>
+</nav>
+
+<!-- ── Tab Profil ── -->
+<div class="tab-panel" id="tab-profil">
+  <div class="layout">
+    <div>
+      <div class="stat-card">
+        <div class="label">Traces uploadées</div>
+        <div class="value">{{ traces_count }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Hexagons</div>
+        <div class="value">{{ hexagons_count }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Points totaux</div>
+        <div class="value">{{ total_points }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Première trace</div>
+        <div class="value small">{{ first_trace_date|date:"Y-m-d"|default:"—" }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Amis</div>
+        <div class="value">{{ friends_count }} <a href="{% url 'friends' %}" style="font-size:0.75rem;font-weight:400;color:var(--muted);text-decoration:none;">gérer →</a></div>
+      </div>
+      {% if pending_received %}
+      <div class="stat-card" style="border-left:3px solid var(--accent);">
+        <div class="label">Demandes reçues</div>
+        {% for f in pending_received %}
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.4rem;gap:0.5rem;">
+            <span style="font-size:0.88rem;color:var(--bg);font-weight:600;">{{ f.from_user.username }}</span>
+            <div style="display:flex;gap:0.4rem;">
+              <form method="post" action="{% url 'friends' %}" style="margin:0">{% csrf_token %}
+                <input type="hidden" name="action" value="accept">
+                <input type="hidden" name="friendship_id" value="{{ f.pk }}">
+                <button style="background:var(--accent);border:none;border-radius:4px;padding:0.2rem 0.5rem;font-size:0.72rem;font-weight:700;cursor:pointer;color:white;">✓</button>
+              </form>
+              <form method="post" action="{% url 'friends' %}" style="margin:0">{% csrf_token %}
+                <input type="hidden" name="action" value="decline">
+                <input type="hidden" name="friendship_id" value="{{ f.pk }}">
+                <button style="background:none;border:1px solid #bbb;border-radius:4px;padding:0.2rem 0.5rem;font-size:0.72rem;cursor:pointer;color:var(--muted);">✗</button>
+              </form>
+            </div>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
+
+    <div id="map"></div>
+  </div>
+</div>
+
+<!-- ── Tab Paramètres ── -->
+<div class="tab-panel" id="tab-settings">
+  <div class="settings-layout">
+
     <div class="stat-card">
       <div class="label">Email</div>
       <form method="post" style="margin-top:0.3rem;">
@@ -159,6 +216,27 @@ h1 {
         {% endif %}
       </form>
     </div>
+
+    <div class="stat-card">
+      <div class="label">Position de départ</div>
+      {% if home_location %}
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">
+          {{ home_location.y|floatformat:5 }}, {{ home_location.x|floatformat:5 }}
+        </div>
+      {% else %}
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Non définie</div>
+      {% endif %}
+      <form method="post" id="home-location-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_home_location">
+        <input type="hidden" name="lat" id="home-lat">
+        <input type="hidden" name="lng" id="home-lng">
+        <button type="button" class="copy-btn" onclick="captureMapCenter()">
+          Utiliser le centre de la carte
+        </button>
+      </form>
+    </div>
+
     <div class="stat-card">
       <div class="label">UUID secret</div>
       <div class="uuid-row">
@@ -166,6 +244,7 @@ h1 {
         <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ secret_uuid }}')">Copier</button>
       </div>
     </div>
+
     <div class="stat-card">
       <div class="label">Token API</div>
       {% if api_token %}
@@ -184,41 +263,66 @@ h1 {
       <form method="post" style="margin-top:0.6rem;">
         {% csrf_token %}
         <input type="hidden" name="action" value="generate_token">
-        <button type="submit" class="copy-btn" style="font-size:0.78rem;">
+        <button type="submit" class="copy-btn">
           {% if api_token %}Régénérer{% else %}Générer{% endif %}
         </button>
       </form>
     </div>
-  </div>
 
-  <div id="map"></div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  const map = L.map('map');
+  /* ── Tab switching ── */
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.profile-tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('tab-btn-' + name).classList.add('active');
+    if (name === 'profil') setTimeout(() => map.invalidateSize(), 0);
+    history.replaceState(null, '', name === 'settings' ? '?tab=settings' : '?');
+  }
 
-  L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+  /* ── Map (init before switchTab so map is defined) ── */
+  const map = L.map('map');
+  L.tileLayer('{{ tile_server_url }}', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
   const hexagons = {{ hexagons_geojson|safe }};
-
   if (hexagons.features.length > 0) {
     const layer = L.geoJSON(hexagons, {
       style: { color: '#2980b9', weight: 1, opacity: 0.7, fillColor: '#2980b9', fillOpacity: 0.45 },
       onEachFeature: (feature, layer) => {
-        layer.bindTooltip(`${feature.properties.points}pt`, {
-          sticky: true,
-          className: 'surface-tooltip',
-        });
+        layer.bindTooltip(`${feature.properties.points}pt`, { sticky: true, className: 'surface-tooltip' });
       },
     }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [40, 40] });
   } else {
+    {% if home_location %}
+    map.setView([{{ home_location.y }}, {{ home_location.x }}], 12);
+    {% else %}
     map.setView([0, 0], 2);
+    {% endif %}
+  }
+
+  {% if home_location %}
+  L.marker([{{ home_location.y }}, {{ home_location.x }}])
+    .addTo(map)
+    .bindTooltip("Position de départ", { permanent: false, className: 'surface-tooltip' });
+  {% endif %}
+
+  const initTab = new URLSearchParams(location.search).get('tab') || 'profil';
+  switchTab(initTab);
+
+  function captureMapCenter() {
+    const c = map.getCenter();
+    document.getElementById('home-lat').value = c.lat;
+    document.getElementById('home-lng').value = c.lng;
+    document.getElementById('home-location-form').submit();
   }
 </script>
 {% endblock %}

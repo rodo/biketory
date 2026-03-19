@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Statistics — Biketory{% endblock %}
 
 {% block extra_css %}
 #page-inner {
@@ -145,6 +144,7 @@ h1 {
   <nav class="tabs">
     <a href="{% url 'stats_monthly' %}">Par mois</a>
     <a href="{% url 'stats' %}" class="active">Par utilisateur</a>
+    <a href="{% url 'stats_pie' %}">Répartition</a>
   </nav>
   <h1>Hexagons gained per month</h1>
 

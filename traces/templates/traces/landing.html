@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Biketory{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endblock %}
 
 {% block extra_css %}
-html, body { overflow: hidden; }
-#page { padding-top: 0; }
+html, body { overflow: hidden; padding-top: 0; }
 #map { width: 100vw; height: calc(100vh - var(--bar-h)); margin-top: var(--bar-h); }
 
 .surface-tooltip {
@@ -150,7 +148,7 @@ html, body { overflow: hidden; }
     document.cookie = `map_pos=${c.lat},${c.lng},${map.getZoom()};path=/;max-age=31536000`;
   });
 
-  L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+  L.tileLayer('{{ tile_server_url }}', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
