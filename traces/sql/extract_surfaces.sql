@@ -1,7 +1,7 @@
 WITH source AS (
     SELECT
         id AS trace_id,
-        route AS geom
+        ST_SimplifyPreserveTopology(route, 0.0001) AS geom
     FROM traces_trace
     WHERE id = %s
 ),
