@@ -1,3 +1,14 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "biketory.settings"
+python_files = ["tests.py", "test_*.py"]
+addopts = "--cov=traces --cov-report=xml --cov-report=term-missing"
+
+[tool.coverage.run]
+omit = ["*/migrations/*", "*/venv/*", "manage.py"]
+
+[tool.coverage.report]
+skip_empty = true
+
 [tool.ruff]
 target-version = "py312"
 line-length = 120
