@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}{{ trace.gpx_file.name|cut:"gpx/" }} — Biketory{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -168,6 +167,13 @@ h1 {
   </div>
 </div>
 
+{% if surfaces_count == 0 %}
+<div style="background:#fff3cd;border:1px solid #f0c040;border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;color:#7a5700;">
+  <span style="font-size:1.1rem;">⚠</span>
+  Cette trace ne contient aucune surface fermée. Assurez-vous que votre parcours forme une boucle.
+</div>
+{% endif %}
+
 <div class="layer-toggles">
   <button class="layer-btn active" id="btn-trace"    style="--c:#e74c3c">Trace</button>
   <button class="layer-btn active" id="btn-surfaces" style="--c:#2980b9">Surfaces</button>
@@ -196,7 +202,7 @@ h1 {
 <script>
   const map = L.map('map');
 
-  L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+  L.tileLayer('{{ tile_server_url }}', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 

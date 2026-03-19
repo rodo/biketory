@@ -9,6 +9,7 @@ from .profile import profile  # noqa: F401
 from .register import register  # noqa: F401
 from .stats import stats  # noqa: F401
 from .stats_monthly import stats_monthly  # noqa: F401
+from .stats_pie import stats_pie  # noqa: F401
 from .surface_list import surface_list  # noqa: F401
 from .trace_detail import trace_detail  # noqa: F401
 from .trace_list import trace_list  # noqa: F401

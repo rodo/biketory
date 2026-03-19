@@ -6,7 +6,7 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, UserSurfaceStats
+from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, UserProfile, UserSurfaceStats
 
 
 @login_required
@@ -20,7 +20,19 @@ def profile(request):
                 user=request.user,
                 expires_at=timezone.now() + timedelta(days=31),
             )
-            return redirect("profile")
+            return redirect("/profile/?tab=settings")
+
+        if action == "update_home_location":
+            try:
+                lat = float(request.POST.get("lat", ""))
+                lng = float(request.POST.get("lng", ""))
+                from django.contrib.gis.geos import Point
+                profile, _ = UserProfile.objects.get_or_create(user=request.user)
+                profile.home_location = Point(lng, lat, srid=4326)
+                profile.save(update_fields=["home_location"])
+            except (ValueError, TypeError):
+                pass
+            return redirect("/profile/?tab=settings")
 
         if action == "update_email":
             new_email = request.POST.get("email", "").strip()
@@ -37,7 +49,7 @@ def profile(request):
                 else:
                     request.user.email = new_email
                     request.user.save(update_fields=["email"])
-                    return redirect("profile")
+                    return redirect("/profile/?tab=settings")
             # Fall through to render with error
             request.email_error = email_error
     user = request.user
@@ -91,6 +103,9 @@ def profile(request):
 
     api_token = ApiToken.objects.filter(user=user).first()
     email_error = getattr(request, "email_error", None)
+    home_location = stats.profile.home_location if hasattr(stats, "profile") else None
+    user_profile, _ = UserProfile.objects.get_or_create(user=user)
+    home_location = user_profile.home_location
 
     return render(request, "traces/profile.html", {
         "traces_count": traces_count,
@@ -103,4 +118,5 @@ def profile(request):
         "pending_received": pending_received,
         "api_token": api_token,
         "email_error": email_error,
+        "home_location": home_location,
     })

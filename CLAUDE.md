@@ -127,6 +127,22 @@ PostGIS extension must be enabled:
 CREATE EXTENSION postgis;
 ```
 
+## SQL conventions
+
+All SQL queries must be stored in dedicated `.sql` files under `traces/sql/`, never inline in Python code. Load them at module level with `Path(__file__).resolve().parent.parent / "sql" / "my_query.sql").read_text()` and pass the result to `cursor.execute()`.
+
+```python
+# Good
+_SQL_DIR = Path(__file__).resolve().parent.parent / "sql"
+_MY_QUERY_SQL = (_SQL_DIR / "my_query.sql").read_text()
+cursor.execute(_MY_QUERY_SQL, [param1, param2])
+
+# Bad — never do this
+cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
+```
+
+**Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 counts them as parameter placeholders.
+
 ## Color palette
 
 | Role | Value |

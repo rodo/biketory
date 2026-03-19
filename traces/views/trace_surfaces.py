@@ -1,9 +1,10 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.gis.db.models import Union
 from django.shortcuts import get_object_or_404, render
 
-from traces.models import Trace
+from traces.models import Hexagon, HexagonScore, Trace
 
 COLORS = [
     "#e74c3c", "#2980b9", "#27ae60", "#f39c12", "#8e44ad",
@@ -37,10 +38,32 @@ def trace_surfaces(request, pk):
         "properties": {},
     }) if trace.route else "null"
 
+    surface_union = trace.closed_surfaces.aggregate(u=Union("polygon"))["u"]
+    hexagons = Hexagon.objects.filter(geom__within=surface_union) if surface_union else Hexagon.objects.none()
+
+    scores = {
+        s.hexagon_id: s.points
+        for s in HexagonScore.objects.filter(hexagon__in=hexagons, user=trace.uploaded_by)
+    }
+    owner_username = trace.uploaded_by.username if trace.uploaded_by else ""
+
+    hexagons_geojson = json.dumps({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": json.loads(h.geom.geojson),
+                "properties": {"points": scores.get(h.pk, 0), "username": owner_username},
+            }
+            for h in hexagons
+        ],
+    })
+
     return render(request, "traces/trace_surfaces.html", {
         "trace": trace,
         "surfaces": surfaces,
         "colors": [COLORS[i % len(COLORS)] for i in range(len(surfaces))],
         "surfaces_geojson": surfaces_geojson,
         "route_geojson": route_geojson,
+        "hexagons_geojson": hexagons_geojson,
     })
