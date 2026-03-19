@@ -35,10 +35,14 @@ jobs:
       DB_USER: biketory
       DB_PASSWORD: biketory
       DB_HOST: localhost
+      DJANGO_SETTINGS_MODULE: biketory.settings_ci
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Prepare CI settings
+        run: cp biketory/settings.dist biketory/settings_ci.py
 
       - name: Set up Python
         uses: actions/setup-python@v5
