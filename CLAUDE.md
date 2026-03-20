@@ -150,3 +150,15 @@ cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 | Background | `#1b2d1e` (dark forest green) |
 | Accent | `#f0a500` (amber) |
 | Surface | `#f5f0e8` (warm beige) |
+
+## Git workflow
+
+La branche `main` est protégée sur GitHub. Toujours créer une nouvelle branche
+avant de modifier des fichiers :
+
+```bash
+git checkout main
+git checkout -b feature/<nom>
+```
+
+Ne jamais commiter ni pusher directement sur `main`.
