@@ -69,21 +69,70 @@ def _parse_route(gpx_file):
     return MultiLineString(segments), first_point_date, length_km
 
 
+def _merge_adjacent_polygons(polygons):
+    """Merge touching polygons into their union (one polygon per connected component).
+
+    ST_Polygonize produces individual face polygons for each enclosed region of a
+    self-intersecting trace. Adjacent faces share edges and must be merged so that
+    a single loop results in a single surface, regardless of how many times the
+    trace crosses itself.
+    """
+    if not polygons:
+        return []
+
+    n = len(polygons)
+    parent = list(range(n))
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            shared = polygons[i].boundary.intersection(polygons[j].boundary)
+            if not shared.empty and shared.length > 0:
+                parent[find(i)] = find(j)
+
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for i in range(n):
+        groups[find(i)].append(polygons[i])
+
+    result = []
+    for group in groups.values():
+        merged = group[0]
+        for g in group[1:]:
+            merged = merged.union(g)
+        if merged.geom_type == "MultiPolygon":
+            merged = max(merged, key=lambda p: p.area)
+        result.append(merged)
+    return result
+
+
 def _extract_surfaces(trace):
     with connection.cursor() as cursor:
         cursor.execute(_EXTRACT_SURFACES_SQL, [trace.pk])
         rows = cursor.fetchall()
 
-    surfaces = []
+    from collections import defaultdict
+    faces_by_segment = defaultdict(list)
     for row in rows:
         geom = GEOSGeometry(row[2].tobytes() if hasattr(row[2], "tobytes") else row[2])
-        if geom.transform(3857, clone=True).area >= settings.MIN_SURFACE_AREA_M2:
-            surfaces.append(ClosedSurface(
-                trace=trace,
-                owner=trace.uploaded_by,
-                segment_index=row[1],
-                polygon=geom,
-            ))
+        faces_by_segment[row[1]].append(geom)
+
+    surfaces = []
+    for seg_idx, faces in faces_by_segment.items():
+        for geom in _merge_adjacent_polygons(faces):
+            if geom.transform(3857, clone=True).area >= settings.MIN_SURFACE_AREA_M2:
+                surfaces.append(ClosedSurface(
+                    trace=trace,
+                    owner=trace.uploaded_by,
+                    segment_index=seg_idx,
+                    polygon=geom,
+                ))
+
     if surfaces:
         ClosedSurface.objects.bulk_create(surfaces)
         with connection.cursor() as cursor:
