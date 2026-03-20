@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Fonctionnalité Premium — Biketory{% endblock %}
+
+{% block content %}
+<div style="max-width:520px;margin:4rem auto;padding:2rem;background:var(--surface);border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.1);text-align:center;">
+  <div style="font-size:2.5rem;margin-bottom:1rem;">★</div>
+  <h1 style="font-size:1.4rem;color:var(--bg);margin-bottom:0.75rem;">Fonctionnalité Premium</h1>
+  <p style="color:#555;font-size:0.95rem;line-height:1.6;margin-bottom:1.5rem;">
+    Cette fonctionnalité est réservée aux abonnés Premium.<br>
+    Contactez l'administrateur pour souscrire un abonnement.
+  </p>
+  <a href="{% url 'landing' %}" style="display:inline-block;padding:0.5rem 1.4rem;background:var(--accent);color:var(--bg);font-weight:700;border-radius:6px;text-decoration:none;font-size:0.9rem;">
+    Retour à l'accueil
+  </a>
+</div>
+{% endblock %}
