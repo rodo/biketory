@@ -1,11 +1,11 @@
 import datetime
 
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from traces.models import Subscription
 from traces.decorators import premium_required
+from traces.models import Subscription
 
 from ._helpers import make_user
 
