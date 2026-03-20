@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models
+from django.utils import timezone
 
 
 class Trace(models.Model):
@@ -147,6 +148,22 @@ class ApiToken(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Subscription(models.Model):
+    user = models.OneToOneField(
+        get_user_model(), on_delete=models.CASCADE, related_name="subscription"
+    )
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_active(self):
+        today = timezone.now().date()
+        return self.start_date <= today <= self.end_date
+
+    def __str__(self):
+        return f"{self.user.username} ({self.start_date} → {self.end_date})"
 
 
 class MonthlyStatsRefresh(models.Model):

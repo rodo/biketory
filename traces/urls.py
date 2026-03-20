@@ -20,4 +20,5 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     path("friends/", views.friends, name="friends"),
     path("api/upload/", views.api_upload_trace, name="api_upload_trace"),
+    path("premium/", views.subscription_required, name="subscription_required"),
 ]

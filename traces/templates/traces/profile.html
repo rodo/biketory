@@ -169,6 +169,19 @@ h1 {
         <div class="label">Amis</div>
         <div class="value">{{ friends_count }} <a href="{% url 'friends' %}" style="font-size:0.75rem;font-weight:400;color:var(--muted);text-decoration:none;">gérer →</a></div>
       </div>
+      <div class="stat-card">
+        <div class="label">Abonnement</div>
+        {% with sub=user.subscription %}
+          {% if sub and sub.is_active %}
+            <div class="value small" style="display:flex;align-items:center;gap:0.5rem;">
+              <span style="font-size:0.72rem;font-weight:700;background:var(--accent);color:var(--bg);padding:0.15rem 0.5rem;border-radius:4px;letter-spacing:0.06em;">PREMIUM</span>
+              <span style="font-size:0.78rem;color:var(--muted);">jusqu'au {{ sub.end_date|date:"d/m/Y" }}</span>
+            </div>
+          {% else %}
+            <div class="value small" style="color:var(--muted);font-size:0.9rem;">Free</div>
+          {% endif %}
+        {% endwith %}
+      </div>
       {% if pending_received %}
       <div class="stat-card" style="border-left:3px solid var(--accent);">
         <div class="label">Demandes reçues</div>
@@ -303,7 +316,7 @@ h1 {
     map.fitBounds(layer.getBounds(), { padding: [40, 40] });
   } else {
     {% if home_location %}
-    map.setView([{{ home_location.y }}, {{ home_location.x }}], 12);
+    map.setView([{{ home_location.y }}, {{ home_location.x }}], 9);
     {% else %}
     map.setView([0, 0], 2);
     {% endif %}
