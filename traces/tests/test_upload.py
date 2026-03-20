@@ -2,7 +2,7 @@
 Tests d'import de traces GPX réelles.
 
 Convention de nommage des fixtures :
-    tests/closed_surface_<nb_surfaces>_hexagon_<nb_hexagons>.gpx
+    trace_samples/closed_surface_<nb_surfaces>_hexagon_<nb_hexagons>.gpx
 
 Le nom encode le résultat attendu après import :
 - nb_surfaces : nombre de ClosedSurface extraites
@@ -18,7 +18,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from traces.models import ClosedSurface, HexagonScore, Trace
 from traces.views.upload import _create_trace_hexagons, _extract_surfaces, _parse_route
 
-_FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent / "tests"
+_FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent / "trace_samples"
 
 _GPX_FIXTURES = list(_FIXTURES_DIR.glob("closed_surface_*_hexagon_*.gpx"))
 
