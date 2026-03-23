@@ -6,6 +6,7 @@ urlpatterns = [
     path("", views.landing, name="landing"),
     path("upload/", views.upload_trace, name="upload_trace"),
     path("register/", views.register, name="register"),
+    path("create/", views.trace_create, name="trace_create"),
     path("traces/", views.trace_list, name="trace_list"),
     path("traces/<int:pk>/", views.trace_detail, name="trace_detail"),
     path("traces/<int:pk>/delete/", views.delete_trace, name="delete_trace"),

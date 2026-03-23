@@ -195,6 +195,7 @@
     </a>
     <div class="nav-links">
       {% block topbar_extra %}{% endblock %}
+      <a href="{% url 'trace_create' %}">Créer</a>
       <a href="{% url 'stats' %}">Stats</a>
       <a href="{% url 'badges' %}">Badges</a>
       {% if user.is_authenticated %}
