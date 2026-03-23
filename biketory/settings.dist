@@ -54,20 +54,29 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "biketory.urls"
 
+
+BIKETORY_THEME = os.environ.get("BIKETORY_THEME", "light")
+
+_THEME_DIRS = [BASE_DIR / "traces" / "templates"]
+if BIKETORY_THEME != "dark":
+    _THEME_DIRS.insert(0, BASE_DIR / "traces" / f"templates-{BIKETORY_THEME}")
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "traces" / "templates"],
+        "DIRS": _THEME_DIRS,
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "traces.context_processors.tile_server",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "biketory.wsgi.application"
 
@@ -130,6 +139,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "upload_trace"
 LOGOUT_REDIRECT_URL = "landing"
+
+TILE_SERVER_URL = "http://{s}.tiles.openstreetmap.org/{z}/{x}/{y}.png"
 
 # Minimum area in m² for a closed surface to be stored
 MIN_SURFACE_AREA_M2 = 900

@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.tabs a {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  opacity: 0.55;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid transparent;
+  border-bottom: none;
+  margin-bottom: -2px;
+  transition: opacity 0.15s;
+}
+
+.tabs a:hover { opacity: 0.85; }
+
+.tabs a.active {
+  opacity: 1;
+  border-color: #e0dcd5;
+  border-bottom-color: var(--page);
+  background: var(--page);
+  color: var(--accent);
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.75rem 2rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.chart-wrap {
+  position: relative;
+  height: 420px;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 420px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ── Dual range slider ── */
+.slider-section {
+  margin-top: 2rem;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--bg);
+  margin-bottom: 0.6rem;
+}
+
+.slider-wrap {
+  position: relative;
+  height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.slider-track {
+  position: absolute;
+  left: 0; right: 0;
+  height: 6px;
+  background: #e0dcd5;
+  border-radius: 3px;
+}
+
+.slider-fill {
+  position: absolute;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.slider-wrap input[type="range"] {
+  position: absolute;
+  width: 100%;
+  margin: 0;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 6px;
+}
+
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  pointer-events: all;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid white;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+  cursor: grab;
+}
+
+.slider-wrap input[type="range"]::-moz-range-thumb {
+  pointer-events: all;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid white;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+  cursor: grab;
+}
+
+.slider-wrap input[type="range"]:focus { outline: none; }
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <nav class="tabs">
+    <a href="{% url 'stats_monthly' %}">Par mois</a>
+    <a href="{% url 'stats' %}" class="active">Par utilisateur</a>
+    <a href="{% url 'stats_pie' %}">Répartition</a>
+    <a href="{% url 'stats_badges' %}">Badges</a>
+  </nav>
+  <h1>Hexagons gained per month</h1>
+
+  <div class="card">
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+      <div class="empty" id="empty-msg" style="display:none;">No data yet.</div>
+    </div>
+
+    <div class="slider-section" id="slider-section" style="display:none;">
+      <div class="slider-labels">
+        <span id="label-start"></span>
+        <span id="label-end"></span>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-track"></div>
+        <div class="slider-fill" id="slider-fill"></div>
+        <input type="range" id="range-start" min="0" value="0">
+        <input type="range" id="range-end"   min="0" value="0">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  const ALL = {{ chart_data|safe }};
+  const labels   = ALL.labels;
+  const datasets = ALL.datasets;
+
+  if (labels.length === 0) {
+    document.getElementById('empty-msg').style.display = 'flex';
+  } else {
+    document.getElementById('slider-section').style.display = 'block';
+
+    /* ── Chart ── */
+    const ctx = document.getElementById('chart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: [], datasets: [] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { font: { size: 12 }, boxWidth: 14, padding: 16 }
+          },
+          tooltip: {
+            callbacks: {
+              title: items => items[0].label,
+              label: item => ` ${item.dataset.label}: ${item.parsed.y} hexagon${item.parsed.y !== 1 ? 's' : ''}`,
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: { display: false },
+            ticks: { font: { size: 11 } }
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            ticks: { precision: 0, font: { size: 11 } },
+            grid: { color: 'rgba(0,0,0,0.06)' }
+          }
+        }
+      }
+    });
+
+    /* ── Slider ── */
+    const rangeStart  = document.getElementById('range-start');
+    const rangeEnd    = document.getElementById('range-end');
+    const fill        = document.getElementById('slider-fill');
+    const labelStart  = document.getElementById('label-start');
+    const labelEnd    = document.getElementById('label-end');
+    const max         = labels.length - 1;
+
+    rangeStart.max = max;
+    rangeEnd.max   = max;
+    rangeEnd.value = max;
+
+    function refresh() {
+      const s = parseInt(rangeStart.value);
+      const e = parseInt(rangeEnd.value);
+
+      /* update fill */
+      const leftPct  = max > 0 ? s / max * 100 : 0;
+      const rightPct = max > 0 ? e / max * 100 : 100;
+      fill.style.left  = leftPct + '%';
+      fill.style.width = (rightPct - leftPct) + '%';
+
+      /* update labels */
+      labelStart.textContent = labels[s];
+      labelEnd.textContent   = labels[e];
+
+      /* slice data */
+      const slicedLabels   = labels.slice(s, e + 1);
+      chart.data.labels    = slicedLabels;
+      chart.data.datasets  = datasets.map(ds => ({
+        label:           ds.label,
+        data:            ds.data.slice(s, e + 1),
+        backgroundColor: ds.backgroundColor,
+      }));
+      chart.update('none');
+    }
+
+    rangeStart.addEventListener('input', () => {
+      if (parseInt(rangeStart.value) > parseInt(rangeEnd.value))
+        rangeStart.value = rangeEnd.value;
+      refresh();
+    });
+
+    rangeEnd.addEventListener('input', () => {
+      if (parseInt(rangeEnd.value) < parseInt(rangeStart.value))
+        rangeEnd.value = rangeStart.value;
+      refresh();
+    });
+
+    refresh();
+  }
+</script>
+{% endblock %}
