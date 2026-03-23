@@ -3,12 +3,11 @@ import tempfile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils import timezone
 
-from traces.models import Hexagon, HexagonScore, Trace
+from traces.models import Hexagon, Trace
 from traces.views.upload import MAX_TRACE_LENGTH_KM
 
-from ._helpers import make_user, small_route, square_polygon
+from ._helpers import make_user, small_route
 
 
 class TraceLengthLimitTest(TestCase):
