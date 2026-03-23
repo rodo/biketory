@@ -10,6 +10,7 @@ from django.db import connection
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
+from traces.badge_award import award_badges
 from traces.forms import TraceUploadForm
 from traces.models import ClosedSurface, Trace, UserProfile
 
@@ -202,12 +203,14 @@ def upload_trace(request):
                     trace = Trace.objects.create(
                         gpx_file=gpx_file,
                         route=route,
+                        length_km=length_km,
                         first_point_date=first_point_date,
                         uploaded_by=request.user,
                     )
                     if route:
                         _create_trace_hexagons(route)
                         _extract_surfaces(trace)
+                    award_badges(request.user, trace)
                     return redirect("trace_detail", pk=trace.pk)
     else:
         form = TraceUploadForm()

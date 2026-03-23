@@ -1,13 +1,14 @@
 from .api_upload import api_upload_trace  # noqa: F401
+from .badges import badges  # noqa: F401
 from .delete_trace import delete_trace  # noqa: F401
 from .friends import friends  # noqa: F401
 from .hexagon_detail import hexagon_detail  # noqa: F401
-from .hexagon_stats import hexagon_stats  # noqa: F401
 from .landing import landing  # noqa: F401
 from .legal import legal  # noqa: F401
 from .profile import profile  # noqa: F401
 from .register import register  # noqa: F401
 from .stats import stats  # noqa: F401
+from .stats_badges import stats_badges  # noqa: F401
 from .stats_monthly import stats_monthly  # noqa: F401
 from .stats_pie import stats_pie  # noqa: F401
 from .subscription import subscription_required  # noqa: F401

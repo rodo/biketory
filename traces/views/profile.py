@@ -6,7 +6,7 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, UserProfile, UserSurfaceStats
+from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, UserBadge, UserProfile, UserSurfaceStats
 
 
 @login_required
@@ -101,6 +101,7 @@ def profile(request):
         Q(to_user=user, status=Friendship.STATUS_ACCEPTED)
     ).count()
 
+    badges_earned = UserBadge.objects.filter(user=user).count()
     api_token = ApiToken.objects.filter(user=user).first()
     email_error = getattr(request, "email_error", None)
     home_location = stats.profile.home_location if hasattr(stats, "profile") else None
@@ -119,4 +120,5 @@ def profile(request):
         "api_token": api_token,
         "email_error": email_error,
         "home_location": home_location,
+        "badges_earned": badges_earned,
     })

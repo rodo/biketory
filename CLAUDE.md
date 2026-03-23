@@ -151,6 +151,10 @@ cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 | Accent | `#f0a500` (amber) |
 | Surface | `#f5f0e8` (warm beige) |
 
+## Test fixtures
+
+Les traces GPX de test sont dans `trace_samples/`. Le document `doc/trace_samples.md` liste chaque fixture et les tests qui l'utilisent. **Ce document doit être mis à jour** à chaque ajout, suppression ou modification d'une fixture ou d'un test qui en dépend.
+
 ## Git workflow
 
 La branche `main` est protégée sur GitHub. Toujours créer une nouvelle branche

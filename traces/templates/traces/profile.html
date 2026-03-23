@@ -170,6 +170,10 @@ h1 {
         <div class="value">{{ friends_count }} <a href="{% url 'friends' %}" style="font-size:0.75rem;font-weight:400;color:var(--muted);text-decoration:none;">gérer →</a></div>
       </div>
       <div class="stat-card">
+        <div class="label">Badges</div>
+        <div class="value">{{ badges_earned }} <a href="{% url 'badges' %}" style="font-size:0.75rem;font-weight:400;color:var(--muted);text-decoration:none;">voir tous →</a></div>
+      </div>
+      <div class="stat-card">
         <div class="label">Abonnement</div>
         {% with sub=user.subscription %}
           {% if sub and sub.is_active %}

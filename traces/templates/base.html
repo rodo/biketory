@@ -175,7 +175,6 @@
       <a href="{% url 'friends' %}">Amis</a>
       <a href="{% url 'trace_list' %}">Traces</a>
       <a href="{% url 'surface_list' %}">Surfaces</a>
-      <a href="{% url 'hexagon_stats' %}">Hexagons</a>
       <a href="{% url 'stats' %}">Stats</a>
       <a href="{% url 'upload_trace' %}">Upload</a>
     {% else %}
@@ -195,6 +194,7 @@
           {% endwith %}
         </a>
         {% endif %}
+        <a href="{% url 'badges' %}">Badges</a>
         <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
         <a href="{% url 'legal' %}">Legal &amp; Cookies</a>
         {% if user.is_authenticated %}
