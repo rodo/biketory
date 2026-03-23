@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.75rem 2rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.chart-wrap {
+  position: relative;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.tabs a {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  opacity: 0.55;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid transparent;
+  border-bottom: none;
+  margin-bottom: -2px;
+  transition: opacity 0.15s;
+}
+
+.tabs a:hover { opacity: 0.85; }
+
+.tabs a.active {
+  opacity: 1;
+  border-color: #e0dcd5;
+  border-bottom-color: var(--page);
+  background: var(--page);
+  color: var(--accent);
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <nav class="tabs">
+    <a href="{% url 'stats_monthly' %}">Par mois</a>
+    <a href="{% url 'stats' %}">Par utilisateur</a>
+    <a href="{% url 'stats_pie' %}" class="active">Répartition</a>
+    <a href="{% url 'stats_badges' %}">Badges</a>
+  </nav>
+  <h1>Hexagons par utilisateur</h1>
+
+  <div class="card">
+    <div class="chart-wrap">
+      {% if chart_data != '{"labels": [], "datasets": [{"data": [], "backgroundColor": []}]}' %}
+        <canvas id="chart"></canvas>
+      {% else %}
+        <div class="empty">Aucune donnée.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  const ALL = {{ chart_data|safe }};
+  if (ALL.labels.length > 0) {
+    new Chart(document.getElementById('chart').getContext('2d'), {
+      type: 'pie',
+      data: ALL,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { font: { size: 13 }, padding: 16, boxWidth: 14 }
+          },
+          tooltip: {
+            callbacks: {
+              label: item => ` ${item.label}: ${item.parsed} hexagon${item.parsed !== 1 ? 's' : ''}`,
+            }
+          }
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

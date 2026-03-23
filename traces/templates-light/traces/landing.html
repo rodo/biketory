@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_css %}
+html, body { overflow: hidden; padding-top: 0; }
+#map { width: 100vw; height: calc(100vh - var(--bar-h)); margin-top: var(--bar-h); }
+
+.surface-tooltip {
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.surface-tooltip::before { display: none; }
+
+.hex-popup .leaflet-popup-content-wrapper {
+  background: var(--surface);
+  color: var(--bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+.hex-popup .leaflet-popup-tip { background: var(--surface); }
+.hex-popup .leaflet-popup-content { margin: 0.75rem 1rem; min-width: 200px; }
+
+.hex-popup table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.hex-popup th { color: var(--muted); font-weight: 600; text-transform: uppercase;
+                font-size: 0.68rem; letter-spacing: 0.05em; padding-bottom: 0.4rem; text-align: left; }
+.hex-popup td { padding: 0.25rem 0; border-top: 1px solid #eee; }
+.hex-popup td:last-child { color: var(--muted); font-size: 0.78rem; text-align: right; }
+.hex-popup td:nth-child(2) { color: var(--accent); font-weight: 700; padding: 0 0.75rem; }
+.hex-popup .loading { color: var(--muted); font-size: 0.85rem; padding: 0.5rem 0; }
+
+/* Layers menu */
+.layers-menu { position: relative; }
+
+.layers-btn {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  background: var(--surface);
+  color: var(--bg);
+  cursor: pointer;
+}
+
+.layers-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.4rem 0;
+  min-width: 200px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  z-index: 3000;
+}
+
+.layers-dropdown.open { display: block; }
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  color: var(--bg);
+  font-size: 0.82rem;
+  user-select: none;
+}
+
+.layer-item:hover { background: #f5f5f0; }
+.layer-item input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+
+.layer-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.layers-separator {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 0.3rem 0;
+}
+
+.layer-sub-label {
+  padding: 0.25rem 0.85rem 0.1rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+{% endblock %}
+
+{% block topbar_extra %}
+<div class="layers-menu" id="layers-menu">
+  <button class="layers-btn" id="layers-btn" onclick="toggleLayersMenu()">Calques &#9662;</button>
+  <div class="layers-dropdown" id="layers-dropdown">
+    {% if current_user %}
+    <label class="layer-item">
+      <input type="checkbox" id="toggle-mine" checked onchange="toggleLayer('mine', this.checked)">
+      <span class="layer-swatch" style="background:#2980b9"></span>
+      Mes hexagons
+    </label>
+    {% endif %}
+    <label class="layer-item">
+      <input type="checkbox" id="toggle-others" checked onchange="toggleLayer('others', this.checked)">
+      <span class="layer-swatch" style="background:#9eaaa0"></span>
+      Autres utilisateurs
+    </label>
+    {% if current_user %}
+    <hr class="layers-separator">
+    <div class="layer-sub-label">Amis</div>
+    <label class="layer-item" id="toggle-friends-row">
+      <input type="checkbox" id="toggle-friends" checked onchange="toggleFriendsLayer(this.checked)">
+      <span class="layer-swatch" style="background:#e67e22;border-radius:50%"></span>
+      Tous les amis
+    </label>
+    <div id="friend-toggles"></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="map"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const _saved = document.cookie.split('; ').find(r => r.startsWith('map_pos='));
+  const _pos = _saved ? _saved.split('=')[1].split(',').map(Number) : null;
+  const map = L.map('map').setView(_pos ? [_pos[0], _pos[1]] : [0, 0], _pos ? _pos[2] : 2);
+
+  map.on('moveend', () => {
+    const c = map.getCenter();
+    document.cookie = `map_pos=${c.lat},${c.lng},${map.getZoom()};path=/;max-age=31536000`;
+  });
+
+  L.tileLayer('{{ tile_server_url }}', {
+    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  const currentUser = {% if current_user %}"{{ current_user }}"{% else %}null{% endif %};
+  const friendUsernames = new Set({{ friend_usernames|safe }});
+
+  const FRIEND_PALETTE = [
+    '#e67e22', '#27ae60', '#8e44ad', '#e74c3c',
+    '#16a085', '#d35400', '#2ecc71', '#9b59b6',
+    '#f39c12', '#1abc9c', '#c0392b', '#3498db',
+  ];
+
+  const friendColors = {};
+  let colorIndex = 0;
+  friendUsernames.forEach(u => {
+    friendColors[u] = FRIEND_PALETTE[colorIndex % FRIEND_PALETTE.length];
+    colorIndex++;
+  });
+
+  const hexagons = {{ geojson|safe }};
+
+  const myLayerGroup = L.layerGroup().addTo(map);
+  const othersLayerGroup = L.layerGroup().addTo(map);
+  const friendLayerGroups = {};
+  friendUsernames.forEach(u => {
+    friendLayerGroups[u] = L.layerGroup().addTo(map);
+  });
+
+  const allLayers = [];
+
+  hexagons.features.forEach(feature => {
+    const username = feature.properties.username;
+    const points = feature.properties.points;
+    const isOwner = currentUser && username === currentUser;
+    const isFriend = friendUsernames.has(username);
+
+    let color, targetGroup;
+    if (isOwner) {
+      color = '#2980b9';
+      targetGroup = myLayerGroup;
+    } else if (isFriend) {
+      color = friendColors[username];
+      targetGroup = friendLayerGroups[username];
+    } else {
+      color = '#9eaaa0';
+      targetGroup = othersLayerGroup;
+    }
+
+    const l = L.geoJSON(feature, {
+      style: { color, weight: 1, opacity: 0.7, fillColor: color, fillOpacity: 0.45 }
+    });
+    l.bindTooltip(`${username} · ${points}pt`, { sticky: true, className: 'surface-tooltip' });
+    l.on('click', (e) => {
+      const hexId = feature.properties.hexagon_id;
+      const popup = L.popup({ className: 'hex-popup' })
+        .setLatLng(e.latlng)
+        .setContent('<div class="loading">Chargement…</div>')
+        .openOn(map);
+      fetch(`/hexagons/${hexId}/`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.scores.length) { popup.setContent('<div class="loading">Aucun score.</div>'); return; }
+          const rows = data.scores.map(s =>
+            `<tr><td>${s.username}</td><td>${s.points}pt</td><td>${s.last_earned_at}</td></tr>`
+          ).join('');
+          popup.setContent(`<table>
+            <thead><tr><th>Utilisateur</th><th>Points</th><th>Dernière activité</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>`);
+        });
+    });
+
+    l.addTo(targetGroup);
+    allLayers.push(l);
+  });
+
+  if (allLayers.length > 0) {
+    const group = L.featureGroup(allLayers);
+    map.fitBounds(group.getBounds(), { padding: [40, 40] });
+  }
+
+  const friendTogglesEl = document.getElementById('friend-toggles');
+  if (friendTogglesEl) {
+    friendUsernames.forEach(u => {
+      const color = friendColors[u];
+      const label = document.createElement('label');
+      label.className = 'layer-item';
+      label.style.paddingLeft = '1.5rem';
+      label.innerHTML = `
+        <input type="checkbox" checked data-friend="${u}" onchange="toggleFriend('${u}', this.checked)">
+        <span class="layer-swatch" style="background:${color}"></span>
+        ${u}
+      `;
+      friendTogglesEl.appendChild(label);
+    });
+
+    if (friendUsernames.size === 0) {
+      document.getElementById('toggle-friends-row').style.display = 'none';
+      friendTogglesEl.style.display = 'none';
+    }
+  }
+
+  function toggleLayer(which, visible) {
+    const group = which === 'mine' ? myLayerGroup : othersLayerGroup;
+    visible ? group.addTo(map) : map.removeLayer(group);
+  }
+
+  function toggleFriendsLayer(visible) {
+    friendUsernames.forEach(u => {
+      visible ? friendLayerGroups[u].addTo(map) : map.removeLayer(friendLayerGroups[u]);
+    });
+    document.querySelectorAll('[data-friend]').forEach(cb => { cb.checked = visible; });
+  }
+
+  function toggleFriend(username, visible) {
+    const group = friendLayerGroups[username];
+    visible ? group.addTo(map) : map.removeLayer(group);
+    const allChecked = [...document.querySelectorAll('[data-friend]')].every(cb => cb.checked);
+    const anyChecked = [...document.querySelectorAll('[data-friend]')].some(cb => cb.checked);
+    const masterCb = document.getElementById('toggle-friends');
+    if (masterCb) {
+      masterCb.checked = anyChecked;
+      masterCb.indeterminate = anyChecked && !allChecked;
+    }
+  }
+
+  function toggleLayersMenu() {
+    document.getElementById('layers-dropdown').classList.toggle('open');
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('layers-menu').contains(e.target)) {
+      document.getElementById('layers-dropdown').classList.remove('open');
+    }
+  });
+
+</script>
+{% endblock %}
