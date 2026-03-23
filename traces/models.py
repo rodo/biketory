@@ -9,6 +9,7 @@ from django.utils import timezone
 class Trace(models.Model):
     gpx_file = models.FileField(upload_to="gpx/")
     route = models.MultiLineStringField(null=True, blank=True)
+    length_km = models.FloatField(null=True, blank=True)
     extracted = models.BooleanField(default=False)
     uploaded_by = models.ForeignKey(
         get_user_model(), null=True, blank=True, on_delete=models.SET_NULL, related_name="traces"
@@ -164,6 +165,25 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.start_date} → {self.end_date})"
+
+
+class UserBadge(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="badges"
+    )
+    badge_id = models.CharField(max_length=50)
+    trace = models.ForeignKey(
+        "Trace", null=True, blank=True, on_delete=models.SET_NULL, related_name="badges"
+    )
+    earned_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "badge_id"], name="unique_user_badge"),
+        ]
+
+    def __str__(self):
+        return f"{self.user} — {self.badge_id}"
 
 
 class MonthlyStatsRefresh(models.Model):

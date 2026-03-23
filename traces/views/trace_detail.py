@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db.models import Union
 from django.shortcuts import get_object_or_404, render
 
-from traces.models import Hexagon, HexagonScore, Trace
+from traces.badges import BADGE_CATALOGUE
+from traces.models import Hexagon, HexagonScore, Trace, UserBadge
 
 
 @login_required
@@ -51,6 +52,17 @@ def trace_detail(request, pk):
     prev_trace = Trace.objects.filter(uploaded_at__lt=trace.uploaded_at).order_by("-uploaded_at").first()
     next_trace = Trace.objects.filter(uploaded_at__gt=trace.uploaded_at).order_by("uploaded_at").first()
 
+    # Badges earned on this trace
+    badge_lookup = {}
+    for cat in BADGE_CATALOGUE:
+        for b in cat["badges"]:
+            badge_lookup[b["id"]] = b
+    earned_badges = [
+        badge_lookup[ub.badge_id]
+        for ub in UserBadge.objects.filter(trace=trace)
+        if ub.badge_id in badge_lookup
+    ]
+
     return render(request, "traces/trace_detail.html", {
         "trace": trace,
         "route_geojson": route_geojson,
@@ -61,4 +73,5 @@ def trace_detail(request, pk):
         "hexagons_count": hexagons.count(),
         "prev_trace": prev_trace,
         "next_trace": next_trace,
+        "earned_badges": earned_badges,
     })

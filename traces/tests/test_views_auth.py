@@ -130,22 +130,6 @@ class AuthenticatedViewTest(TestCase):
         resp = self.client.get(reverse("surface_list"))
         self.assertEqual(resp.status_code, 200)
 
-    def test_hexagon_stats_returns_200(self):
-        resp = self.client.get(reverse("hexagon_stats"))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_hexagon_stats_total_count(self):
-        Hexagon.objects.create(geom=square_polygon(2.35, 48.85, 0.001))
-        resp = self.client.get(reverse("hexagon_stats"))
-        self.assertEqual(resp.context["total_hexagons"], 1)
-
-    def test_hexagon_stats_per_user_points(self):
-        h = Hexagon.objects.create(geom=square_polygon(2.35, 48.85, 0.001))
-        HexagonScore.objects.create(hexagon=h, user=self.user, points=3, last_earned_at=timezone.now())
-        resp = self.client.get(reverse("hexagon_stats"))
-        row = resp.context["per_user"][0]
-        self.assertEqual(row["user__username"], "alice")
-        self.assertEqual(row["total_points"], 3)
 
     def test_trace_detail_returns_200(self):
         trace = Trace.objects.create(
