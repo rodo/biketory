@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+
+{% block extra_css %}
+#page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+thead {
+  background: #f2f1ec;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+thead th {
+  color: var(--bg);
+  text-align: left;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #f9f8f4; }
+
+tbody td {
+  padding: 0.8rem 1.1rem;
+  color: var(--bg);
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-done    { background: #d4edda; color: #155724; }
+.badge-pending { background: #fff3cd; color: #856404; }
+
+.empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.88rem;
+}
+
+.pagination a, .pagination span {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--bg);
+  border: 1px solid #e0dcd5;
+  background: var(--surface);
+}
+
+.pagination a:hover { background: #f9f8f4; }
+.pagination .current { background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 700; }
+
+.btn-delete {
+  background: none;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-delete:hover { background: #c0392b; color: white; }
+
+/* Modal */
+#confirm-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+#confirm-modal.open { display: flex; }
+
+.modal-card {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 2rem 2.5rem;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  text-align: center;
+}
+
+.modal-card h2 { color: var(--bg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+.modal-card p  { color: var(--muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+
+.modal-actions { display: flex; gap: 0.75rem; justify-content: center; }
+
+.modal-actions button {
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+}
+
+#btn-cancel  { background: #e0dcd5; color: var(--bg); }
+#btn-confirm { background: #c0392b; color: white; }
+#btn-cancel:hover  { background: #d4cfc7; }
+#btn-confirm:hover { background: #a93226; }
+{% endblock %}
+
+{% block content %}
+<h1>All traces</h1>
+
+{% if page.object_list %}
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>First point date</th>
+      <th>Length</th>
+      <th>Uploaded at</th>
+      <th>Extracted</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for trace in page %}
+    <tr>
+      <td><a href="{% url 'trace_detail' trace.pk %}" style="color:var(--accent);font-weight:600;text-decoration:none;">{{ trace.gpx_file.name|cut:"gpx/" }}</a></td>
+      <td>{{ trace.first_point_date|date:"Y-m-d H:i"|default:"—" }}</td>
+      <td>
+        {% if trace.length_m %}
+          {% if trace.length_m.km >= 1 %}
+            {{ trace.length_m.km|floatformat:1 }} km
+          {% else %}
+            {{ trace.length_m.m|floatformat:0 }} m
+          {% endif %}
+        {% else %}—{% endif %}
+      </td>
+      <td>{{ trace.uploaded_at|date:"Y-m-d H:i" }}</td>
+      <td>
+        {% if trace.extracted %}
+          <span class="badge badge-done">Done</span>
+        {% else %}
+          <span class="badge badge-pending">Pending</span>
+        {% endif %}
+      </td>
+      <td style="display:flex;gap:0.4rem;align-items:center;">
+        {% if trace.extracted %}
+        <a href="{% url 'trace_surfaces' trace.pk %}"
+           style="display:inline-block;padding:0.25rem 0.6rem;border-radius:4px;font-size:0.8rem;border:1px solid var(--accent);color:var(--accent);text-decoration:none;white-space:nowrap;"
+           title="View closed surfaces">Surfaces</a>
+        {% endif %}
+        <button class="btn-delete"
+                data-url="{% url 'delete_trace' trace.pk %}"
+                data-name="{{ trace.gpx_file.name|cut:'gpx/' }}">
+          Delete
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">No traces uploaded yet.</p>
+{% endif %}
+
+{% if page.paginator.num_pages > 1 %}
+<nav class="pagination">
+  {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}">&lsaquo;</a>
+  {% endif %}
+  <span class="current">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}
+    <a href="?page={{ page.next_page_number }}">&rsaquo;</a>
+  {% endif %}
+</nav>
+{% endif %}
+
+<div id="confirm-modal">
+  <div class="modal-card">
+    <h2>Delete trace</h2>
+    <p id="modal-msg">Are you sure you want to delete this trace?</p>
+    <div class="modal-actions">
+      <button id="btn-cancel">Cancel</button>
+      <form id="delete-form" method="post">
+        {% csrf_token %}
+        <button id="btn-confirm" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const modal   = document.getElementById('confirm-modal');
+  const form    = document.getElementById('delete-form');
+  const msg     = document.getElementById('modal-msg');
+  const cancel  = document.getElementById('btn-cancel');
+
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      msg.textContent = `Delete "${btn.dataset.name}"?`;
+      form.action = btn.dataset.url;
+      modal.classList.add('open');
+    });
+  });
+
+  cancel.addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+</script>
+{% endblock %}
