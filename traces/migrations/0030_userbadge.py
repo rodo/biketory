@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("traces", "0028_subscription.py"),
+        ("traces", "0028_subscription"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
