@@ -13,17 +13,16 @@ from ._helpers import make_user
 
 def _minimal_gpx():
     return (
-        '<?xml version="1.0"?>'
-        '<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">'
-        '<trk><trkseg>'
-        '<trkpt lat="48.0" lon="2.0"><time>2024-06-01T00:00:00Z</time></trkpt>'
-        '<trkpt lat="48.1" lon="2.1"><time>2024-06-01T01:00:00Z</time></trkpt>'
-        '</trkseg></trk></gpx>'
-    ).encode()
+        b'<?xml version="1.0"?>'
+        b'<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">'
+        b"<trk><trkseg>"
+        b'<trkpt lat="48.0" lon="2.0"><time>2024-06-01T00:00:00Z</time></trkpt>'
+        b'<trkpt lat="48.1" lon="2.1"><time>2024-06-01T01:00:00Z</time></trkpt>'
+        b"</trkseg></trk></gpx>"
+    )
 
 
 class ApiUploadAuthTest(TestCase):
-
     def test_no_auth_returns_401(self):
         resp = self.client.post(reverse("api_upload_trace"))
         self.assertEqual(resp.status_code, 401)
@@ -38,7 +37,8 @@ class ApiUploadAuthTest(TestCase):
     def test_expired_token_returns_401(self):
         user = make_user()
         token = ApiToken.objects.create(
-            user=user, expires_at=timezone.now() - timedelta(days=1),
+            user=user,
+            expires_at=timezone.now() - timedelta(days=1),
         )
         resp = self.client.post(
             reverse("api_upload_trace"),
@@ -48,11 +48,11 @@ class ApiUploadAuthTest(TestCase):
 
 
 class ApiUploadTest(TestCase):
-
     def setUp(self):
         self.user = make_user()
         self.token = ApiToken.objects.create(
-            user=self.user, expires_at=timezone.now() + timedelta(days=31),
+            user=self.user,
+            expires_at=timezone.now() + timedelta(days=31),
         )
         self.auth = f"Bearer {self.token.token}"
 
@@ -79,6 +79,7 @@ class ApiUploadTest(TestCase):
     @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
     def test_quota_exceeded_returns_429(self):
         from traces.models import UserProfile
+
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
         profile.daily_upload_limit = 1
         profile.save()
@@ -91,13 +92,13 @@ class ApiUploadTest(TestCase):
         )
         # Second upload should be rejected
         gpx2 = (
-            '<?xml version="1.0"?>'
-            '<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">'
-            '<trk><trkseg>'
-            '<trkpt lat="48.0" lon="2.0"><time>2024-07-01T00:00:00Z</time></trkpt>'
-            '<trkpt lat="48.1" lon="2.1"><time>2024-07-01T01:00:00Z</time></trkpt>'
-            '</trkseg></trk></gpx>'
-        ).encode()
+            b'<?xml version="1.0"?>'
+            b'<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">'
+            b"<trk><trkseg>"
+            b'<trkpt lat="48.0" lon="2.0"><time>2024-07-01T00:00:00Z</time></trkpt>'
+            b'<trkpt lat="48.1" lon="2.1"><time>2024-07-01T01:00:00Z</time></trkpt>'
+            b"</trkseg></trk></gpx>"
+        )
         f2 = SimpleUploadedFile("t2.gpx", gpx2, content_type="application/gpx+xml")
         resp = self.client.post(
             reverse("api_upload_trace"),
