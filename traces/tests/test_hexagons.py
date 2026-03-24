@@ -44,6 +44,7 @@ class AwardHexagonPointsTest(TestCase):
         self.trace = Trace.objects.create(
             route=small_route(),
             uploaded_by=self.user,
+            first_point_date=timezone.now(),
         )
         self.surface = ClosedSurface.objects.create(
             trace=self.trace,
@@ -54,23 +55,23 @@ class AwardHexagonPointsTest(TestCase):
         self.hex_outside = Hexagon.objects.create(geom=square_polygon(10.0, 10.0, 0.001))
 
     def test_creates_score_for_hexagon_inside_surface(self):
-        _award_hexagon_points([self.surface], self.user, timezone.now())
+        _award_hexagon_points([self.surface], self.user, self.trace.first_point_date)
         score = HexagonScore.objects.get(hexagon=self.hex_inside, user=self.user)
         self.assertEqual(score.points, 1)
 
     def test_does_not_score_hexagon_outside_surface(self):
-        _award_hexagon_points([self.surface], self.user, timezone.now())
+        _award_hexagon_points([self.surface], self.user, self.trace.first_point_date)
         self.assertFalse(HexagonScore.objects.filter(hexagon=self.hex_outside).exists())
 
     def test_increments_points_on_second_upload(self):
-        _award_hexagon_points([self.surface], self.user, timezone.now())
-        _award_hexagon_points([self.surface], self.user, timezone.now())
+        _award_hexagon_points([self.surface], self.user, self.trace.first_point_date)
+        _award_hexagon_points([self.surface], self.user, self.trace.first_point_date)
         score = HexagonScore.objects.get(hexagon=self.hex_inside, user=self.user)
         self.assertEqual(score.points, 2)
 
     def test_different_users_score_independently(self):
         other_user = make_user("bob")
-        _award_hexagon_points([self.surface], self.user, timezone.now())
-        _award_hexagon_points([self.surface], other_user, timezone.now())
+        _award_hexagon_points([self.surface], self.user, self.trace.first_point_date)
+        _award_hexagon_points([self.surface], other_user, self.trace.first_point_date)
         self.assertEqual(HexagonScore.objects.get(hexagon=self.hex_inside, user=self.user).points, 1)
         self.assertEqual(HexagonScore.objects.get(hexagon=self.hex_inside, user=other_user).points, 1)
