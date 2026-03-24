@@ -3,7 +3,7 @@
 
 {% block extra_css %}
 #page {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -36,6 +36,19 @@ thead th {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+thead th a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+thead th a:hover { color: var(--accent); }
+
+.sort-arrow { font-size: 0.6rem; opacity: 0.4; }
+.sort-arrow.active { opacity: 1; color: var(--accent); }
 
 tbody tr {
   border-bottom: 1px solid #eee;
@@ -145,17 +158,18 @@ tbody td {
 {% endblock %}
 
 {% block content %}
-<h1>All traces</h1>
+<h1>Mes traces</h1>
 
 {% if page.object_list %}
 <table>
   <thead>
     <tr>
-      <th>File</th>
-      <th>First point date</th>
-      <th>Length</th>
-      <th>Uploaded at</th>
-      <th>Extracted</th>
+      {% with s=current_sort o=current_order %}
+      <th><a href="?sort=file&order={% if s == 'file' and o == 'asc' %}desc{% else %}asc{% endif %}">File <span class="sort-arrow{% if s == 'file' %} active{% endif %}">{% if s == 'file' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9650;{% endif %}</span></a></th>
+      <th><a href="?sort=date&order={% if s == 'date' and o == 'desc' %}asc{% else %}desc{% endif %}">First point date <span class="sort-arrow{% if s == 'date' %} active{% endif %}">{% if s == 'date' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
+      <th><a href="?sort=length&order={% if s == 'length' and o == 'desc' %}asc{% else %}desc{% endif %}">Length <span class="sort-arrow{% if s == 'length' %} active{% endif %}">{% if s == 'length' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
+      <th><a href="?sort=uploaded&order={% if s == 'uploaded' and o == 'desc' %}asc{% else %}desc{% endif %}">Uploaded at <span class="sort-arrow{% if s == 'uploaded' %} active{% endif %}">{% if s == 'uploaded' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
+      {% endwith %}
       <th></th>
     </tr>
   </thead>
@@ -174,13 +188,6 @@ tbody td {
         {% else %}—{% endif %}
       </td>
       <td>{{ trace.uploaded_at|date:"Y-m-d H:i" }}</td>
-      <td>
-        {% if trace.extracted %}
-          <span class="badge badge-done">Done</span>
-        {% else %}
-          <span class="badge badge-pending">Pending</span>
-        {% endif %}
-      </td>
       <td style="display:flex;gap:0.4rem;align-items:center;">
         {% if trace.extracted %}
         <a href="{% url 'trace_surfaces' trace.pk %}"
@@ -204,11 +211,11 @@ tbody td {
 {% if page.paginator.num_pages > 1 %}
 <nav class="pagination">
   {% if page.has_previous %}
-    <a href="?page={{ page.previous_page_number }}">&lsaquo;</a>
+    <a href="?page={{ page.previous_page_number }}&sort={{ current_sort }}&order={{ current_order }}">&lsaquo;</a>
   {% endif %}
   <span class="current">{{ page.number }} / {{ page.paginator.num_pages }}</span>
   {% if page.has_next %}
-    <a href="?page={{ page.next_page_number }}">&rsaquo;</a>
+    <a href="?page={{ page.next_page_number }}&sort={{ current_sort }}&order={{ current_order }}">&rsaquo;</a>
   {% endif %}
 </nav>
 {% endif %}
