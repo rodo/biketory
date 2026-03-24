@@ -1,25 +1,54 @@
 import json
 
+from django.contrib.gis.geos import Polygon
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from traces.models import Friendship, HexagonScore
 
 
+def _friend_usernames(user):
+    """Return the set of friend usernames for the given user."""
+    if not user.is_authenticated:
+        return set()
+    current = user.username
+    pairs = Friendship.objects.filter(
+        Q(from_user=user, status=Friendship.STATUS_ACCEPTED)
+        | Q(to_user=user, status=Friendship.STATUS_ACCEPTED)
+    ).values_list("from_user__username", "to_user__username")
+    return {b if a == current else a for a, b in pairs}
+
+
 def landing(request):
+    last_center = None
+    if not request.user.is_authenticated:
+        last_score = (
+            HexagonScore.objects.filter(points__gt=0)
+            .select_related("hexagon")
+            .order_by("-last_earned_at")
+            .first()
+        )
+        if last_score:
+            centroid = last_score.hexagon.geom.centroid
+            last_center = [centroid.y, centroid.x]
+    return render(request, "traces/landing.html", {
+        "last_center": json.dumps(last_center),
+    })
+
+
+def landing_hexagons(request):
     current_user = request.user.username if request.user.is_authenticated else None
+    friends = _friend_usernames(request.user)
 
-    # Collect friend usernames for the current user
-    friend_usernames = set()
-    if request.user.is_authenticated:
-        pairs = Friendship.objects.filter(
-            Q(from_user=request.user, status=Friendship.STATUS_ACCEPTED) |
-            Q(to_user=request.user, status=Friendship.STATUS_ACCEPTED)
-        ).values_list("from_user__username", "to_user__username")
-        for a, b in pairs:
-            friend_usernames.add(b if a == current_user else a)
+    scores = HexagonScore.objects.filter(points__gt=0).select_related("hexagon", "user")
 
-    scores = HexagonScore.objects.select_related("hexagon", "user")
+    bbox_param = request.GET.get("bbox")
+    if bbox_param:
+        west, south, east, north = map(float, bbox_param.split(","))
+        bbox_poly = Polygon.from_bbox((west, south, east, north))
+        scores = scores.filter(hexagon__geom__bboverlaps=bbox_poly)
+
     features = [
         {
             "type": "Feature",
@@ -28,15 +57,13 @@ def landing(request):
                 "hexagon_id": s.hexagon_id,
                 "username": s.user.username,
                 "points": s.points,
-                "is_friend": s.user.username in friend_usernames,
+                "is_friend": s.user.username in friends,
             },
         }
         for s in scores
     ]
-    geojson = json.dumps({"type": "FeatureCollection", "features": features})
-
-    return render(request, "traces/landing.html", {
-        "geojson": geojson,
+    return JsonResponse({
+        "geojson": {"type": "FeatureCollection", "features": features},
         "current_user": current_user,
-        "friend_usernames": json.dumps(list(friend_usernames)),
+        "friend_usernames": sorted(friends),
     })

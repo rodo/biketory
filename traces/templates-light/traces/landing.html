@@ -105,22 +105,23 @@ html, body { overflow: hidden; padding-top: 0; }
 {% endblock %}
 
 {% block topbar_extra %}
+<span id="zoom-display" style="color:var(--bg);font-size:0.85rem;opacity:0.6;">zoom —</span>
 <div class="layers-menu" id="layers-menu">
   <button class="layers-btn" id="layers-btn" onclick="toggleLayersMenu()">Calques &#9662;</button>
   <div class="layers-dropdown" id="layers-dropdown">
-    {% if current_user %}
+    {% if user.is_authenticated %}
     <label class="layer-item">
       <input type="checkbox" id="toggle-mine" checked onchange="toggleLayer('mine', this.checked)">
-      <span class="layer-swatch" style="background:#2980b9"></span>
+      <span class="layer-swatch" style="background:linear-gradient(to right, #6bb5e0, #1a4971)"></span>
       Mes hexagons
     </label>
     {% endif %}
     <label class="layer-item">
       <input type="checkbox" id="toggle-others" checked onchange="toggleLayer('others', this.checked)">
-      <span class="layer-swatch" style="background:#9eaaa0"></span>
+      <span class="layer-swatch" style="background:linear-gradient(to right, #b0bfb1, #4a5e4c)"></span>
       Autres utilisateurs
     </label>
-    {% if current_user %}
+    {% if user.is_authenticated %}
     <hr class="layers-separator">
     <div class="layer-sub-label">Amis</div>
     <label class="layer-item" id="toggle-friends-row">
@@ -143,7 +144,10 @@ html, body { overflow: hidden; padding-top: 0; }
 <script>
   const _saved = document.cookie.split('; ').find(r => r.startsWith('map_pos='));
   const _pos = _saved ? _saved.split('=')[1].split(',').map(Number) : null;
-  const map = L.map('map').setView(_pos ? [_pos[0], _pos[1]] : [0, 0], _pos ? _pos[2] : 2);
+  const _lastCenter = {{ last_center|safe }};
+  const _defaultPos = _lastCenter || [0, 0];
+  const _defaultZoom = _lastCenter ? 14 : 2;
+  const map = L.map('map').setView(_pos ? [_pos[0], _pos[1]] : _defaultPos, _pos ? _pos[2] : _defaultZoom);
 
   map.on('moveend', () => {
     const c = map.getCenter();
@@ -154,8 +158,24 @@ html, body { overflow: hidden; padding-top: 0; }
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
-  const currentUser = {% if current_user %}"{{ current_user }}"{% else %}null{% endif %};
-  const friendUsernames = new Set({{ friend_usernames|safe }});
+  const graticuleGroup = L.layerGroup().addTo(map);
+  function drawGraticule() {
+    graticuleGroup.clearLayers();
+    const bounds = map.getBounds();
+    const south = Math.floor(bounds.getSouth());
+    const north = Math.ceil(bounds.getNorth());
+    const west = Math.floor(bounds.getWest());
+    const east = Math.ceil(bounds.getEast());
+    const style = { color: '#999', weight: 0.5, opacity: 0.3, dashArray: '4 4' };
+    for (let lat = south; lat <= north; lat++) {
+      L.polyline([[lat, west], [lat, east]], style).addTo(graticuleGroup);
+    }
+    for (let lng = west; lng <= east; lng++) {
+      L.polyline([[south, lng], [north, lng]], style).addTo(graticuleGroup);
+    }
+  }
+  drawGraticule();
+  map.on('moveend', drawGraticule);
 
   const FRIEND_PALETTE = [
     '#e67e22', '#27ae60', '#8e44ad', '#e74c3c',
@@ -163,77 +183,131 @@ html, body { overflow: hidden; padding-top: 0; }
     '#f39c12', '#1abc9c', '#c0392b', '#3498db',
   ];
 
+  const MIN_HEX_ZOOM = 11;
+  let hexLayer = null;
+  let hexAbort = null;
+  let friendUsernames = new Set();
   const friendColors = {};
-  let colorIndex = 0;
-  friendUsernames.forEach(u => {
-    friendColors[u] = FRIEND_PALETTE[colorIndex % FRIEND_PALETTE.length];
-    colorIndex++;
-  });
 
-  const hexagons = {{ geojson|safe }};
-
-  const myLayerGroup = L.layerGroup().addTo(map);
-  const othersLayerGroup = L.layerGroup().addTo(map);
-  const friendLayerGroups = {};
-  friendUsernames.forEach(u => {
-    friendLayerGroups[u] = L.layerGroup().addTo(map);
-  });
-
-  const allLayers = [];
-
-  hexagons.features.forEach(feature => {
-    const username = feature.properties.username;
-    const points = feature.properties.points;
-    const isOwner = currentUser && username === currentUser;
-    const isFriend = friendUsernames.has(username);
-
-    let color, targetGroup;
-    if (isOwner) {
-      color = '#2980b9';
-      targetGroup = myLayerGroup;
-    } else if (isFriend) {
-      color = friendColors[username];
-      targetGroup = friendLayerGroups[username];
-    } else {
-      color = '#9eaaa0';
-      targetGroup = othersLayerGroup;
+  function clearHexagons() {
+    if (hexAbort) { hexAbort.abort(); hexAbort = null; }
+    if (hexLayer) {
+      map.removeLayer(hexLayer);
+      hexLayer = null;
     }
-
-    const l = L.geoJSON(feature, {
-      style: { color, weight: 1, opacity: 0.7, fillColor: color, fillOpacity: 0.45 }
-    });
-    l.bindTooltip(`${username} · ${points}pt`, { sticky: true, className: 'surface-tooltip' });
-    l.on('click', (e) => {
-      const hexId = feature.properties.hexagon_id;
-      const popup = L.popup({ className: 'hex-popup' })
-        .setLatLng(e.latlng)
-        .setContent('<div class="loading">Chargement…</div>')
-        .openOn(map);
-      fetch(`/hexagons/${hexId}/`)
-        .then(r => r.json())
-        .then(data => {
-          if (!data.scores.length) { popup.setContent('<div class="loading">Aucun score.</div>'); return; }
-          const rows = data.scores.map(s =>
-            `<tr><td>${s.username}</td><td>${s.points}pt</td><td>${s.last_earned_at}</td></tr>`
-          ).join('');
-          popup.setContent(`<table>
-            <thead><tr><th>Utilisateur</th><th>Points</th><th>Dernière activité</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>`);
-        });
-    });
-
-    l.addTo(targetGroup);
-    allLayers.push(l);
-  });
-
-  if (allLayers.length > 0) {
-    const group = L.featureGroup(allLayers);
-    map.fitBounds(group.getBounds(), { padding: [40, 40] });
   }
 
-  const friendTogglesEl = document.getElementById('friend-toggles');
-  if (friendTogglesEl) {
+  function getOwnerColor(points) {
+    if (points >= 10) return '#1a4971';
+    if (points >= 5)  return '#1f6199';
+    if (points >= 2)  return '#3a94cc';
+    return '#6bb5e0';
+  }
+
+  function getOthersColor(points) {
+    if (points >= 10) return '#4a5e4c';
+    if (points >= 5)  return '#6b7d6c';
+    if (points >= 2)  return '#8a9e8b';
+    return '#b0bfb1';
+  }
+
+  function loadHexagons() {
+    clearHexagons();
+
+    if (map.getZoom() < MIN_HEX_ZOOM) return;
+
+    const bounds = map.getBounds();
+    const latSpan = bounds.getNorth() - bounds.getSouth();
+    const lngSpan = bounds.getEast() - bounds.getWest();
+    const pad = 0.2;
+    const west = bounds.getWest() - lngSpan * pad;
+    const south = bounds.getSouth() - latSpan * pad;
+    const east = bounds.getEast() + lngSpan * pad;
+    const north = bounds.getNorth() + latSpan * pad;
+    const bbox = [west, south, east, north].join(',');
+
+    hexAbort = new AbortController();
+    fetch(`{% url "landing_hexagons" %}?bbox=${bbox}`, { signal: hexAbort.signal })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => {
+        friendUsernames = new Set(data.friend_usernames);
+        let colorIndex = 0;
+        friendUsernames.forEach(u => {
+          if (!friendColors[u]) {
+            friendColors[u] = FRIEND_PALETTE[colorIndex % FRIEND_PALETTE.length];
+          }
+          colorIndex++;
+        });
+
+        const currentUser = data.current_user;
+        const features = data.geojson.features;
+        const BATCH_SIZE = 50;
+
+        hexLayer = L.geoJSON(null, {
+          style: function(feature) {
+            const username = feature.properties.username;
+            const points = feature.properties.points;
+            const isOwner = currentUser && username === currentUser;
+            const isFriend = friendUsernames.has(username);
+            let color;
+            if (isOwner) color = getOwnerColor(points);
+            else if (isFriend) color = friendColors[username];
+            else color = getOthersColor(points);
+            return { color, weight: 1, opacity: 0.7, fillColor: color, fillOpacity: 0.45 };
+          },
+          onEachFeature: function(feature, layer) {
+            const username = feature.properties.username;
+            const points = feature.properties.points;
+            const hexId = feature.properties.hexagon_id;
+            layer.on('click', (e) => {
+              const tooltipText = currentUser ? `${username} · ${points}pt` : `${points}pt`;
+              const popup = L.popup({ className: 'hex-popup' })
+                .setLatLng(e.latlng)
+                .setContent(`<div class="loading">${tooltipText}</div>`)
+                .openOn(map);
+              fetch(`/hexagons/${hexId}/`)
+                .then(r => r.json())
+                .then(d => {
+                  if (!d.scores.length) { popup.setContent(`<div class="loading">${tooltipText}</div>`); return; }
+                  const rows = d.scores.map(s =>
+                    `<tr><td>${s.username}</td><td>${s.points}pt</td><td>${s.last_earned_at}</td></tr>`
+                  ).join('');
+                  popup.setContent(`<table>
+                    <thead><tr><th>Utilisateur</th><th>Points</th><th>Dernière activité</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                  </table>`);
+                });
+            });
+          }
+        }).addTo(map);
+
+        let i = 0;
+        function addBatch() {
+          if (!hexLayer) return;
+          const end = Math.min(i + BATCH_SIZE, features.length);
+          for (; i < end; i++) {
+            hexLayer.addData(features[i]);
+          }
+          if (i < features.length) {
+            requestAnimationFrame(addBatch);
+          }
+        }
+        addBatch();
+
+        buildFriendToggles();
+      }).catch(err => {
+        if (err.name !== 'AbortError') console.error('Failed to load hexagons:', err);
+      });
+  }
+
+  loadHexagons();
+  map.on('moveend', loadHexagons);
+
+  function buildFriendToggles() {
+    const el = document.getElementById('friend-toggles');
+    if (!el) return;
+    el.innerHTML = '';
+
     friendUsernames.forEach(u => {
       const color = friendColors[u];
       const label = document.createElement('label');
@@ -244,30 +318,52 @@ html, body { overflow: hidden; padding-top: 0; }
         <span class="layer-swatch" style="background:${color}"></span>
         ${u}
       `;
-      friendTogglesEl.appendChild(label);
+      el.appendChild(label);
     });
 
+    const friendsRow = document.getElementById('toggle-friends-row');
     if (friendUsernames.size === 0) {
-      document.getElementById('toggle-friends-row').style.display = 'none';
-      friendTogglesEl.style.display = 'none';
+      if (friendsRow) friendsRow.style.display = 'none';
+      el.style.display = 'none';
+    } else {
+      if (friendsRow) friendsRow.style.display = '';
+      el.style.display = '';
     }
   }
 
+  const hiddenLayers = new Set();
+
+  function applyVisibility() {
+    if (!hexLayer) return;
+    hexLayer.eachLayer(l => {
+      const f = l.feature;
+      if (!f) return;
+      const username = f.properties.username;
+      const isOwner = hexLayer._currentUser && username === hexLayer._currentUser;
+      const isFriend = friendUsernames.has(username);
+
+      const hidden = (hiddenLayers.has('mine') && isOwner)
+        || (hiddenLayers.has('others') && !isOwner && !isFriend)
+        || (hiddenLayers.has(username) && isFriend);
+
+      l.setStyle({ opacity: hidden ? 0 : 0.7, fillOpacity: hidden ? 0 : 0.45 });
+    });
+  }
+
   function toggleLayer(which, visible) {
-    const group = which === 'mine' ? myLayerGroup : othersLayerGroup;
-    visible ? group.addTo(map) : map.removeLayer(group);
+    visible ? hiddenLayers.delete(which) : hiddenLayers.add(which);
+    applyVisibility();
   }
 
   function toggleFriendsLayer(visible) {
-    friendUsernames.forEach(u => {
-      visible ? friendLayerGroups[u].addTo(map) : map.removeLayer(friendLayerGroups[u]);
-    });
+    friendUsernames.forEach(u => { visible ? hiddenLayers.delete(u) : hiddenLayers.add(u); });
     document.querySelectorAll('[data-friend]').forEach(cb => { cb.checked = visible; });
+    applyVisibility();
   }
 
   function toggleFriend(username, visible) {
-    const group = friendLayerGroups[username];
-    visible ? group.addTo(map) : map.removeLayer(group);
+    visible ? hiddenLayers.delete(username) : hiddenLayers.add(username);
+    applyVisibility();
     const allChecked = [...document.querySelectorAll('[data-friend]')].every(cb => cb.checked);
     const anyChecked = [...document.querySelectorAll('[data-friend]')].some(cb => cb.checked);
     const masterCb = document.getElementById('toggle-friends');
@@ -287,5 +383,9 @@ html, body { overflow: hidden; padding-top: 0; }
     }
   });
 
+  const zoomDisplay = document.getElementById('zoom-display');
+  const updateZoom = () => { zoomDisplay.textContent = 'zoom ' + map.getZoom(); };
+  map.on('zoomend', updateZoom);
+  updateZoom();
 </script>
 {% endblock %}
