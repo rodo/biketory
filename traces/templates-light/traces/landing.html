@@ -189,6 +189,19 @@ html, body { overflow: hidden; padding-top: 0; }
   let friendUsernames = new Set();
   const friendColors = {};
 
+  // Static PNG tile overlay for low zoom levels
+  const hexTileLayer = L.tileLayer('{{ media_url }}tiles/{z}/{x}/{y}.png', {
+    maxZoom: 10, minZoom: 0, opacity: 0.8, errorTileUrl: ''
+  });
+
+  function updateOverlayVisibility() {
+    if (map.getZoom() < MIN_HEX_ZOOM && !hiddenLayers.has('others')) {
+      if (!map.hasLayer(hexTileLayer)) hexTileLayer.addTo(map);
+    } else {
+      if (map.hasLayer(hexTileLayer)) map.removeLayer(hexTileLayer);
+    }
+  }
+
   function clearHexagons() {
     if (hexAbort) { hexAbort.abort(); hexAbort = null; }
     if (hexLayer) {
@@ -332,6 +345,8 @@ html, body { overflow: hidden; padding-top: 0; }
   }
 
   const hiddenLayers = new Set();
+  map.on('zoomend', updateOverlayVisibility);
+  updateOverlayVisibility();
 
   function applyVisibility() {
     if (!hexLayer) return;
@@ -353,6 +368,7 @@ html, body { overflow: hidden; padding-top: 0; }
   function toggleLayer(which, visible) {
     visible ? hiddenLayers.delete(which) : hiddenLayers.add(which);
     applyVisibility();
+    if (which === 'others') updateOverlayVisibility();
   }
 
   function toggleFriendsLayer(visible) {

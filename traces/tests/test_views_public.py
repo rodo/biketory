@@ -31,19 +31,27 @@ class LandingViewTest(TestCase):
         resp = self.client.get(reverse("landing"))
         self.assertEqual(resp.status_code, 200)
 
-    def test_geojson_in_context(self):
-        resp = self.client.get(reverse("landing"))
-        self.assertIn("geojson", resp.context)
+    def test_hexagons_api_returns_json(self):
+        resp = self.client.get(reverse("landing_hexagons"))
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("geojson", data)
+        self.assertIsNone(data["current_user"])
 
-    def test_current_user_none_when_anonymous(self):
-        resp = self.client.get(reverse("landing"))
-        self.assertIsNone(resp.context["current_user"])
-
-    def test_current_user_set_when_authenticated(self):
+    def test_hexagons_api_current_user_when_authenticated(self):
         make_user()
         self.client.login(username="alice", password="pass")
-        resp = self.client.get(reverse("landing"))
-        self.assertEqual(resp.context["current_user"], "alice")
+        resp = self.client.get(reverse("landing_hexagons"))
+        data = resp.json()
+        self.assertEqual(data["current_user"], "alice")
+
+    def test_hexagons_api_with_bbox(self):
+        resp = self.client.get(
+            reverse("landing_hexagons"), {"bbox": "-180,-90,180,90"}
+        )
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("geojson", data)
 
 
 class LegalViewTest(TestCase):

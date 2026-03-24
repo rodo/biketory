@@ -14,6 +14,7 @@ requise).
 | `traces/templates-light/traces/landing.html` | Template principal (thème light, prioritaire) |
 | `traces/templates/traces/landing.html` | Template thème dark |
 | `traces/urls.py` | Routes `/` et `/landing/hexagons/` |
+| `traces/management/commands/generate_hexagon_tiles.py` | Génération des tuiles PNG statiques |
 
 **Attention :** le thème par défaut est `light` (`BIKETORY_THEME`). Le dossier
 `templates-light/` est prioritaire sur `templates/` grâce à la configuration
@@ -133,6 +134,49 @@ style (opacity à 0).
 
 Des lignes pointillées représentent les méridiens et parallèles aux degrés
 entiers. Elles sont redessinées à chaque déplacement de la carte (`moveend`).
+
+## Tuiles statiques PNG (zoom < 11)
+
+Pour les niveaux de zoom inférieurs à `MIN_HEX_ZOOM` (11), les hexagones sont
+affichés via un overlay de tuiles PNG pré-générées au standard OSM (`z/x/y.png`).
+
+### Fichiers concernés
+
+| Fichier | Rôle |
+|---|---|
+| `traces/sql/hexagons_extent.sql` | Emprise globale des hexagones scorés |
+| `traces/sql/hexagons_for_tile.sql` | Hexagones dans une bbox de tuile |
+| `traces/management/commands/generate_hexagon_tiles.py` | Commande de génération |
+
+### Génération
+
+```bash
+python manage.py generate_hexagon_tiles --zoom-min 0 --zoom-max 10
+```
+
+Options :
+- `--zoom-min` / `--zoom-max` : plage de zoom (défaut 0–10)
+- `--clean` : supprime les tuiles existantes avant regénération
+
+Les tuiles sont stockées dans `MEDIA_ROOT/tiles/{z}/{x}/{y}.png`.
+Seules les tuiles contenant des hexagones sont créées (génération sparse).
+
+### Couleurs (dégradé par max_points)
+
+| Points | Couleur | Alpha |
+|---|---|---|
+| >= 10 | `#4a5e4c` | 160 |
+| >= 5 | `#6b7d6c` | 160 |
+| >= 2 | `#8a9e8b` | 160 |
+| < 2 | `#b0bfb1` | 160 |
+
+### Intégration Leaflet
+
+L'overlay est un `L.tileLayer` ajouté à la carte quand le zoom est < 11
+et retiré quand le zoom atteint 11 (transition vers le GeoJSON dynamique).
+`errorTileUrl: ''` supprime les erreurs 404 pour les tuiles inexistantes.
+
+Le toggle « Autres utilisateurs » contrôle aussi la visibilité de l'overlay.
 
 ## Zoom display
 
