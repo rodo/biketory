@@ -6,7 +6,17 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from traces.models import ApiToken, Friendship, Hexagon, HexagonScore, Trace, UserBadge, UserProfile, UserSurfaceStats
+from traces.models import (
+    ApiToken,
+    Friendship,
+    Hexagon,
+    HexagonScore,
+    Subscription,
+    Trace,
+    UserBadge,
+    UserProfile,
+    UserSurfaceStats,
+)
 
 
 @login_required
@@ -15,11 +25,13 @@ def profile(request):
         action = request.POST.get("action")
 
         if action == "generate_token":
-            ApiToken.objects.filter(user=request.user).delete()
-            ApiToken.objects.create(
-                user=request.user,
-                expires_at=timezone.now() + timedelta(days=31),
-            )
+            sub = Subscription.objects.filter(user=request.user).first()
+            if sub and sub.is_active():
+                ApiToken.objects.filter(user=request.user).delete()
+                ApiToken.objects.create(
+                    user=request.user,
+                    expires_at=timezone.now() + timedelta(days=31),
+                )
             return redirect("/profile/?tab=settings")
 
         if action == "update_home_location":
@@ -102,7 +114,9 @@ def profile(request):
     ).count()
 
     badges_earned = UserBadge.objects.filter(user=user).count()
-    api_token = ApiToken.objects.filter(user=user).first()
+    sub = Subscription.objects.filter(user=user).first()
+    is_premium = sub is not None and sub.is_active()
+    api_token = ApiToken.objects.filter(user=user).first() if is_premium else None
     email_error = getattr(request, "email_error", None)
     home_location = stats.profile.home_location if hasattr(stats, "profile") else None
     user_profile, _ = UserProfile.objects.get_or_create(user=user)
@@ -118,6 +132,7 @@ def profile(request):
         "friends_count": friends_count,
         "pending_received": pending_received,
         "api_token": api_token,
+        "is_premium": is_premium,
         "email_error": email_error,
         "home_location": home_location,
         "badges_earned": badges_earned,

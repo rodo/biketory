@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from traces.models import ApiToken, Trace
+from traces.models import ApiToken, Subscription, Trace
 from traces.views.upload import (
     MAX_TRACE_LENGTH_KM,
     _create_trace_hexagons,
@@ -34,6 +34,10 @@ def api_upload_trace(request):
     user = _authenticate(request)
     if user is None:
         return JsonResponse({"error": "Invalid or expired token."}, status=401)
+
+    sub = Subscription.objects.filter(user=user).first()
+    if not sub or not sub.is_active():
+        return JsonResponse({"error": "API access requires an active Premium subscription."}, status=403)
 
     gpx_file = request.FILES.get("gpx_file")
     if gpx_file is None:
