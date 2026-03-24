@@ -50,3 +50,5 @@ staticfiles/
 coverage.xml
 htmlcov/
 .pytest_cache/
+traces/templates-light/traces/trace_create.html
+traces/views/trace_create.py
