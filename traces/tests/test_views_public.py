@@ -70,6 +70,7 @@ class RegisterViewTest(TestCase):
     def test_post_creates_user(self):
         self.client.post(reverse("register"), {
             "username": "newuser",
+            "email": "newuser@example.com",
             "password1": "Str0ngPass!",
             "password2": "Str0ngPass!",
         })
