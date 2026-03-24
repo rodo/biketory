@@ -5,7 +5,6 @@ from django.shortcuts import render
 
 from traces.models import Trace
 
-
 ALLOWED_SORTS = {
     "file": "gpx_file",
     "date": "first_point_date",
