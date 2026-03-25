@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from traces.models import ApiToken, Trace
+from traces.models import ApiToken, Subscription, Trace
 
 from ._helpers import make_user
 
@@ -55,6 +55,12 @@ class ApiUploadTest(TestCase):
             expires_at=timezone.now() + timedelta(days=31),
         )
         self.auth = f"Bearer {self.token.token}"
+        today = timezone.now().date()
+        Subscription.objects.create(
+            user=self.user,
+            start_date=today - timedelta(days=1),
+            end_date=today + timedelta(days=30),
+        )
 
     def test_missing_file_returns_400(self):
         resp = self.client.post(

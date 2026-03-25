@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from traces.models import ApiToken
+from traces.models import ApiToken, Subscription
 
 from ._helpers import make_user
 
@@ -36,6 +36,12 @@ class ProfileGenerateTokenTest(TestCase):
     def setUp(self):
         self.user = make_user()
         self.client.login(username="alice", password="pass")
+        today = timezone.now().date()
+        Subscription.objects.create(
+            user=self.user,
+            start_date=today - timedelta(days=1),
+            end_date=today + timedelta(days=30),
+        )
 
     def test_generate_token(self):
         resp = self.client.post(reverse("profile"), {"action": "generate_token"})
