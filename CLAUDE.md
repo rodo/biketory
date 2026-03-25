@@ -36,8 +36,6 @@ traces/            Main application
     trace_list.py    List of all traces (login required)
     trace_detail.py  Trace map with route/surfaces/hexagons layers (login required)
     delete_trace.py  Trace deletion (login required)
-    surface_list.py  List of all extracted surfaces (login required)
-    hexagon_stats.py Hexagon statistics and leaderboard (login required)
     hexagon_detail.py JSON API — top scores for a hexagon (public)
     profile.py       User profile with stats and hexagon map (login required)
     friends.py       Friend search, requests, accept/decline/remove (login required)
@@ -48,8 +46,6 @@ traces/            Main application
     traces/upload.html           GPX drop-zone form
     traces/trace_list.html       Traces table
     traces/trace_detail.html     Map with 3 toggleable layers: trace, surfaces, hexagons
-    traces/surface_list.html     Surfaces table
-    traces/hexagon_stats.html    Hexagon count and per-user leaderboard
     traces/profile.html          User stats, hexagon map, friends summary
     traces/friends.html          Friend search, pending requests, friends list
     traces/legal.html            Legal notice
@@ -99,8 +95,6 @@ python manage.py purge_surfaces [--yes]
 | `/traces/` | `trace_list` | required |
 | `/traces/<pk>/` | `trace_detail` | required |
 | `/traces/<pk>/delete/` | `delete_trace` | required |
-| `/surfaces/` | `surface_list` | required |
-| `/hexagons/` | `hexagon_stats` | required |
 | `/hexagons/<pk>/` | `hexagon_detail` (JSON API) | public |
 | `/profile/` | `profile` | required |
 | `/friends/` | `friends` | required |
