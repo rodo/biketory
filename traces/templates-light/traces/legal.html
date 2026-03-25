@@ -74,46 +74,46 @@ code {
 {% endblock %}
 
 {% block content %}
-<h1>Legal & Cookie Policy</h1>
+<h1>Mentions légales et cookies</h1>
 
 <p>
-  Biketory uses a small number of cookies strictly necessary for the application to function.
-  No tracking, advertising, or third-party cookies are used.
+  Biketory utilise un nombre limité de cookies strictement nécessaires au fonctionnement de l'application.
+  Aucun cookie de suivi, publicitaire ou tiers n'est utilisé.
 </p>
 
-<h2>Cookies used</h2>
+<h2>Cookies utilisés</h2>
 
 <table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Purpose</th>
-      <th>Duration</th>
+      <th>Nom</th>
+      <th>Fonction</th>
+      <th>Durée</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><code>sessionid</code></td>
-      <td>Keeps you logged in between pages. Set by Django's authentication system.</td>
-      <td>Session (deleted when browser closes, or after 2 weeks if "remember me" is used)</td>
+      <td>Maintient votre connexion entre les pages. Géré par le système d'authentification Django.</td>
+      <td>Session (supprimé à la fermeture du navigateur, ou après 2 semaines)</td>
     </tr>
     <tr>
       <td><code>csrftoken</code></td>
-      <td>Protects forms against Cross-Site Request Forgery attacks. Required by Django for any POST request (login, logout, upload…).</td>
-      <td>1 year</td>
+      <td>Protège les formulaires contre les attaques CSRF. Requis par Django pour toute requête POST (connexion, déconnexion, envoi…).</td>
+      <td>1 an</td>
     </tr>
     <tr>
       <td><code>map_pos</code></td>
-      <td>Remembers the last position and zoom level of the map on the home page, so the map reopens where you left it. Contains three comma-separated numbers: <code>latitude,longitude,zoom</code>.</td>
-      <td>1 year</td>
+      <td>Mémorise la dernière position et le niveau de zoom de la carte sur la page d'accueil. Contient trois nombres séparés par des virgules : <code>latitude,longitude,zoom</code>.</td>
+      <td>1 an</td>
     </tr>
   </tbody>
 </table>
 
-<h2>No personal data sold or shared</h2>
+<h2>Aucune donnée personnelle vendue ou partagée</h2>
 
 <p>
-  None of the cookies above are shared with third parties. The <code>map_pos</code> cookie
-  is stored only in your browser and is never sent to any external service.
+  Aucun des cookies ci-dessus n'est partagé avec des tiers. Le cookie <code>map_pos</code>
+  est stocké uniquement dans votre navigateur et n'est jamais transmis à un service externe.
 </p>
 {% endblock %}

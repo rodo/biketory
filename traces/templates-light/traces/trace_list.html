@@ -165,10 +165,10 @@ tbody td {
   <thead>
     <tr>
       {% with s=current_sort o=current_order %}
-      <th><a href="?sort=file&order={% if s == 'file' and o == 'asc' %}desc{% else %}asc{% endif %}">File <span class="sort-arrow{% if s == 'file' %} active{% endif %}">{% if s == 'file' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9650;{% endif %}</span></a></th>
-      <th><a href="?sort=date&order={% if s == 'date' and o == 'desc' %}asc{% else %}desc{% endif %}">First point date <span class="sort-arrow{% if s == 'date' %} active{% endif %}">{% if s == 'date' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
-      <th><a href="?sort=length&order={% if s == 'length' and o == 'desc' %}asc{% else %}desc{% endif %}">Length <span class="sort-arrow{% if s == 'length' %} active{% endif %}">{% if s == 'length' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
-      <th><a href="?sort=uploaded&order={% if s == 'uploaded' and o == 'desc' %}asc{% else %}desc{% endif %}">Uploaded at <span class="sort-arrow{% if s == 'uploaded' %} active{% endif %}">{% if s == 'uploaded' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
+      <th><a href="?sort=file&order={% if s == 'file' and o == 'asc' %}desc{% else %}asc{% endif %}">Fichier <span class="sort-arrow{% if s == 'file' %} active{% endif %}">{% if s == 'file' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9650;{% endif %}</span></a></th>
+      <th><a href="?sort=date&order={% if s == 'date' and o == 'desc' %}asc{% else %}desc{% endif %}">Date du premier point <span class="sort-arrow{% if s == 'date' %} active{% endif %}">{% if s == 'date' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
+      <th><a href="?sort=length&order={% if s == 'length' and o == 'desc' %}asc{% else %}desc{% endif %}">Distance <span class="sort-arrow{% if s == 'length' %} active{% endif %}">{% if s == 'length' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
+      <th><a href="?sort=uploaded&order={% if s == 'uploaded' and o == 'desc' %}asc{% else %}desc{% endif %}">Envoyé le <span class="sort-arrow{% if s == 'uploaded' %} active{% endif %}">{% if s == 'uploaded' %}{% if o == 'asc' %}&#9650;{% else %}&#9660;{% endif %}{% else %}&#9660;{% endif %}</span></a></th>
       {% endwith %}
       <th></th>
     </tr>
@@ -192,12 +192,12 @@ tbody td {
         {% if trace.extracted %}
         <a href="{% url 'trace_surfaces' trace.pk %}"
            style="display:inline-block;padding:0.25rem 0.6rem;border-radius:4px;font-size:0.8rem;border:1px solid var(--accent);color:var(--accent);text-decoration:none;white-space:nowrap;"
-           title="View closed surfaces">Surfaces</a>
+           title="Voir les surfaces fermées">Surfaces</a>
         {% endif %}
         <button class="btn-delete"
                 data-url="{% url 'delete_trace' trace.pk %}"
                 data-name="{{ trace.gpx_file.name|cut:'gpx/' }}">
-          Delete
+          Supprimer
         </button>
       </td>
     </tr>
@@ -205,7 +205,7 @@ tbody td {
   </tbody>
 </table>
 {% else %}
-  <p class="empty">No traces uploaded yet.</p>
+  <p class="empty">Aucune trace envoyée pour le moment.</p>
 {% endif %}
 
 {% if page.paginator.num_pages > 1 %}
@@ -222,13 +222,13 @@ tbody td {
 
 <div id="confirm-modal">
   <div class="modal-card">
-    <h2>Delete trace</h2>
-    <p id="modal-msg">Are you sure you want to delete this trace?</p>
+    <h2>Supprimer la trace</h2>
+    <p id="modal-msg">Voulez-vous vraiment supprimer cette trace ?</p>
     <div class="modal-actions">
-      <button id="btn-cancel">Cancel</button>
+      <button id="btn-cancel">Annuler</button>
       <form id="delete-form" method="post">
         {% csrf_token %}
-        <button id="btn-confirm" type="submit">Delete</button>
+        <button id="btn-confirm" type="submit">Supprimer</button>
       </form>
     </div>
   </div>
@@ -245,7 +245,7 @@ tbody td {
 
   document.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', () => {
-      msg.textContent = `Delete "${btn.dataset.name}"?`;
+      msg.textContent = `Supprimer « ${btn.dataset.name} » ?`;
       form.action = btn.dataset.url;
       modal.classList.add('open');
     });

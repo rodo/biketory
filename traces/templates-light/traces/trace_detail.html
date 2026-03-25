@@ -179,20 +179,20 @@ h1 {
 {% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'trace_list' %}">← Back to traces</a>
+<a class="back" href="{% url 'trace_list' %}">← Retour aux traces</a>
 <h1>{{ trace.gpx_file.name|cut:"gpx/" }}</h1>
 
 <div class="meta-grid">
   <div class="meta-card">
-    <div class="label">First point date</div>
+    <div class="label">Date du premier point</div>
     <div class="value">{{ trace.first_point_date|date:"Y-m-d H:i"|default:"—" }}</div>
   </div>
   <div class="meta-card">
-    <div class="label">Uploaded at</div>
+    <div class="label">Envoyé le</div>
     <div class="value">{{ trace.uploaded_at|date:"Y-m-d H:i" }}</div>
   </div>
   <div class="meta-card">
-    <div class="label">Extracted surfaces</div>
+    <div class="label">Surfaces extraites</div>
     <div class="value">{{ surfaces_count }}</div>
   </div>
   <div class="meta-card">
@@ -234,13 +234,13 @@ h1 {
   {% if prev_trace %}
     <a class="btn-nav" href="{% url 'trace_detail' prev_trace.pk %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
   {% else %}
-    <span class="btn-nav disabled">← Previous</span>
+    <span class="btn-nav disabled">← Précédent</span>
   {% endif %}
 
   {% if next_trace %}
     <a class="btn-nav" href="{% url 'trace_detail' next_trace.pk %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
   {% else %}
-    <span class="btn-nav disabled">Next →</span>
+    <span class="btn-nav disabled">Suivant →</span>
   {% endif %}
 </div>
 {% endblock %}

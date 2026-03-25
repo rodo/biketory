@@ -118,28 +118,28 @@ button[type="submit"]:hover { opacity: 0.88; }
 </svg>
 
 <div class="card">
-  <h1>Welcome back</h1>
-  <p class="subtitle">Sign in to upload your traces.</p>
+  <h1>Bon retour</h1>
+  <p class="subtitle">Connectez-vous pour envoyer vos traces.</p>
 
   {% if form.errors %}
-    <div class="errors">Invalid username or password.</div>
+    <div class="errors">Nom d'utilisateur ou mot de passe invalide.</div>
   {% endif %}
 
   <form method="post">
     {% csrf_token %}
     <div class="field">
-      <label for="id_username">Username</label>
+      <label for="id_username">Nom d'utilisateur</label>
       <input type="text" name="username" id="id_username" autofocus autocomplete="username">
     </div>
     <div class="field">
-      <label for="id_password">Password</label>
+      <label for="id_password">Mot de passe</label>
       <input type="password" name="password" id="id_password" autocomplete="current-password">
     </div>
     <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit">Sign in</button>
+    <button type="submit">Se connecter</button>
   </form>
 
-  <p class="footer-link"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
-  <p class="footer-link">No account? <a href="{% url 'register' %}">Create one</a></p>
+  <p class="footer-link"><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
+  <p class="footer-link">Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
 </div>
 {% endblock %}
