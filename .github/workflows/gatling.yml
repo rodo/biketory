@@ -1,0 +1,94 @@
+name: Gatling
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  public-browsing:
+    name: Public browsing smoke test
+    runs-on: ubuntu-latest
+
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: biketory
+          POSTGRES_USER: biketory
+          POSTGRES_PASSWORD: biketory
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_NAME: biketory
+      DB_USER: biketory
+      DB_PASSWORD: biketory
+      DB_HOST: localhost
+      DJANGO_SETTINGS_MODULE: biketory.settings_ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Prepare CI settings
+        run: cp biketory/settings.dist biketory/settings_ci.py
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install GDAL system dependency
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends gdal-bin libgdal-dev
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run migrations
+        run: python manage.py migrate --no-input
+
+      - name: Start Django server
+        run: |
+          python manage.py runserver 0.0.0.0:8000 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8000/ > /dev/null && break
+            sleep 1
+          done
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: gatling/pom.xml
+
+      - name: Run Gatling PublicBrowsingSimulation
+        working-directory: gatling
+        run: >
+          mvn gatling:test
+          -Dgatling.simulationClass=biketory.PublicBrowsingSimulation
+          -DbaseUrl=http://localhost:8000
+          -Dusers=2
+          -DrampDuration=10
+
+      - name: Upload Gatling report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatling-report
+          path: gatling/target/gatling/*/
