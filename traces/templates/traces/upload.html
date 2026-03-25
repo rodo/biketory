@@ -139,9 +139,9 @@ button[type="submit"]:hover { opacity: 0.88; }
       <path d="M19 8 L16 5 M14 5 L20 5"    stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
       <circle cx="19" cy="22" r="2" fill="currentColor"/>
     </svg>
-    <h1>Upload a trace</h1>
+    <h1>Envoyer une trace</h1>
   </div>
-  <p class="subtitle">Drop your GPX file to add it to the map.</p>
+  <p class="subtitle">Déposez votre fichier GPX pour l'ajouter à la carte.</p>
 
   <!-- Quota bar -->
   <div class="quota-bar-wrap">
@@ -189,8 +189,8 @@ button[type="submit"]:hover { opacity: 0.88; }
           <circle cx="29" cy="18" r="2" fill="var(--accent)"/>
         </svg>
       </div>
-      <div class="label">Click or drag &amp; drop</div>
-      <div class="hint">.gpx files only</div>
+      <div class="label">Cliquer ou glisser-déposer</div>
+      <div class="hint">Fichiers .gpx uniquement</div>
       <div class="file-name" id="file-name"></div>
     </div>
     {% if form.gpx_file.errors %}
@@ -199,7 +199,7 @@ button[type="submit"]:hover { opacity: 0.88; }
       {% endfor %}
     {% endif %}
     <button type="submit" {% if limit_reached %}disabled style="opacity:0.4;cursor:not-allowed;"{% endif %}>
-      Upload
+      Envoyer
     </button>
   </form>
 </div>

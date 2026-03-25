@@ -111,8 +111,8 @@ button[type="submit"]:hover { opacity: 0.88; }
 </svg>
 
 <div class="card">
-  <h1>Create account</h1>
-  <p class="subtitle">Join Biketory and start uploading your traces.</p>
+  <h1>Créer un compte</h1>
+  <p class="subtitle">Rejoignez Biketory et commencez à envoyer vos traces.</p>
 
   <form method="post">
     {% csrf_token %}
@@ -128,9 +128,9 @@ button[type="submit"]:hover { opacity: 0.88; }
         {% endif %}
       </div>
     {% endfor %}
-    <button type="submit">Create account</button>
+    <button type="submit">Créer un compte</button>
   </form>
 
-  <p class="footer-link">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+  <p class="footer-link">Déjà un compte ? <a href="{% url 'login' %}">Se connecter</a></p>
 </div>
 {% endblock %}

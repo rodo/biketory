@@ -175,11 +175,11 @@
       <a href="{% url 'friends' %}">Amis</a>
       <a href="{% url 'trace_list' %}">Traces</a>
       <a href="{% url 'stats' %}">Stats</a>
-      <a href="{% url 'upload_trace' %}">Upload</a>
+      <a href="{% url 'upload_trace' %}">Envoyer</a>
     {% else %}
       <a href="{% url 'stats' %}">Stats</a>
-      <a href="{% url 'login' %}">Sign in</a>
-      <a class="btn" href="{% url 'register' %}">Register</a>
+      <a href="{% url 'login' %}">Connexion</a>
+      <a class="btn" href="{% url 'register' %}">S'inscrire</a>
     {% endif %}
     <div class="dropdown" id="dropdown-more">
       <button class="dropdown-toggle" onclick="toggleDropdown()">{% if user.is_authenticated %}{{ user.username }}{% else %}Plus{% endif %} ▾</button>
@@ -195,11 +195,11 @@
         {% endif %}
         <a href="{% url 'badges' %}">Badges</a>
         <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
-        <a href="{% url 'legal' %}">Legal &amp; Cookies</a>
+        <a href="{% url 'legal' %}">Mentions légales</a>
         {% if user.is_authenticated %}
         <form method="post" action="{% url 'logout' %}" style="margin:0">
           {% csrf_token %}
-          <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #e8e2d9;cursor:pointer;font-family:inherit;">Logout</button>
+          <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #e8e2d9;cursor:pointer;font-family:inherit;">Déconnexion</button>
         </form>
         {% endif %}
       </div>
