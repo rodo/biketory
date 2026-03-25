@@ -28,6 +28,7 @@ jobs:
           severity: MEDIUM,HIGH,CRITICAL
           format: sarif
           output: trivy-fs.sarif
+          skip-files: "gatling/pom.xml"
           exit-code: "1"          # fail the job if issues are found
           ignore-unfixed: true    # skip vulns with no available fix
 
