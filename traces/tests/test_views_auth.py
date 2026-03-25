@@ -125,11 +125,6 @@ class AuthenticatedViewTest(TestCase):
         resp = self.client.get(reverse("trace_list"))
         self.assertEqual(resp.status_code, 200)
 
-    def test_surface_list_returns_200(self):
-        resp = self.client.get(reverse("surface_list"))
-        self.assertEqual(resp.status_code, 200)
-
-
     def test_trace_detail_returns_200(self):
         trace = Trace.objects.create(
             route=small_route(),

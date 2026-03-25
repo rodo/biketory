@@ -12,7 +12,6 @@ from .stats_badges import stats_badges  # noqa: F401
 from .stats_monthly import stats_monthly  # noqa: F401
 from .stats_pie import stats_pie  # noqa: F401
 from .subscription import subscription_required  # noqa: F401
-from .surface_list import surface_list  # noqa: F401
 from .trace_create import trace_create  # noqa: F401
 from .trace_detail import trace_detail  # noqa: F401
 from .trace_list import trace_list  # noqa: F401

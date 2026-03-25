@@ -11,7 +11,6 @@ class AuthRedirectTest(TestCase):
     protected = [
         "upload_trace",
         "trace_list",
-        "surface_list",
     ]
 
     def test_redirects_anonymous(self):
