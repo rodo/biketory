@@ -9,13 +9,15 @@ Le nom encode le résultat attendu après import :
 - nb_hexagons : nombre de HexagonScore attribués à l'utilisateur
 """
 import re
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 
-from traces.models import ClosedSurface, HexagonScore, Trace
+from traces.models import ClosedSurface, HexagonScore, Subscription, Trace
 from traces.views.upload import _create_trace_hexagons, _extract_surfaces, _parse_route
 
 _FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent / "trace_samples"
@@ -36,6 +38,12 @@ def test_gpx_import_surfaces_and_hexagons(settings, tmp_path, gpx_path):
     expected_surfaces, expected_hexagons = _parse_gpx_filename(gpx_path)
 
     user = User.objects.create_user(username="testuser", password="testpass")
+    today = timezone.now().date()
+    Subscription.objects.create(
+        user=user,
+        start_date=today - timedelta(days=30),
+        end_date=today + timedelta(days=30),
+    )
 
     gpx_file = SimpleUploadedFile(
         gpx_path.name,
