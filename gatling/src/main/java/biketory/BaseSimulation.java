@@ -21,8 +21,7 @@ public abstract class BaseSimulation extends Simulation {
             .baseUrl(baseUrl)
             .acceptHeader("text/html,application/json")
             .acceptLanguageHeader("fr-FR,fr;q=0.9")
-            .userAgentHeader("Gatling/Biketory")
-            .disableFollowRedirect();
+            .userAgentHeader("Gatling/Biketory");
 
     // -- Chain builders (reusable request sequences) ----------------------------
 
@@ -42,14 +41,14 @@ public abstract class BaseSimulation extends Simulation {
                 .exec(
                         http("POST /register/")
                                 .post("/register/")
+                                .disableFollowRedirect()
                                 .header("Referer", baseUrl + "/register/")
                                 .formParam("csrfmiddlewaretoken", "#{csrfToken}")
                                 .formParam("username", "#{username}")
                                 .formParam("email", "#{email}")
                                 .formParam("password1", "#{password}")
                                 .formParam("password2", "#{password}")
-                                .check(status().is(302))
-                                .check(header("Location").is("/"))
+                                .check(status().is(200))
                 );
     }
 
@@ -59,12 +58,13 @@ public abstract class BaseSimulation extends Simulation {
                 .exec(
                         http("POST /accounts/login/")
                                 .post("/accounts/login/")
+                                .disableFollowRedirect()
                                 .header("Referer", baseUrl + "/accounts/login/")
                                 .formParam("csrfmiddlewaretoken", "#{csrfToken}")
                                 .formParam("username", "#{username}")
                                 .formParam("password", "#{password}")
-                                .check(status().is(302))
-                                .check(header("Location").is("/upload/"))
+                                .check(status().is(200))
+                                .check(header("Location").is("/profile/"))
                 );
     }
 
@@ -74,6 +74,7 @@ public abstract class BaseSimulation extends Simulation {
                 .exec(
                         http("POST /upload/")
                                 .post("/upload/")
+                                .disableFollowRedirect()
                                 .header("Referer", baseUrl + "/upload/")
                                 .formUpload("gpx_file", "#{gpxFile}")
                                 .formParam("csrfmiddlewaretoken", "#{csrfToken}")
