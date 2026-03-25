@@ -9,8 +9,6 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 public class PublicBrowsingSimulation extends Simulation {
 
     private final String baseUrl = System.getProperty("baseUrl", "http://localhost:8000");
-    private final int users = Integer.getInteger("users", 10);
-    private final int rampDuration = Integer.getInteger("rampDuration", 30);
 
     private final HttpProtocolBuilder httpProtocol = http
             .baseUrl(baseUrl)
@@ -70,7 +68,7 @@ public class PublicBrowsingSimulation extends Simulation {
     {
         setUp(
                 publicBrowsing.injectOpen(
-                        rampUsers(users).during(rampDuration)
+                        atOnceUsers(1)
                 )
         )
                 .protocols(httpProtocol)
