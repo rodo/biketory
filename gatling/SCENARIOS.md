@@ -3,11 +3,34 @@
 Ce document liste tous les scénarios de performance Gatling du projet.
 **Il doit être mis à jour** à chaque ajout, modification ou suppression de scénario.
 
+## Architecture
+
+```
+BaseSimulation (abstraite)
+├── PublicBrowsingSimulation    — navigation publique
+├── RegistrationSimulation      — création de comptes
+├── UploadAndStatsSimulation    — upload GPX + vérification hexagons
+└── AllSimulation               — enchaîne les 3 scénarios ci-dessus
+```
+
+`BaseSimulation` centralise toute la logique partagée : configuration HTTP,
+feeders (`registrationFeeder`, `uploadFeeder`), chains réutilisables
+(`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`) et factory methods
+de scénarios (`publicBrowsingScenario()`, `registrationScenario()`,
+`uploadScenario()`, `verifyStatsScenario()`).
+
+Les sous-classes ne contiennent que le `setUp()` avec injection et assertions.
+
 ## Lancement
 
 ```bash
 cd gatling
+
+# Un scénario individuel
 mvn gatling:test -Dgatling.simulationClass=biketory.<NomSimulation> -DbaseUrl=http://localhost:8000
+
+# Tous les scénarios (CI)
+mvn gatling:test -Dgatling.simulationClass=biketory.AllSimulation -DbaseUrl=http://localhost:8000
 ```
 
 ## Scénarios
@@ -87,4 +110,21 @@ Chaque utilisateur exécute :
 3. Vérification que chaque utilisateur a le bon nombre d'hexagons
 
 **Injection :** `atOnceUsers(2)` puis `atOnceUsers(1)`
+**Assertions :** p95 < 5s, succès > 95 %
+
+---
+
+### AllSimulation
+
+**Fichier :** `src/main/java/biketory/AllSimulation.java`
+
+Enchaîne séquentiellement les 3 scénarios ci-dessus via `andThen()`.
+C'est la simulation à utiliser en CI pour tout valider en une seule étape.
+
+**Ordre d'exécution :**
+
+1. PublicBrowsing — `atOnceUsers(1)`
+2. Registration — `atOnceUsers(2)`
+3. Upload — `atOnceUsers(2)` puis Verify stats — `atOnceUsers(1)`
+
 **Assertions :** p95 < 5s, succès > 95 %
