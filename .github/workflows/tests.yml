@@ -45,7 +45,7 @@ jobs:
         run: cp biketory/settings.dist biketory/settings_ci.py
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
