@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ username }} — Biketory{% endblock %}
+
+{% block head %}
+<meta property="og:title" content="{{ username }} — Biketory">
+<meta property="og:description" content="{{ hexagons_count }} hexagons · {{ total_points }} points · {{ traces_count }} traces">
+<meta property="og:type" content="profile">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ username }} — Biketory">
+<meta name="twitter:description" content="{{ hexagons_count }} hexagons · {{ total_points }} points · {{ traces_count }} traces">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_css %}
+#page {
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 0.75rem;
+}
+
+.stat-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+#map {
+  width: 100%;
+  height: 600px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.surface-tooltip {
+  background: #1b2d1e;
+  color: #f0a500;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.surface-tooltip::before { display: none; }
+{% endblock %}
+
+{% block content %}
+<h1>{{ username }}</h1>
+
+<div class="layout">
+  <div>
+    <div class="stat-card">
+      <div class="label">Traces uploadées</div>
+      <div class="value">{{ traces_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Hexagons</div>
+      <div class="value">{{ hexagons_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Points totaux</div>
+      <div class="value">{{ total_points }}</div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map');
+  L.tileLayer('{{ tile_server_url }}', {
+    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  const hexagons = {{ hexagons_geojson|safe }};
+  if (hexagons.features.length > 0) {
+    const layer = L.geoJSON(hexagons, {
+      style: { color: '#2980b9', weight: 1, opacity: 0.7, fillColor: '#2980b9', fillOpacity: 0.45 },
+      onEachFeature: (feature, layer) => {
+        layer.bindTooltip(`${feature.properties.points}pt`, { sticky: true, className: 'surface-tooltip' });
+      },
+    }).addTo(map);
+    map.fitBounds(layer.getBounds(), { padding: [40, 40] });
+  } else {
+    map.setView([46.5, 2.5], 6);
+  }
+</script>
+{% endblock %}

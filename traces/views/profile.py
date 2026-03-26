@@ -6,6 +6,7 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
+from traces.base62 import uuid_to_base62
 from traces.models import (
     ApiToken,
     Friendship,
@@ -122,6 +123,9 @@ def profile(request):
     user_profile, _ = UserProfile.objects.get_or_create(user=user)
     home_location = user_profile.home_location
 
+    share_code = uuid_to_base62(stats.secret_uuid)
+    share_url = request.build_absolute_uri(f"/s/{share_code}/")
+
     return render(request, "traces/profile.html", {
         "traces_count": traces_count,
         "first_trace_date": first_trace_date,
@@ -129,6 +133,7 @@ def profile(request):
         "total_points": total_points,
         "hexagons_geojson": hexagons_geojson,
         "secret_uuid": stats.secret_uuid,
+        "share_url": share_url,
         "friends_count": friends_count,
         "pending_received": pending_received,
         "api_token": api_token,

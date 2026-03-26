@@ -1,1 +1,170 @@
-{% extends "registration/login.html" %}
+{% extends "base.html" %}
+
+
+{% block extra_css %}
+#page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mountain cycling scene banner */
+.scene-banner {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: -1px;
+  display: block;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 0 0 12px 12px;
+  padding: 2rem 2.5rem 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+}
+
+.card h1 { color: var(--bg); font-size: 1.5rem; margin-bottom: 0.25rem; }
+.card p.subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
+
+.field { margin-bottom: 1.25rem; }
+
+.field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bg);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0dcd5;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95rem;
+  color: var(--bg);
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.field input:focus { border-color: var(--accent); }
+
+.errors {
+  background: #fdecea;
+  border-left: 3px solid #c0392b;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: #c0392b;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button[type="submit"]:hover { opacity: 0.88; }
+
+.footer-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.footer-link a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.footer-link a:hover { text-decoration: underline; }
+
+.social-separator {
+  display: flex; align-items: center; margin: 1.5rem 0;
+  color: var(--muted); font-size: 0.85rem;
+}
+.social-separator::before,
+.social-separator::after {
+  content: ""; flex: 1; border-top: 1px solid #e0dcd5;
+}
+.social-separator span { padding: 0 0.75rem; }
+
+.btn-google {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 0.75rem; border: 2px solid #e0dcd5;
+  border-radius: 8px; background: white; color: var(--bg);
+  font-weight: 600; font-size: 0.95rem; text-decoration: none;
+  cursor: pointer; transition: border-color 0.2s;
+}
+.btn-google:hover { border-color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<!-- Mountain cycling scene -->
+<svg class="scene-banner" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <rect width="400" height="90" fill="#e8f0e0"/>
+  <!-- distant hills -->
+  <path d="M0 90 C60 90 90 38 170 50 C250 62 280 18 360 28 C390 33 420 58 440 48 L440 90 Z" fill="#d4e4c8"/>
+  <!-- near hills -->
+  <path d="M0 90 C50 90 90 62 150 68 C210 74 240 48 310 55 C360 60 390 74 420 70 L420 90 Z" fill="#b8d4a0"/>
+  <!-- route path -->
+  <path d="M40 82 C80 75 120 65 170 60 C220 55 250 52 310 55 C350 57 380 65 400 70"
+        stroke="#4f6814" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5" fill="none"/>
+  <!-- cyclist -->
+  <g transform="translate(248, 50)">
+    <circle cx="-7" cy="2"  r="4.5" stroke="#2d3a2e" stroke-width="1.5" fill="none"/>
+    <circle cx="7"  cy="2"  r="4.5" stroke="#2d3a2e" stroke-width="1.5" fill="none"/>
+    <path d="M-7 2 L0 -4 L7 2 L2 2 Z"     stroke="#2d3a2e" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+    <path d="M0 -4 L-1 -8 L2.5 -10.5"     stroke="#2d3a2e" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="3" cy="-12" r="2.2" fill="#2d3a2e"/>
+    <path d="M7 -3 L7 -7 M5.5 -7 L8.5 -7" stroke="#2d3a2e" stroke-width="1.3" stroke-linecap="round"/>
+  </g>
+  <!-- sun -->
+  <circle cx="355" cy="18" r="10" fill="#f0d080" opacity="0.7"/>
+  <circle cx="355" cy="18" r="7"  fill="#f0d080"/>
+</svg>
+
+<div class="card">
+  <h1>Bon retour</h1>
+  <p class="subtitle">Connectez-vous pour envoyer vos traces.</p>
+
+  {% if form.errors %}
+    <div class="errors">Nom d'utilisateur ou mot de passe invalide.</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="id_login">Nom d'utilisateur</label>
+      <input type="text" name="login" id="id_login" autofocus autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="id_password">Mot de passe</label>
+      <input type="password" name="password" id="id_password" autocomplete="current-password">
+    </div>
+    {{ redirect_field }}
+    <button type="submit">Se connecter</button>
+  </form>
+
+  <div class="social-separator"><span>ou</span></div>
+  <a href="{% url 'google_login' %}" class="btn-google">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right:.5rem"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09a6.97 6.97 0 0 1 0-4.17V7.07H2.18a11.01 11.01 0 0 0 0 9.86l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+    Continuer avec Google
+  </a>
+
+  <p class="footer-link"><a href="{% url 'account_reset_password' %}">Mot de passe oublié ?</a></p>
+  <p class="footer-link">Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+</div>
+{% endblock %}

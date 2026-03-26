@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Biketory"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Trace Biketory</name>
+    <trkseg>
+      <trkpt lat="47.671167383001375" lon="-2.8691482543945317">
+        <time>2026-03-25T13:21:39.603Z</time>
+      </trkpt>
+      <trkpt lat="47.64596177800046" lon="-2.8677749633789067">
+        <time>2026-03-25T13:21:39.603Z</time>
+      </trkpt>
+      <trkpt lat="47.64827472580503" lon="-2.824172973632813">
+        <time>2026-03-25T13:21:39.603Z</time>
+      </trkpt>
+      <trkpt lat="47.677409092859904" lon="-2.8252029418945312">
+        <time>2026-03-25T13:21:39.603Z</time>
+      </trkpt>
+      <trkpt lat="47.670618307983375" lon="-2.8697490692138676">
+        <time>2026-03-25T13:21:39.603Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -1,4 +1,3 @@
-import math
 import shutil
 from pathlib import Path
 
@@ -7,11 +6,18 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from PIL import Image, ImageDraw
 
+from traces.tiles import (
+    TILE_SIZE,
+    lat_to_tile_y,
+    lng_to_tile_x,
+    lnglat_to_pixel,
+    parse_wkt_polygon,
+    tile_to_bbox,
+)
+
 _SQL_DIR = Path(__file__).resolve().parent.parent.parent / "sql"
 _HEXAGONS_EXTENT_SQL = (_SQL_DIR / "hexagons_extent.sql").read_text()
 _HEXAGONS_FOR_TILE_SQL = (_SQL_DIR / "hexagons_for_tile.sql").read_text()
-
-TILE_SIZE = 256
 
 # Color gradient by max_points (R, G, B, A)
 COLORS = [
@@ -27,57 +33,6 @@ def _get_color(max_points):
         if max_points >= threshold:
             return color
     return COLORS[-1][1]
-
-
-def _lng_to_tile_x(lng, zoom):
-    """Convert longitude to tile X number."""
-    n = 2 ** zoom
-    return int((lng + 180.0) / 360.0 * n)
-
-
-def _lat_to_tile_y(lat, zoom):
-    """Convert latitude to tile Y number (OSM standard)."""
-    n = 2 ** zoom
-    lat_rad = math.radians(lat)
-    return int((1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi) / 2.0 * n)
-
-
-def _tile_to_bbox(x, y, zoom):
-    """Return (west, south, east, north) for a tile."""
-    n = 2 ** zoom
-    west = x / n * 360.0 - 180.0
-    east = (x + 1) / n * 360.0 - 180.0
-    north_rad = math.atan(math.sinh(math.pi * (1 - 2 * y / n)))
-    south_rad = math.atan(math.sinh(math.pi * (1 - 2 * (y + 1) / n)))
-    north = math.degrees(north_rad)
-    south = math.degrees(south_rad)
-    return west, south, east, north
-
-
-def _lnglat_to_pixel(lng, lat, west, south, east, north):
-    """Convert WGS84 coords to pixel coords within a 256x256 tile."""
-    px = (lng - west) / (east - west) * TILE_SIZE
-    # Mercator projection for Y
-    def _merc_y(lat_deg):
-        lat_rad = math.radians(lat_deg)
-        return math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad))
-
-    y_north = _merc_y(north)
-    y_south = _merc_y(south)
-    y_point = _merc_y(lat)
-    py = (y_north - y_point) / (y_north - y_south) * TILE_SIZE
-    return px, py
-
-
-def _parse_wkt_polygon(wkt):
-    """Parse a WKT POLYGON into a list of (lng, lat) tuples."""
-    # Strip "POLYGON((" and "))"
-    inner = wkt.replace("POLYGON((", "").replace("))", "")
-    coords = []
-    for pair in inner.split(","):
-        lng, lat = pair.strip().split()
-        coords.append((float(lng), float(lat)))
-    return coords
 
 
 class Command(BaseCommand):
@@ -125,16 +80,16 @@ class Command(BaseCommand):
             clamped_ymin = max(ymin, -85.05)
             clamped_ymax = min(ymax, 85.05)
 
-            tx_min = _lng_to_tile_x(xmin, zoom)
-            tx_max = _lng_to_tile_x(xmax, zoom)
-            ty_min = _lat_to_tile_y(clamped_ymax, zoom)  # note: y is inverted
-            ty_max = _lat_to_tile_y(clamped_ymin, zoom)
+            tx_min = lng_to_tile_x(xmin, zoom)
+            tx_max = lng_to_tile_x(xmax, zoom)
+            ty_min = lat_to_tile_y(clamped_ymax, zoom)  # note: y is inverted
+            ty_max = lat_to_tile_y(clamped_ymin, zoom)
 
             zoom_count = 0
 
             for tx in range(tx_min, tx_max + 1):
                 for ty in range(ty_min, ty_max + 1):
-                    west, south, east, north = _tile_to_bbox(tx, ty, zoom)
+                    west, south, east, north = tile_to_bbox(tx, ty, zoom)
 
                     with connection.cursor() as cursor:
                         cursor.execute(_HEXAGONS_FOR_TILE_SQL, [west, south, east, north])
@@ -147,9 +102,9 @@ class Command(BaseCommand):
                     draw = ImageDraw.Draw(img)
 
                     for _hex_id, geom_wkt, max_points in hexagons:
-                        coords = _parse_wkt_polygon(geom_wkt)
+                        coords = parse_wkt_polygon(geom_wkt)
                         pixels = [
-                            _lnglat_to_pixel(lng, lat, west, south, east, north)
+                            lnglat_to_pixel(lng, lat, west, south, east, north)
                             for lng, lat in coords
                         ]
                         color = _get_color(max_points)

@@ -7,6 +7,7 @@ from .landing import landing, landing_hexagons  # noqa: F401
 from .legal import legal  # noqa: F401
 from .profile import profile  # noqa: F401
 from .register import register  # noqa: F401
+from .share import shared_profile  # noqa: F401
 from .stats import stats  # noqa: F401
 from .stats_badges import stats_badges  # noqa: F401
 from .stats_monthly import stats_monthly  # noqa: F401

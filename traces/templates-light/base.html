@@ -218,14 +218,14 @@
             <a href="{% url 'friends' %}">Mes amis</a>
             <a href="{% url 'legal' %}">Mentions légales</a>
             <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
-            <form method="post" action="{% url 'logout' %}" style="margin:0">
+            <form method="post" action="{% url 'account_logout' %}" style="margin:0">
               {% csrf_token %}
               <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #eee;cursor:pointer;font-family:inherit;">Déconnexion</button>
             </form>
           </div>
         </div>
       {% else %}
-        <a href="{% url 'login' %}">Connexion</a>
+        <a href="{% url 'account_login' %}">Connexion</a>
         <a class="btn-primary" href="{% url 'register' %}">S'inscrire</a>
       {% endif %}
     </div>
