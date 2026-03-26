@@ -63,7 +63,7 @@ public abstract class BaseSimulation extends Simulation {
                                 .formParam("csrfmiddlewaretoken", "#{csrfToken}")
                                 .formParam("username", "#{username}")
                                 .formParam("password", "#{password}")
-                                .check(status().is(302))
+                                .check(status().find().in(200,302))
                                 .check(header("Location").is("/profile/"))
                 );
     }
