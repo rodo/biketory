@@ -48,7 +48,7 @@ public abstract class BaseSimulation extends Simulation {
                                 .formParam("email", "#{email}")
                                 .formParam("password1", "#{password}")
                                 .formParam("password2", "#{password}")
-                                .check(status().is(200))
+                                .check(status().find().in(200,302))
                 );
     }
 
@@ -63,7 +63,7 @@ public abstract class BaseSimulation extends Simulation {
                                 .formParam("csrfmiddlewaretoken", "#{csrfToken}")
                                 .formParam("username", "#{username}")
                                 .formParam("password", "#{password}")
-                                .check(status().is(200))
+                                .check(status().find().in(200,302))
                                 .check(header("Location").is("/profile/"))
                 );
     }

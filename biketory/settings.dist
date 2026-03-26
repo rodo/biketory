@@ -59,7 +59,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "biketory.urls"
 
-
 BIKETORY_THEME = os.environ.get("BIKETORY_THEME", "light")
 
 _THEME_DIRS = [BASE_DIR / "traces" / "templates"]
@@ -81,7 +80,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 WSGI_APPLICATION = "biketory.wsgi.application"
 
@@ -147,8 +145,8 @@ MEDIA_URL = "/media/"
 # Maximum zoom level for pre-generated hexagon PNG tiles
 HEXAGON_TILE_MAX_ZOOM = 10
 
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "upload_trace"
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "profile"
 LOGOUT_REDIRECT_URL = "landing"
 
 TILE_SERVER_URL = "http://{s}.tiles.openstreetmap.org/{z}/{x}/{y}.png"

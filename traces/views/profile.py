@@ -75,19 +75,19 @@ def profile(request):
         .first()
     )
 
-    scores = HexagonScore.objects.filter(user=user).aggregate(
+    scores = HexagonScore.objects.filter(user=user, points__gte=1).aggregate(
         hexagons_count=Count("hexagon"),
         total_points=Sum("points"),
     )
     hexagons_count = scores["hexagons_count"] or 0
     total_points = scores["total_points"] or 0
 
-    hexagon_ids = HexagonScore.objects.filter(user=user).values_list("hexagon_id", flat=True)
+    hexagon_ids = HexagonScore.objects.filter(user=user, points__gte=1).values_list("hexagon_id", flat=True)
     hexagons = Hexagon.objects.filter(pk__in=hexagon_ids)
 
     score_map = {
         s.hexagon_id: s.points
-        for s in HexagonScore.objects.filter(user=user)
+        for s in HexagonScore.objects.filter(user=user, points__gte=1)
     }
 
     hexagons_geojson = json.dumps({
