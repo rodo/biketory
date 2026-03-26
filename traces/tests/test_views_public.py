@@ -19,7 +19,7 @@ class AuthRedirectTest(TestCase):
                 resp = self.client.get(reverse(name))
                 self.assertRedirects(
                     resp,
-                    f"{reverse('login')}?next={reverse(name)}",
+                    f"{reverse('account_login')}?next={reverse(name)}",
                     fetch_redirect_response=False,
                 )
 

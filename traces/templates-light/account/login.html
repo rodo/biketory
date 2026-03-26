@@ -7,14 +7,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: var(--bar-h);
 }
 
+/* Mountain cycling scene banner */
 .scene-banner {
   width: 100%;
-  max-width: 440px;
-  display: block;
+  max-width: 400px;
   margin-bottom: -1px;
+  display: block;
 }
 
 .card {
@@ -22,9 +22,8 @@
   border-radius: 0 0 12px 12px;
   padding: 2rem 2.5rem 2.5rem;
   width: 100%;
-  max-width: 440px;
+  max-width: 400px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-  margin-bottom: 2rem;
 }
 
 .card h1 { color: var(--bg); font-size: 1.5rem; margin-bottom: 0.25rem; }
@@ -56,8 +55,15 @@
 
 .field input:focus { border-color: var(--accent); }
 
-.field-errors { margin-top: 0.35rem; font-size: 0.78rem; color: #c0392b; }
-.helptext { margin-top: 0.3rem; font-size: 0.75rem; color: var(--muted); }
+.errors {
+  background: #fdecea;
+  border-left: 3px solid #c0392b;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: #c0392b;
+}
 
 button[type="submit"] {
   width: 100%;
@@ -70,7 +76,6 @@ button[type="submit"] {
   border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.2s;
-  margin-top: 0.5rem;
 }
 
 button[type="submit"]:hover { opacity: 0.88; }
@@ -107,16 +112,18 @@ button[type="submit"]:hover { opacity: 0.88; }
 {% endblock %}
 
 {% block content %}
-<!-- Mountain cycling scene (mirrored for variety) -->
-<svg class="scene-banner" viewBox="0 0 440 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <rect width="440" height="90" fill="#e8f0e0"/>
-  <path d="M0 90 C80 90 110 30 200 45 C290 60 320 10 400 22 C425 28 445 55 460 45 L460 90 Z" fill="#d4e4c8"/>
-  <path d="M0 90 C70 90 110 58 170 65 C230 72 260 44 330 52 C375 57 410 70 440 66 L440 90 Z" fill="#b8d4a0"/>
-  <!-- route -->
-  <path d="M0 80 C50 72 100 66 160 63 C220 60 260 60 320 58 C360 57 400 62 440 65"
+<!-- Mountain cycling scene -->
+<svg class="scene-banner" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <rect width="400" height="90" fill="#e8f0e0"/>
+  <!-- distant hills -->
+  <path d="M0 90 C60 90 90 38 170 50 C250 62 280 18 360 28 C390 33 420 58 440 48 L440 90 Z" fill="#d4e4c8"/>
+  <!-- near hills -->
+  <path d="M0 90 C50 90 90 62 150 68 C210 74 240 48 310 55 C360 60 390 74 420 70 L420 90 Z" fill="#b8d4a0"/>
+  <!-- route path -->
+  <path d="M40 82 C80 75 120 65 170 60 C220 55 250 52 310 55 C350 57 380 65 400 70"
         stroke="#4f6814" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5" fill="none"/>
-  <!-- cyclist going right to left for variety -->
-  <g transform="translate(165, 58) scale(-1,1)">
+  <!-- cyclist -->
+  <g transform="translate(248, 50)">
     <circle cx="-7" cy="2"  r="4.5" stroke="#2d3a2e" stroke-width="1.5" fill="none"/>
     <circle cx="7"  cy="2"  r="4.5" stroke="#2d3a2e" stroke-width="1.5" fill="none"/>
     <path d="M-7 2 L0 -4 L7 2 L2 2 Z"     stroke="#2d3a2e" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
@@ -125,29 +132,30 @@ button[type="submit"]:hover { opacity: 0.88; }
     <path d="M7 -3 L7 -7 M5.5 -7 L8.5 -7" stroke="#2d3a2e" stroke-width="1.3" stroke-linecap="round"/>
   </g>
   <!-- sun -->
-  <circle cx="50" cy="20" r="10" fill="#f0d080" opacity="0.7"/>
-  <circle cx="50" cy="20" r="7"  fill="#f0d080"/>
+  <circle cx="355" cy="18" r="10" fill="#f0d080" opacity="0.7"/>
+  <circle cx="355" cy="18" r="7"  fill="#f0d080"/>
 </svg>
 
 <div class="card">
-  <h1>Créer un compte</h1>
-  <p class="subtitle">Rejoignez Biketory et commencez à envoyer vos traces.</p>
+  <h1>Bon retour</h1>
+  <p class="subtitle">Connectez-vous pour envoyer vos traces.</p>
+
+  {% if form.errors %}
+    <div class="errors">Nom d'utilisateur ou mot de passe invalide.</div>
+  {% endif %}
 
   <form method="post">
     {% csrf_token %}
-    {% for field in form %}
-      <div class="field">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}
-          <div class="field-errors">{{ field.errors|join:", " }}</div>
-        {% endif %}
-        {% if field.help_text %}
-          <div class="helptext">{{ field.help_text }}</div>
-        {% endif %}
-      </div>
-    {% endfor %}
-    <button type="submit">Créer un compte</button>
+    <div class="field">
+      <label for="id_login">Nom d'utilisateur</label>
+      <input type="text" name="login" id="id_login" autofocus autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="id_password">Mot de passe</label>
+      <input type="password" name="password" id="id_password" autocomplete="current-password">
+    </div>
+    {{ redirect_field }}
+    <button type="submit">Se connecter</button>
   </form>
 
   <div class="social-separator"><span>ou</span></div>
@@ -156,6 +164,7 @@ button[type="submit"]:hover { opacity: 0.88; }
     Continuer avec Google
   </a>
 
-  <p class="footer-link">Déjà un compte ? <a href="{% url 'account_login' %}">Se connecter</a></p>
+  <p class="footer-link"><a href="{% url 'account_reset_password' %}">Mot de passe oublié ?</a></p>
+  <p class="footer-link">Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
 </div>
 {% endblock %}
