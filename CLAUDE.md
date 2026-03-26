@@ -76,6 +76,9 @@ python manage.py extract_closed_surfaces
 
 # Delete all surfaces, reset trace.extracted flags, clear user stats
 python manage.py purge_surfaces [--yes]
+
+# Generate static tiles per premium user with recent uploads
+python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--clean]
 ```
 
 ## Authentication
