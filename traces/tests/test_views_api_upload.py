@@ -30,7 +30,7 @@ class ApiUploadAuthTest(TestCase):
     def test_invalid_token_returns_401(self):
         resp = self.client.post(
             reverse("api_upload_trace"),
-            HTTP_AUTHORIZATION="Bearer invalidtoken",
+            headers={"authorization": "Bearer invalidtoken"}
         )
         self.assertEqual(resp.status_code, 401)
 
@@ -42,7 +42,7 @@ class ApiUploadAuthTest(TestCase):
         )
         resp = self.client.post(
             reverse("api_upload_trace"),
-            HTTP_AUTHORIZATION=f"Bearer {token.token}",
+            headers={"authorization": f"Bearer {token.token}"}
         )
         self.assertEqual(resp.status_code, 401)
 
@@ -65,7 +65,7 @@ class ApiUploadTest(TestCase):
     def test_missing_file_returns_400(self):
         resp = self.client.post(
             reverse("api_upload_trace"),
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         self.assertEqual(resp.status_code, 400)
 
@@ -75,7 +75,7 @@ class ApiUploadTest(TestCase):
         resp = self.client.post(
             reverse("api_upload_trace"),
             {"gpx_file": f},
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(Trace.objects.count(), 1)
@@ -94,7 +94,7 @@ class ApiUploadTest(TestCase):
         self.client.post(
             reverse("api_upload_trace"),
             {"gpx_file": f1},
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         # Second upload should be rejected
         gpx2 = (
@@ -109,6 +109,6 @@ class ApiUploadTest(TestCase):
         resp = self.client.post(
             reverse("api_upload_trace"),
             {"gpx_file": f2},
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         self.assertEqual(resp.status_code, 429)

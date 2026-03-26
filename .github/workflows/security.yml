@@ -51,6 +51,24 @@ jobs:
         with:
           inputs: requirements.txt
 
+  bandit:
+    name: Bandit — Python security linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install bandit
+        run: pip install bandit==1.8.3
+
+      - name: Run bandit
+        run: bandit -c pyproject.toml -r traces/ biketory/
+
   gitleaks:
     name: Gitleaks — secret scanning
     runs-on: ubuntu-latest
