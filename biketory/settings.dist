@@ -28,6 +28,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
+# Strava OAuth2 toggle (disabled by default)
+STRAVA_AUTH_ENABLED = os.environ.get("STRAVA_AUTH_ENABLED", "").lower() in ("1", "true", "yes")
 
 # Application definition
 
@@ -45,6 +47,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "traces",
 ]
+
+if STRAVA_AUTH_ENABLED:
+    INSTALLED_APPS.insert(-1, "allauth.socialaccount.providers.strava")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -166,7 +171,6 @@ DEFAULT_FROM_EMAIL  = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@biketory.fr"
 # Strava OAuth2
 STRAVA_CLIENT_ID     = os.environ.get("STRAVA_CLIENT_ID", "")
 STRAVA_CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET", "")
-STRAVA_REDIRECT_URI  = os.environ.get("STRAVA_REDIRECT_URI", "http://localhost:8000/strava/callback/")
 
 # --- Authentication backends ---
 AUTHENTICATION_BACKENDS = [
@@ -193,3 +197,11 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {"access_type": "online"},
     },
 }
+
+if STRAVA_AUTH_ENABLED:
+    SOCIALACCOUNT_PROVIDERS["strava"] = {
+        "APP": {
+            "client_id": os.environ.get("STRAVA_CLIENT_ID", ""),
+            "secret": os.environ.get("STRAVA_CLIENT_SECRET", ""),
+        },
+    }
