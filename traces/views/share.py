@@ -15,13 +15,13 @@ _SHARE_USER_STATS_SQL = (_SQL_DIR / "share_user_stats.sql").read_text()
 def shared_profile(request, code):
     try:
         secret = base62_to_uuid(code)
-    except (ValueError, OverflowError):
-        raise Http404
+    except (ValueError, OverflowError) as exc:
+        raise Http404 from exc
 
     try:
         stats = UserSurfaceStats.objects.select_related("user").get(secret_uuid=secret)
-    except UserSurfaceStats.DoesNotExist:
-        raise Http404
+    except UserSurfaceStats.DoesNotExist as exc:
+        raise Http404 from exc
 
     user = stats.user
 
