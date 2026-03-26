@@ -11,8 +11,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  public-browsing:
-    name: Public browsing smoke test
+  all-scenarios:
+    name: All Gatling scenarios
     runs-on: ubuntu-latest
 
     services:
@@ -78,11 +78,11 @@ jobs:
           cache: maven
           cache-dependency-path: gatling/pom.xml
 
-      - name: Run Gatling PublicBrowsingSimulation
+      - name: Run Gatling AllSimulation
         working-directory: gatling
         run: >
           mvn gatling:test
-          -Dgatling.simulationClass=biketory.PublicBrowsingSimulation
+          -Dgatling.simulationClass=biketory.AllSimulation
           -DbaseUrl=http://localhost:8000
 
       - name: Build Gatling report comment
@@ -98,7 +98,7 @@ jobs:
             .stats as $s |
             (if $s.numberOfRequests.ko == 0 then "pass" else "fail" end) as $result |
             (if $result == "pass" then ":white_check_mark:" else ":x:" end) as $icon |
-            "\($icon) **Gatling — Public Browsing**\n\n" +
+            "\($icon) **Gatling — All Scenarios**\n\n" +
             "| Metric | Value |\n" +
             "|---|---|\n" +
             "| Requests | \($s.numberOfRequests.total) (\($s.numberOfRequests.ok) OK / \($s.numberOfRequests.ko) KO) |\n" +
@@ -122,7 +122,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.report.outputs.comment }}
-          comment-tag: gatling-public-browsing
+          comment-tag: gatling-all
 
       - name: Upload Gatling report
         if: always()
