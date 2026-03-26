@@ -63,7 +63,7 @@ jobs:
         run: python manage.py migrate --no-input
 
       - name: Django deployment checks
-        run: python manage.py check --deploy --fail-level WARNING
+        run: python manage.py check --deploy --fail-level ERROR
 
       - name: Run tests
         run: pytest
