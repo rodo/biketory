@@ -216,9 +216,9 @@
             </a>
             <a href="{% url 'trace_list' %}">Mes traces</a>
             <a href="{% url 'friends' %}">Mes amis</a>
-            <a href="{% url 'about' %}">À propos</a>
             <a href="{% url 'legal' %}">Mentions légales</a>
             <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
+            <a href="{% url 'about' %}">À propos</a>
             <form method="post" action="{% url 'account_logout' %}" style="margin:0">
               {% csrf_token %}
               <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #eee;cursor:pointer;font-family:inherit;">Déconnexion</button>
