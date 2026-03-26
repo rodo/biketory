@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+
+{% block extra_css %}
+#page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: var(--accent);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.75rem;
+  margin-top: 2rem;
+}
+
+p {
+  color: var(--bg);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  opacity: 0.85;
+  margin-bottom: 0.75rem;
+}
+
+a {
+  color: var(--accent);
+}
+{% endblock %}
+
+{% block content %}
+<h1>À propos de Biketory</h1>
+
+<p>
+  Biketory est une application web qui permet aux cyclistes d'importer leurs traces GPX
+  et de visualiser les surfaces géographiques fermées parcourues sur une carte interactive.
+</p>
+
+<h2>Comment ça marche</h2>
+
+<p>
+  Importez vos fichiers GPX, et Biketory détecte automatiquement les boucles fermées
+  dans vos parcours. Ces surfaces sont ensuite affichées sur une carte et découpées
+  en hexagones pour suivre votre progression.
+</p>
+
+<h2>L'histoire</h2>
+
+<p>
+  Biketory est né de la passion d'un amoureux du vélo qui ne se lasse jamais
+  d'explorer de nouveaux chemins en gravel. Partir à l'aventure, découvrir un
+  sentier inconnu, rouler pour le plaisir de rouler — c'est ça l'esprit du projet.
+  L'idée était simple : avoir un moyen ludique de visualiser tout le terrain
+  couvert au fil des sorties, et transformer chaque boucle en une petite victoire
+  sur la carte.
+</p>
+
+<h2>Code source</h2>
+
+<p>
+  Biketory est un projet open source. Le code est disponible sur
+  <a href="https://github.com/rodo/biketory">GitHub</a>.
+</p>
+{% endblock %}
