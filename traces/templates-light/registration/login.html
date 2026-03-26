@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load socialaccount %}
 
 {% block extra_css %}
 #page {
@@ -141,5 +141,16 @@ button[type="submit"]:hover { opacity: 0.88; }
 
   <p class="footer-link"><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
   <p class="footer-link">Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+
+  {% get_providers as socialaccount_providers %}
+  {% if socialaccount_providers %}
+    <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e0dcd5;">
+    {% for provider in socialaccount_providers %}
+      {% provider_login_url provider process="login" as href %}
+      <a href="{{ href }}" style="display:block;text-align:center;padding:0.75rem;border:2px solid #e0dcd5;border-radius:8px;font-weight:600;font-size:0.95rem;color:var(--bg);text-decoration:none;transition:border-color 0.2s;">
+        Se connecter avec {{ provider.name }}
+      </a>
+    {% endfor %}
+  {% endif %}
 </div>
 {% endblock %}
