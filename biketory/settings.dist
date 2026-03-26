@@ -146,7 +146,7 @@ MEDIA_URL = "/media/"
 HEXAGON_TILE_MAX_ZOOM = 10
 
 LOGIN_URL = "account_login"
-LOGIN_REDIRECT_URL = "upload_trace"
+LOGIN_REDIRECT_URL = "profile"
 LOGOUT_REDIRECT_URL = "landing"
 
 TILE_SERVER_URL = "http://{s}.tiles.openstreetmap.org/{z}/{x}/{y}.png"
