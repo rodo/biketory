@@ -99,6 +99,7 @@ python manage.py purge_surfaces [--yes]
 | `/profile/` | `profile` | required |
 | `/friends/` | `friends` | required |
 | `/legal/` | `legal` | public |
+| `/s/<code>/` | `shared_profile` | public |
 
 ## Landing page map
 

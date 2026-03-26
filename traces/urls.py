@@ -23,4 +23,5 @@ urlpatterns = [
     path("api/hexagons/", views.landing_hexagons, name="landing_hexagons"),
     path("api/upload/", views.api_upload_trace, name="api_upload_trace"),
     path("premium/", views.subscription_required, name="subscription_required"),
+    path("s/<str:code>/", views.shared_profile, name="shared_profile"),
 ]

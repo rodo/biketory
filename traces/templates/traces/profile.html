@@ -255,6 +255,14 @@ h1 {
     </div>
 
     <div class="stat-card">
+      <div class="label">Partager mon profil</div>
+      <div class="uuid-row">
+        <code id="share-url">{{ share_url }}</code>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ share_url }}')">Copier</button>
+      </div>
+    </div>
+
+    <div class="stat-card">
       <div class="label">UUID secret</div>
       <div class="uuid-row">
         <code id="secret-uuid">{{ secret_uuid }}</code>
