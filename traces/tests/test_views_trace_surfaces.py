@@ -38,6 +38,6 @@ class TraceSurfacesTest(TestCase):
         resp = self.client.get(reverse("trace_surfaces", args=[self.trace.pk]))
         self.assertRedirects(
             resp,
-            f"{reverse('login')}?next={reverse('trace_surfaces', args=[self.trace.pk])}",
+            f"{reverse('account_login')}?next={reverse('trace_surfaces', args=[self.trace.pk])}",
             fetch_redirect_response=False,
         )

@@ -52,3 +52,6 @@ htmlcov/
 .pytest_cache/
 biketory/settings_ci.py
 .claude/
+
+
+*.json
