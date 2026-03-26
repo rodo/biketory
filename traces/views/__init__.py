@@ -1,3 +1,4 @@
+from .about import about  # noqa: F401
 from .api_upload import api_upload_trace  # noqa: F401
 from .badges import badges  # noqa: F401
 from .delete_trace import delete_trace  # noqa: F401

@@ -126,6 +126,8 @@ public abstract class BaseSimulation extends Simulation {
                 .pause(1, 3)
                 .exec(http("API hexagons bbox").get("/api/hexagons/?bbox=-2,46,4,49").check(status().is(200)))
                 .pause(1, 3)
+                .exec(http("À propos").get("/about/").check(status().is(200)))
+                .pause(1, 3)
                 .exec(http("Mentions légales").get("/legal/").check(status().is(200)))
                 .pause(1, 3)
                 .exec(http("Stats utilisateur").get("/stats/").check(status().is(200)))
