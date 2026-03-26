@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from traces.models import ApiToken, Subscription, Trace
-from traces.views.upload import (
+from traces.trace_processing import (
     MAX_TRACE_LENGTH_KM,
     _create_trace_hexagons,
     _extract_surfaces,

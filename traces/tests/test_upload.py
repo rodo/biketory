@@ -18,7 +18,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from traces.models import ClosedSurface, HexagonScore, Subscription, Trace
-from traces.views.upload import _create_trace_hexagons, _extract_surfaces, _parse_route
+from traces.trace_processing import _create_trace_hexagons, _extract_surfaces, _parse_route
 
 _FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent / "trace_samples"
 

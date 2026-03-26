@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from traces.models import Hexagon, Trace
-from traces.views.upload import MAX_TRACE_LENGTH_KM
+from traces.trace_processing import MAX_TRACE_LENGTH_KM
 
 from ._helpers import make_user, small_route
 

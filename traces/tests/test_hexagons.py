@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from traces.models import ClosedSurface, Hexagon, HexagonScore, Trace
-from traces.views.upload import _HEX_SIDE_M, _award_hexagon_points, _create_trace_hexagons
+from traces.trace_processing import _HEX_SIDE_M, _award_hexagon_points, _create_trace_hexagons
 
 from ._helpers import make_user, small_route, square_polygon
 
