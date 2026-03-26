@@ -62,6 +62,9 @@ jobs:
       - name: Run migrations
         run: python manage.py migrate --no-input
 
+      - name: Django deployment checks
+        run: python manage.py check --deploy --fail-level WARNING
+
       - name: Run tests
         run: pytest
 

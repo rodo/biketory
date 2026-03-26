@@ -13,3 +13,16 @@ jobs:
       - uses: astral-sh/ruff-action@v3
         with:
           args: "check --output-format=github"
+
+  django-upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install django-upgrade==1.25.0
+      - name: Run django-upgrade
+        run: |
+          find traces biketory -name '*.py' -not -path '*/migrations/*' | xargs django-upgrade --target-version 5.2
+          git diff --exit-code || (echo "::error::django-upgrade found changes — run 'django-upgrade --target-version 5.2' locally" && exit 1)

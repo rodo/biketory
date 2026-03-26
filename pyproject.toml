@@ -18,3 +18,7 @@ line-length = 120
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
 exclude = ["traces/migrations/*"]
+
+[tool.bandit]
+exclude_dirs = ["traces/tests", "traces/migrations", "venv"]
+skips = ["B101", "B105"]

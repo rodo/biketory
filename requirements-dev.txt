@@ -2,3 +2,5 @@
 pytest==8.3.5
 pytest-django==4.9.0
 pytest-cov==6.1.0
+bandit==1.8.3
+django-upgrade==1.25.0

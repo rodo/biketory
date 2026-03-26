@@ -47,7 +47,7 @@ class ApiUploadPremiumCheckTest(TestCase):
         resp = self.client.post(
             reverse("api_upload_trace"),
             {"gpx_file": f},
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         self.assertEqual(resp.status_code, 403)
         self.assertIn("Premium", resp.json()["error"])
@@ -62,7 +62,7 @@ class ApiUploadPremiumCheckTest(TestCase):
         resp = self.client.post(
             reverse("api_upload_trace"),
             {"gpx_file": f},
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         self.assertEqual(resp.status_code, 403)
 
@@ -77,7 +77,7 @@ class ApiUploadPremiumCheckTest(TestCase):
         resp = self.client.post(
             reverse("api_upload_trace"),
             {"gpx_file": f},
-            HTTP_AUTHORIZATION=self.auth,
+            headers={"authorization": self.auth}
         )
         self.assertEqual(resp.status_code, 201)
 
