@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "traces",
+    "statistics",
 ]
 
 if STRAVA_AUTH_ENABLED:

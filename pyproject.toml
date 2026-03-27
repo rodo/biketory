@@ -17,7 +17,10 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
-exclude = ["traces/migrations/*"]
+exclude = ["traces/migrations/*", "statistics/migrations/*"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["statistics"]
 
 [tool.bandit]
 exclude_dirs = ["traces/tests", "traces/migrations", "venv"]
