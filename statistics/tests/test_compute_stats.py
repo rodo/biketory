@@ -93,8 +93,8 @@ class ComputeStatsCountsTest(TestCase):
         )
 
         hexagon = Hexagon.objects.create(geom=square_polygon(2.35, 48.85, 0.005))
-        HexagonGainEvent.objects.create(hexagon=hexagon, user=self.alice, earned_at=now)
-        HexagonGainEvent.objects.create(hexagon=hexagon, user=self.bob, earned_at=now)
+        HexagonGainEvent.objects.create(hexagon=hexagon, user=self.alice, earned_at=now, is_first=True)
+        HexagonGainEvent.objects.create(hexagon=hexagon, user=self.bob, earned_at=now, is_first=True)
 
     def test_daily_counts(self):
         call_command("compute_stats", "day", "--from", self.today.isoformat(), "--to", self.today.isoformat())
@@ -103,7 +103,8 @@ class ComputeStatsCountsTest(TestCase):
         self.assertEqual(row.traces_uploaded, 2)
         self.assertAlmostEqual(row.total_distance_km, 20.0)
         self.assertEqual(row.surfaces_detected, 1)
-        self.assertEqual(row.hexagons_earned, 2)
+        self.assertEqual(row.hexagons_acquired, 2)
+        self.assertEqual(row.new_hexagons_acquired, 2)
 
     def test_monthly_counts(self):
         first_of_month = self.today.replace(day=1)

@@ -5,7 +5,8 @@ from .models import DailyStats, MonthlyStats, WeeklyStats, YearlyStats
 
 class BaseStatsAdmin(admin.ModelAdmin):
     list_display = ("period", "new_users", "traces_uploaded", "total_distance_km",
-                    "surfaces_detected", "hexagons_earned", "computed_at")
+                    "surfaces_detected", "hexagons_acquired", "new_hexagons_acquired",
+                    "computed_at")
     list_filter = ("period",)
     ordering = ("-period",)
 

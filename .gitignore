@@ -55,3 +55,4 @@ biketory/settings_ci.py
 
 
 *.json
+envdb.sh

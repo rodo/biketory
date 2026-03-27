@@ -6,7 +6,7 @@ WITH affected AS (
     ON CONFLICT (hexagon_id, user_id)
     DO UPDATE SET points = traces_hexagonscore.points + 1,
                   last_earned_at = EXCLUDED.last_earned_at
-    RETURNING hexagon_id, user_id, last_earned_at
+    RETURNING hexagon_id, user_id, last_earned_at, (xmax = 0) AS is_new
 )
-INSERT INTO traces_hexagongainevent (hexagon_id, user_id, earned_at)
-SELECT hexagon_id, user_id, last_earned_at FROM affected
+INSERT INTO traces_hexagongainevent (hexagon_id, user_id, earned_at, is_first)
+SELECT hexagon_id, user_id, last_earned_at, is_new FROM affected

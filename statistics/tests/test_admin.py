@@ -13,8 +13,10 @@ class StatsAdminTest(TestCase):
     def setUp(self):
         self.admin = User.objects.create_superuser("admin", "admin@test.com", "pass")
         self.client.login(username="admin", password="pass")
-        for model in (DailyStats, WeeklyStats, MonthlyStats, YearlyStats):
-            model.objects.create(period=datetime.date(2025, 1, 1))
+        DailyStats.objects.create(period=datetime.date(2025, 1, 1))
+        WeeklyStats.objects.create(period=datetime.date(2025, 1, 6))  # Monday
+        MonthlyStats.objects.create(period=datetime.date(2025, 1, 1))
+        YearlyStats.objects.create(period=datetime.date(2025, 1, 1))
 
     def test_dailystats_changelist(self):
         resp = self.client.get(reverse("admin:statistics_dailystats_changelist"))

@@ -15,7 +15,8 @@ class BaseStatsFieldsTest(TestCase):
         self.assertEqual(row.traces_uploaded, 0)
         self.assertEqual(row.total_distance_km, 0.0)
         self.assertEqual(row.surfaces_detected, 0)
-        self.assertEqual(row.hexagons_earned, 0)
+        self.assertEqual(row.hexagons_acquired, 0)
+        self.assertEqual(row.new_hexagons_acquired, 0)
         self.assertIsNotNone(row.computed_at)
 
     def test_str(self):
@@ -41,7 +42,7 @@ class PeriodUniquenessTest(TestCase):
             DailyStats.objects.create(period=d)
 
     def test_weekly_unique_period(self):
-        d = datetime.date(2025, 3, 3)
+        d = datetime.date(2025, 3, 3)  # Monday
         WeeklyStats.objects.create(period=d)
         with self.assertRaises(IntegrityError):
             WeeklyStats.objects.create(period=d)
@@ -60,15 +61,26 @@ class PeriodUniquenessTest(TestCase):
 
     def test_same_date_different_models(self):
         """The same period date can exist in different granularity tables."""
-        d = datetime.date(2025, 1, 1)
-        DailyStats.objects.create(period=d)
-        WeeklyStats.objects.create(period=d)
-        MonthlyStats.objects.create(period=d)
-        YearlyStats.objects.create(period=d)
+        DailyStats.objects.create(period=datetime.date(2025, 1, 6))
+        WeeklyStats.objects.create(period=datetime.date(2025, 1, 6))  # Monday
+        MonthlyStats.objects.create(period=datetime.date(2025, 1, 1))
+        YearlyStats.objects.create(period=datetime.date(2025, 1, 1))
         self.assertEqual(DailyStats.objects.count(), 1)
         self.assertEqual(WeeklyStats.objects.count(), 1)
         self.assertEqual(MonthlyStats.objects.count(), 1)
         self.assertEqual(YearlyStats.objects.count(), 1)
+
+    def test_weekly_rejects_non_monday(self):
+        with self.assertRaises(IntegrityError):
+            WeeklyStats.objects.create(period=datetime.date(2025, 1, 1))  # Wednesday
+
+    def test_monthly_rejects_non_first(self):
+        with self.assertRaises(IntegrityError):
+            MonthlyStats.objects.create(period=datetime.date(2025, 1, 15))
+
+    def test_yearly_rejects_non_jan_first(self):
+        with self.assertRaises(IntegrityError):
+            YearlyStats.objects.create(period=datetime.date(2025, 3, 1))
 
 
 class OrderingTest(TestCase):

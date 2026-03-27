@@ -1,31 +1,45 @@
 import json
+from datetime import date
 
-from django.db.models import Count
 from django.shortcuts import render
 
-from traces.models import HexagonScore
-
-_COLORS = [
-    "#2980b9", "#27ae60", "#e74c3c", "#f39c12", "#8e44ad",
-    "#16a085", "#d35400", "#e84393", "#2c3e50", "#1abc9c",
-]
+from statistics.models import MonthlyStats
 
 
-def stats_pie(request):
-    qs = (
-        HexagonScore.objects
-        .values("user__username")
-        .annotate(count=Count("hexagon"))
-        .order_by("-count")
+def _all_months(first: date, last: date) -> list[str]:
+    months = []
+    y, m = first.year, first.month
+    while (y, m) <= (last.year, last.month):
+        months.append(f"{y:04d}-{m:02d}")
+        m += 1
+        if m > 12:
+            m = 1
+            y += 1
+    return months
+
+
+def stats_traces(request):
+    rows = MonthlyStats.objects.order_by("period").values_list(
+        "period", "traces_uploaded",
     )
 
-    labels = [row["user__username"] for row in qs]
-    data = [row["count"] for row in qs]
-    colors = [_COLORS[i % len(_COLORS)] for i in range(len(labels))]
+    if not rows:
+        return render(request, "traces/stats_traces.html", {
+            "chart_data": json.dumps({"labels": [], "datasets": []}),
+        })
 
-    return render(request, "traces/stats_pie.html", {
-        "chart_data": json.dumps({
-            "labels": labels,
-            "datasets": [{"data": data, "backgroundColor": colors}],
-        }),
+    first_month = rows[0][0]
+    today = date.today().replace(day=1)
+    all_months = _all_months(first_month, today)
+
+    by_month = {r[0].strftime("%Y-%m"): r[1] for r in rows}
+
+    datasets = [{
+        "label": "Traces",
+        "data": [by_month.get(m, 0) for m in all_months],
+        "backgroundColor": "#e74c3c",
+    }]
+
+    return render(request, "traces/stats_traces.html", {
+        "chart_data": json.dumps({"labels": all_months, "datasets": datasets}),
     })
