@@ -3,7 +3,7 @@
 
 {% block extra_css %}
 #page-inner {
-  max-width: 700px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -24,12 +24,13 @@ h1 {
 .chart-wrap {
   position: relative;
   height: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 420px;
   color: var(--muted);
   font-size: 0.95rem;
 }
@@ -70,18 +71,15 @@ h1 {
   <nav class="tabs">
     <a href="{% url 'stats_monthly' %}">Par mois</a>
     <a href="{% url 'stats' %}">Par utilisateur</a>
-    <a href="{% url 'stats_pie' %}" class="active">Répartition</a>
+    <a href="{% url 'stats_traces' %}" class="active">Traces</a>
     <a href="{% url 'stats_badges' %}">Badges</a>
   </nav>
-  <h1>Hexagons par utilisateur</h1>
+  <h1>Traces uploadées par mois</h1>
 
   <div class="card">
     <div class="chart-wrap">
-      {% if chart_data != '{"labels": [], "datasets": [{"data": [], "backgroundColor": []}]}' %}
-        <canvas id="chart"></canvas>
-      {% else %}
-        <div class="empty">Aucune donnée.</div>
-      {% endif %}
+      <canvas id="chart"></canvas>
+      <div class="empty" id="empty-msg" style="display:none;">Aucune donnée.</div>
     </div>
   </div>
 </div>
@@ -91,22 +89,40 @@ h1 {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
   const ALL = {{ chart_data|safe }};
-  if (ALL.labels.length > 0) {
-    new Chart(document.getElementById('chart').getContext('2d'), {
-      type: 'pie',
-      data: ALL,
+  const labels   = ALL.labels;
+  const datasets = ALL.datasets;
+
+  if (labels.length === 0) {
+    document.getElementById('empty-msg').style.display = 'flex';
+  } else {
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'right',
-            labels: { font: { size: 13 }, padding: 16, boxWidth: 14 }
+            position: 'top',
+            labels: { font: { size: 12 }, boxWidth: 14, padding: 16 }
           },
           tooltip: {
             callbacks: {
-              label: item => ` ${item.label}: ${item.parsed} hexagon${item.parsed !== 1 ? 's' : ''}`,
+              title: items => items[0].label,
+              label: item => ` ${item.dataset.label}: ${item.parsed.y} trace${item.parsed.y !== 1 ? 's' : ''}`,
             }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11 } }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0, font: { size: 11 } },
+            grid: { color: 'rgba(0,0,0,0.06)' }
           }
         }
       }

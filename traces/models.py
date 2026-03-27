@@ -71,6 +71,7 @@ class HexagonGainEvent(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="hexagon_gain_events"
     )
     earned_at = models.DateTimeField(db_index=True)
+    is_first = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user_id} — Hexagon #{self.hexagon_id} — {self.earned_at:%Y-%m-%d}"
