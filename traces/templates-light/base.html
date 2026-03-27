@@ -203,6 +203,9 @@
       {% endif %}
     </div>
     <div class="nav-auth">
+      {% if user.is_superuser %}
+        <a href="{% url 'admin_dashboard' %}">Admin</a>
+      {% endif %}
       {% if user.is_authenticated %}
         <div class="dropdown" id="dropdown-user">
           <button class="dropdown-toggle" onclick="toggleDropdown()">{{ user.username }} &#9662;</button>
