@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -43,7 +42,7 @@ def api_upload_trace(request):
     if gpx_file is None:
         return JsonResponse({"error": "Missing gpx_file field."}, status=400)
 
-    uploads_today, daily_limit, next_slot = _upload_quota(user)
+    _, daily_limit, next_slot = _upload_quota(user)
     if next_slot is not None:
         return JsonResponse(
             {

@@ -56,8 +56,8 @@ def profile(request):
                 email_error = "Adresse email invalide."
             else:
                 from django.contrib.auth import get_user_model
-                User = get_user_model()
-                if User.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+                user = get_user_model()
+                if user.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
                     email_error = "Cette adresse email est déjà utilisée."
                 else:
                     request.user.email = new_email
