@@ -2,7 +2,7 @@ from io import BytesIO
 
 from django.test import TestCase
 
-from traces.views.upload import _distance_m, _parse_route
+from traces.trace_processing import _distance_m, _parse_route
 
 
 class DistanceTest(TestCase):

@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 
 from traces.badge_award import award_badges
 from traces.models import Trace, UserBadge
-from traces.views.upload import _create_trace_hexagons, _extract_surfaces, _parse_route
+from traces.trace_processing import _create_trace_hexagons, _extract_surfaces, _parse_route
 
 from ._helpers import make_user
 
