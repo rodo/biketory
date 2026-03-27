@@ -12,6 +12,7 @@ urlpatterns = [
     path("traces/<int:pk>/delete/", views.delete_trace, name="delete_trace"),
     path("traces/<int:pk>/surfaces/", views.trace_surfaces, name="trace_surfaces"),
     path("about/", views.about, name="about"),
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
     path("legal/", views.legal, name="legal"),
     path("stats/", views.stats, name="stats"),
     path("stats/monthly/", views.stats_monthly, name="stats_monthly"),

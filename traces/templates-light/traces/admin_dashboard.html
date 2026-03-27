@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — Biketory{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.tabs a {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  opacity: 0.55;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid transparent;
+  border-bottom: none;
+  margin-bottom: -2px;
+  transition: opacity 0.15s;
+}
+
+.tabs a:hover { opacity: 0.85; }
+
+.tabs a.active {
+  opacity: 1;
+  border-color: #e0dcd5;
+  border-bottom-color: var(--page);
+  background: var(--page);
+  color: var(--accent);
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.75rem 2rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.granularity-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.granularity-bar a {
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  background: #f0ede6;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.granularity-bar a:hover {
+  background: #e0dcd5;
+}
+
+.granularity-bar a.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 420px;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 420px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <nav class="tabs">
+    <a href="{% url 'admin_dashboard' %}" class="active">Utilisateurs</a>
+  </nav>
+
+  <h1>Inscriptions</h1>
+
+  <div class="card">
+    <div class="granularity-bar">
+      <a href="?granularity=day"{% if granularity == "day" %} class="active"{% endif %}>Jour</a>
+      <a href="?granularity=week"{% if granularity == "week" %} class="active"{% endif %}>Semaine</a>
+      <a href="?granularity=month"{% if granularity == "month" %} class="active"{% endif %}>Mois</a>
+      <a href="?granularity=year"{% if granularity == "year" %} class="active"{% endif %}>Année</a>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+      <div class="empty" id="empty-msg" style="display:none;">Aucune donnée.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  const DATA = {{ chart_data|safe }};
+
+  if (DATA.labels.length === 0) {
+    document.getElementById('empty-msg').style.display = 'flex';
+    document.getElementById('chart').style.display = 'none';
+  } else {
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: DATA.labels,
+        datasets: [
+          {
+            label: 'Nouvelles inscriptions',
+            data: DATA.new_users,
+            backgroundColor: 'rgba(79,104,20,0.7)',
+            borderRadius: 4,
+            order: 2
+          },
+          {
+            label: 'Cumul',
+            data: DATA.cumulative,
+            type: 'line',
+            borderColor: '#e0a020',
+            backgroundColor: 'rgba(224,160,32,0.1)',
+            borderWidth: 2,
+            pointRadius: 2,
+            fill: true,
+            tension: 0.3,
+            order: 1,
+            yAxisID: 'yCumul'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { font: { size: 12 }, boxWidth: 14, padding: 16 }
+          },
+          tooltip: {
+            callbacks: {
+              title: items => items[0].label
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11 }, maxRotation: 45 }
+          },
+          y: {
+            beginAtZero: true,
+            position: 'left',
+            title: { display: true, text: 'Nouvelles inscriptions' },
+            ticks: { precision: 0, font: { size: 11 } },
+            grid: { color: 'rgba(0,0,0,0.06)' }
+          },
+          yCumul: {
+            beginAtZero: true,
+            position: 'right',
+            title: { display: true, text: 'Cumul' },
+            ticks: { precision: 0, font: { size: 11 } },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}
