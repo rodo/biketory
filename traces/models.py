@@ -18,6 +18,9 @@ class Trace(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        indexes = [
+            models.Index(fields=["uploaded_by", "uploaded_at"], name="trace_user_uploaded_at"),
+        ]
         constraints = [
             models.UniqueConstraint(
                 fields=["uploaded_by", "first_point_date"],
@@ -37,6 +40,11 @@ class ClosedSurface(models.Model):
     segment_index = models.PositiveIntegerField(default=0)
     polygon = models.PolygonField()
     detected_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["owner"], name="closedsurface_owner"),
+        ]
 
     def __str__(self):
         return f"ClosedSurface #{self.pk} from Trace #{self.trace_id}"
@@ -60,6 +68,9 @@ class HexagonScore(models.Model):
 
     class Meta:
         unique_together = [("hexagon", "user")]
+        indexes = [
+            models.Index(fields=["user", "points"], name="hexagonscore_user_points"),
+        ]
 
     def __str__(self):
         return f"{self.user_id} — Hexagon #{self.hexagon_id} — {self.points}pt(s)"
@@ -72,6 +83,11 @@ class HexagonGainEvent(models.Model):
     )
     earned_at = models.DateTimeField(db_index=True)
     is_first = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "earned_at"], name="hexagongainevent_user_earned"),
+        ]
 
     def __str__(self):
         return f"{self.user_id} — Hexagon #{self.hexagon_id} — {self.earned_at:%Y-%m-%d}"
