@@ -141,6 +141,10 @@ cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 
 **Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 counts them as parameter placeholders.
 
+## API Stats constraints
+
+`traces/views/api_stats.py` must only query models from the `statistics` application. No direct access to `traces` models is allowed in this view.
+
 ## Color palette
 
 | Role | Value |

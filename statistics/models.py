@@ -51,3 +51,66 @@ class YearlyStats(BaseStats):
                 name="yearlystats_period_is_jan_first",
             ),
         ]
+
+
+class BaseUserStats(models.Model):
+    period = models.DateField()
+    user_id = models.IntegerField()
+    hexagons_acquired = models.PositiveIntegerField(default=0)
+    computed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+        ordering = ["-period"]
+
+    def __str__(self):
+        return f"user {self.user_id} {self.period} — {self.hexagons_acquired}"
+
+
+class UserDailyStats(BaseUserStats):
+    pk = models.CompositePrimaryKey("user_id", "period")
+
+    class Meta(BaseUserStats.Meta):
+        managed = False
+
+
+class UserWeeklyStats(BaseUserStats):
+    class Meta(BaseUserStats.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "period"],
+                name="userweeklystats_user_id_period",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(period__week_day=2),
+                name="userweeklystats_period_is_monday",
+            ),
+        ]
+
+
+class UserMonthlyStats(BaseUserStats):
+    class Meta(BaseUserStats.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "period"],
+                name="usermonthlystats_user_id_period",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(period__day=1),
+                name="usermonthlystats_period_first_of_month",
+            ),
+        ]
+
+
+class UserYearlyStats(BaseUserStats):
+    class Meta(BaseUserStats.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "period"],
+                name="useryearlystats_user_id_period",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(period__month=1, period__day=1),
+                name="useryearlystats_period_is_jan_first",
+            ),
+        ]

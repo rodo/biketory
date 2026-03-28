@@ -1,12 +1,9 @@
 from collections import defaultdict
 from datetime import date
 
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
 from django.http import JsonResponse
 
-from statistics.models import MonthlyStats
-from traces.models import HexagonGainEvent
+from statistics.models import MonthlyStats, UserMonthlyStats
 
 _COLORS = [
     "#2980b9", "#27ae60", "#e74c3c", "#f39c12", "#8e44ad",
@@ -81,40 +78,41 @@ def _build_traces_data() -> dict:
 
 
 def _build_per_user_data() -> dict:
-    qs = (
-        HexagonGainEvent.objects
-        .annotate(month=TruncMonth("earned_at"))
-        .values("month", "user__username")
-        .annotate(count=Count("id"))
-        .order_by("month", "user__username")
+    qs = UserMonthlyStats.objects.order_by("period", "user_id").values_list(
+        "period", "user_id", "hexagons_acquired",
     )
 
     months = []
     months_seen = set()
-    users = []
-    users_seen = set()
+    user_ids = []
+    user_ids_seen = set()
 
-    for row in qs:
-        m = row["month"].strftime("%Y-%m")
-        u = row["user__username"]
+    for period, user_id, _ in qs:
+        m = period.strftime("%Y-%m")
         if m not in months_seen:
             months.append(m)
             months_seen.add(m)
-        if u not in users_seen:
-            users.append(u)
-            users_seen.add(u)
+        if user_id not in user_ids_seen:
+            user_ids.append(user_id)
+            user_ids_seen.add(user_id)
 
     matrix = defaultdict(lambda: defaultdict(int))
-    for row in qs:
-        matrix[row["user__username"]][row["month"].strftime("%Y-%m")] = row["count"]
+    for period, user_id, count in qs:
+        matrix[user_id][period.strftime("%Y-%m")] = count
+
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    usernames = dict(
+        User.objects.filter(id__in=user_ids).values_list("id", "username")
+    )
 
     datasets = [
         {
-            "label": user,
-            "data": [matrix[user][m] for m in months],
+            "label": usernames.get(uid, str(uid)),
+            "data": [matrix[uid][m] for m in months],
             "backgroundColor": _COLORS[i % len(_COLORS)],
         }
-        for i, user in enumerate(users)
+        for i, uid in enumerate(user_ids)
     ]
 
     return {"labels": months, "datasets": datasets}
