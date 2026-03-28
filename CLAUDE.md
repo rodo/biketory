@@ -72,6 +72,8 @@ traces/            Main application
 
 ## Management commands
 
+**À chaque ajout, suppression ou modification d'une management command, mettre à jour `README.md` et cette section.**
+
 ```bash
 # Compute aggregated statistics for day/week/month/year (or all)
 python manage.py compute_stats {day,week,month,year,all} [--from YYYY-MM-DD] [--to YYYY-MM-DD]
