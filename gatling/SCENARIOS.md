@@ -54,7 +54,7 @@ séquentiellement tous les endpoints publics avec des pauses de 1 à 3 secondes.
 5. `GET /legal/` — Mentions légales
 6. `GET /stats/` — Stats par utilisateur
 7. `GET /stats/monthly/` — Stats mensuelles
-8. `GET /stats/pie/` — Répartition
+8. `GET /stats/` — Répartition
 9. `GET /stats/badges/` — Badges
 
 **Injection :** `atOnceUsers(1)`
@@ -128,7 +128,7 @@ Chaque utilisateur exécute :
 
 #### Phase 2 — Vérification des stats (1 utilisateur)
 
-1. `GET /stats/pie/` — Récupération de la page de répartition
+1. `GET /stats/` — Récupération de la page de répartition
 2. Extraction du JSON `const ALL = {...}` depuis le body HTML
 3. Vérification que chaque utilisateur a le bon nombre d'hexagons
 

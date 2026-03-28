@@ -180,8 +180,8 @@ public abstract class BaseSimulation extends Simulation {
     protected ScenarioBuilder verifyStatsScenario(String user1, String user2) {
         return scenario("Verify stats")
                 .exec(
-                        http("GET /stats/pie/")
-                                .get("/stats/pie/")
+                        http("GET /stats/")
+                                .get("/stats/")
                                 .check(status().is(200))
                                 .check(bodyString().saveAs("pieBody"))
                 )
@@ -190,7 +190,7 @@ public abstract class BaseSimulation extends Simulation {
 
                     int start = body.indexOf("const ALL = ");
                     if (start == -1) {
-                        System.err.println("Chart data not found in /stats/pie/");
+                        System.err.println("Chart data not found in /stats/");
                         return session.markAsFailed();
                     }
                     start += "const ALL = ".length();
