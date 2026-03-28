@@ -52,8 +52,10 @@ traces/            Main application
     registration/login.html
     registration/register.html
   management/commands/
-    extract_closed_surfaces.py   Detect closed loops, store polygons, update user stats
+    generate_hexagon_tiles.py    Generate static PNG tiles for hexagons
+    generate_premium_user_tiles.py  Generate static tiles per premium user
     purge_surfaces.py            Delete all surfaces and reset extraction flags
+    purge_all.py                 Delete all traces, surfaces, and user stats
 ```
 
 ## Models
@@ -70,15 +72,26 @@ traces/            Main application
 
 ## Management commands
 
+**À chaque ajout, suppression ou modification d'une management command, mettre à jour `README.md` et cette section.**
+
 ```bash
-# Parse unextracted traces, store closed surfaces, update user stats
-python manage.py extract_closed_surfaces
+# Compute aggregated statistics for day/week/month/year (or all)
+python manage.py compute_stats {day,week,month,year,all} [--from YYYY-MM-DD] [--to YYYY-MM-DD]
+
+# Create missing monthly sub-partitions for statistics_userdailystats
+python manage.py create_daily_stats_partitions [--months-ahead 3]
+
+# Generate static PNG tiles for all hexagons
+python manage.py generate_hexagon_tiles [--zoom-min 0] [--zoom-max 10] [--clean]
+
+# Generate static tiles per premium user with recent uploads
+python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--clean]
 
 # Delete all surfaces, reset trace.extracted flags, clear user stats
 python manage.py purge_surfaces [--yes]
 
-# Generate static tiles per premium user with recent uploads
-python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--clean]
+# Delete all traces, surfaces, and user stats
+python manage.py purge_all [--yes]
 ```
 
 ## Authentication
@@ -140,6 +153,10 @@ cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 ```
 
 **Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 counts them as parameter placeholders.
+
+## API Stats constraints
+
+`traces/views/api_stats.py` must only query models from the `statistics` application. No direct access to `traces` models is allowed in this view.
 
 ## Color palette
 

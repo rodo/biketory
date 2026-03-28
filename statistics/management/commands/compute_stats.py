@@ -7,7 +7,16 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from statistics.models import DailyStats, MonthlyStats, WeeklyStats, YearlyStats
+from statistics.models import (
+    DailyStats,
+    MonthlyStats,
+    UserDailyStats,
+    UserMonthlyStats,
+    UserWeeklyStats,
+    UserYearlyStats,
+    WeeklyStats,
+    YearlyStats,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +26,13 @@ _TRACES_SQL = (_SQL_DIR / "traces.sql").read_text()
 _SURFACES_SQL = (_SQL_DIR / "surfaces.sql").read_text()
 _HEXAGONS_ACQUIRED_SQL = (_SQL_DIR / "hexagons_acquired.sql").read_text()
 _NEW_HEXAGONS_ACQUIRED_SQL = (_SQL_DIR / "new_hexagons_acquired.sql").read_text()
+_USER_HEXAGONS_ACQUIRED_SQL = (_SQL_DIR / "user_hexagons_acquired.sql").read_text()
 
 GRANULARITY_MAP = {
-    "day": ("day", DailyStats),
-    "week": ("week", WeeklyStats),
-    "month": ("month", MonthlyStats),
-    "year": ("year", YearlyStats),
+    "day": ("day", DailyStats, UserDailyStats),
+    "week": ("week", WeeklyStats, UserWeeklyStats),
+    "month": ("month", MonthlyStats, UserMonthlyStats),
+    "year": ("year", YearlyStats, UserYearlyStats),
 }
 
 
@@ -119,8 +129,9 @@ class Command(BaseCommand):
         logger.info("Computing stats from %s to %s for: %s", date_from, date_to, ", ".join(granularities))
 
         for gran in granularities:
-            trunc, model = GRANULARITY_MAP[gran]
+            trunc, model, user_model = GRANULARITY_MAP[gran]
             self._compute(trunc, model, date_from, date_to)
+            self._compute_user_stats(trunc, user_model, date_from, date_to)
 
     def _compute(self, trunc, model, date_from, date_to):
         params = [trunc, date_from, date_to]
@@ -158,3 +169,23 @@ class Command(BaseCommand):
             count += 1
 
         logger.info("%s: %d periods updated.", model.__name__, count)
+
+    def _compute_user_stats(self, trunc, user_model, date_from, date_to):
+        params = [trunc, date_from, date_to]
+        t0 = time.monotonic()
+        with connection.cursor() as cursor:
+            cursor.execute(_USER_HEXAGONS_ACQUIRED_SQL, params)
+            rows = cursor.fetchall()
+        elapsed_ms = (time.monotonic() - t0) * 1000
+        logger.info("user_hexagons_acquired (%s): %.1f ms (%d rows)", trunc, elapsed_ms, len(rows))
+
+        count = 0
+        for period, user_id, hexagons_acquired in rows:
+            user_model.objects.update_or_create(
+                period=period,
+                user_id=user_id,
+                defaults={"hexagons_acquired": hexagons_acquired},
+            )
+            count += 1
+
+        logger.info("%s: %d rows updated.", user_model.__name__, count)

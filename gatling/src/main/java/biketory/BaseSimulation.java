@@ -118,6 +118,24 @@ public abstract class BaseSimulation extends Simulation {
 
     // -- Scenario builders ------------------------------------------------------
 
+    protected static ScenarioBuilder statsApiScenario() {
+        return scenario("API Stats")
+                .exec(http("API stats monthly").get("/api/stats/monthly/")
+                        .check(status().is(200))
+                        .check(jsonPath("$.labels").exists())
+                        .check(jsonPath("$.datasets").exists()))
+                .pause(1, 2)
+                .exec(http("API stats traces").get("/api/stats/traces/")
+                        .check(status().is(200))
+                        .check(jsonPath("$.labels").exists())
+                        .check(jsonPath("$.datasets").exists()))
+                .pause(1, 2)
+                .exec(http("API stats users").get("/api/stats/users/")
+                        .check(status().is(200))
+                        .check(jsonPath("$.labels").exists())
+                        .check(jsonPath("$.datasets").exists()));
+    }
+
     protected static ScenarioBuilder publicBrowsingScenario() {
         return scenario("Navigation publique")
                 .exec(http("Landing page").get("/").check(status().is(200)))
@@ -162,8 +180,8 @@ public abstract class BaseSimulation extends Simulation {
     protected ScenarioBuilder verifyStatsScenario(String user1, String user2) {
         return scenario("Verify stats")
                 .exec(
-                        http("GET /stats/pie/")
-                                .get("/stats/pie/")
+                        http("GET /stats/")
+                                .get("/stats/")
                                 .check(status().is(200))
                                 .check(bodyString().saveAs("pieBody"))
                 )
@@ -172,7 +190,7 @@ public abstract class BaseSimulation extends Simulation {
 
                     int start = body.indexOf("const ALL = ");
                     if (start == -1) {
-                        System.err.println("Chart data not found in /stats/pie/");
+                        System.err.println("Chart data not found in /stats/");
                         return session.markAsFailed();
                     }
                     start += "const ALL = ".length();
@@ -192,6 +210,111 @@ public abstract class BaseSimulation extends Simulation {
                             + user1 + "=12, " + user2 + "=10");
                     return session;
                 });
+    }
+
+    protected ScenarioBuilder verifyStatsApiScenario(String user1, String user2) {
+        return scenario("Verify Stats API")
+                .exec(
+                        http("Trigger compute_stats")
+                                .get("/api/compute-stats/?granularity=month")
+                                .check(status().is(200))
+                                .check(jsonPath("$.status").is("ok"))
+                )
+                .pause(1, 2)
+                .exec(
+                        http("API stats monthly")
+                                .get("/api/stats/monthly/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.labels").exists())
+                                .check(jsonPath("$.datasets").exists())
+                                .check(jsonPath("$.datasets[*].label").count().gte(1))
+                                .check(jsonPath("$.datasets[0].data").exists())
+                )
+                .pause(1, 2)
+                .exec(
+                        http("API stats traces")
+                                .get("/api/stats/traces/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.labels").exists())
+                                .check(jsonPath("$.datasets").exists())
+                                .check(jsonPath("$.datasets[0].label").is("Traces"))
+                                .check(jsonPath("$.datasets[0].data").exists())
+                )
+                .pause(1, 2)
+                .exec(
+                        http("API stats users")
+                                .get("/api/stats/users/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.labels").exists())
+                                .check(jsonPath("$.datasets").exists())
+                                .check(jsonPath("$.datasets[*].label").count().gte(2))
+                                .check(
+                                        jsonPath("$.datasets[*].label")
+                                                .findAll()
+                                                .transform(labels -> labels.contains(user1) && labels.contains(user2))
+                                                .is(true)
+                                )
+                                .check(jsonPath("$.datasets[*].backgroundColor").count().gte(2))
+                                .check(bodyString().saveAs("usersBody"))
+                )
+                .exec(session -> {
+                    String body = session.getString("usersBody");
+                    boolean ok = true;
+                    ok &= verifyUserHexagons(body, user1, 12);
+                    ok &= verifyUserHexagons(body, user2, 10);
+                    if (!ok) {
+                        System.err.println("Stats API hexagon count mismatch: " + body);
+                        return session.markAsFailed();
+                    }
+                    System.out.println("Stats API hexagon counts verified: "
+                            + user1 + "=12, " + user2 + "=10");
+                    return session;
+                });
+    }
+
+    /**
+     * Parse the /api/stats/users/ JSON response and verify that the sum of
+     * a user's data array equals the expected hexagon count.
+     */
+    protected static boolean verifyUserHexagons(String json, String username, int expected) {
+        // Find the dataset object whose "label" matches the username.
+        // JSON structure: {"labels":[...], "datasets":[{"label":"x","data":[...]}, ...]}
+        String needle = "\"label\":\"" + username + "\"";
+        // try with a space after colon too
+        int idx = json.indexOf(needle);
+        if (idx == -1) {
+            needle = "\"label\": \"" + username + "\"";
+            idx = json.indexOf(needle);
+        }
+        if (idx == -1) {
+            System.err.println("Stats API: user " + username + " not found in datasets");
+            return false;
+        }
+
+        // Find the "data" array that follows this label within the same object
+        int dataIdx = json.indexOf("\"data\"", idx);
+        if (dataIdx == -1) {
+            System.err.println("Stats API: data array not found for " + username);
+            return false;
+        }
+        int arrayStart = json.indexOf("[", dataIdx) + 1;
+        int arrayEnd = json.indexOf("]", arrayStart);
+        String[] values = json.substring(arrayStart, arrayEnd).split(",");
+
+        int total = 0;
+        for (String v : values) {
+            String trimmed = v.trim();
+            if (!trimmed.isEmpty()) {
+                total += Integer.parseInt(trimmed);
+            }
+        }
+
+        if (total != expected) {
+            System.err.println("Stats API: user " + username + " expected "
+                    + expected + " hexagons, got " + total);
+            return false;
+        }
+        return true;
     }
 
     protected static boolean verifyHexagonCount(String json, String username, int expected) {

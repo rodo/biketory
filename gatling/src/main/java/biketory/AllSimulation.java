@@ -7,8 +7,10 @@ import static io.gatling.javaapi.core.CoreDsl.*;
 /**
  * Runs all scenarios sequentially:
  * 1. Public browsing
- * 2. Registration
- * 3. Upload + stats verification
+ * 2. Stats API (structure only)
+ * 3. Registration
+ * 4. Upload + stats page verification
+ * 5. Upload + stats API verification
  */
 public class AllSimulation extends BaseSimulation {
 
@@ -22,6 +24,10 @@ public class AllSimulation extends BaseSimulation {
                 publicBrowsingScenario()
                         .injectOpen(atOnceUsers(1))
                         .andThen(
+                                statsApiScenario()
+                                        .injectOpen(atOnceUsers(1))
+                        )
+                        .andThen(
                                 registrationScenario()
                                         .injectOpen(atOnceUsers(2))
                         )
@@ -30,6 +36,10 @@ public class AllSimulation extends BaseSimulation {
                                         .injectOpen(atOnceUsers(2))
                                         .andThen(
                                                 verifyStatsScenario(USER1, USER2)
+                                                        .injectOpen(atOnceUsers(1))
+                                        )
+                                        .andThen(
+                                                verifyStatsApiScenario(USER1, USER2)
                                                         .injectOpen(atOnceUsers(1))
                                         )
                         )
