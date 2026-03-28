@@ -8,16 +8,17 @@ Ce document liste tous les scénarios de performance Gatling du projet.
 ```
 BaseSimulation (abstraite)
 ├── PublicBrowsingSimulation    — navigation publique
+├── StatsApiSimulation          — endpoints API stats JSON
 ├── RegistrationSimulation      — création de comptes
 ├── UploadAndStatsSimulation    — upload GPX + vérification hexagons
-└── AllSimulation               — enchaîne les 3 scénarios ci-dessus
+└── AllSimulation               — enchaîne les 4 scénarios ci-dessus
 ```
 
 `BaseSimulation` centralise toute la logique partagée : configuration HTTP,
 feeders (`registrationFeeder`, `uploadFeeder`), chains réutilisables
 (`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`) et factory methods
-de scénarios (`publicBrowsingScenario()`, `registrationScenario()`,
-`uploadScenario()`, `verifyStatsScenario()`).
+de scénarios (`publicBrowsingScenario()`, `statsApiScenario()`,
+`registrationScenario()`, `uploadScenario()`, `verifyStatsScenario()`).
 
 Les sous-classes ne contiennent que le `setUp()` avec injection et assertions.
 
@@ -53,6 +54,25 @@ séquentiellement tous les endpoints publics avec des pauses de 1 à 3 secondes.
 7. `GET /stats/monthly/` — Stats mensuelles
 8. `GET /stats/pie/` — Répartition
 9. `GET /stats/badges/` — Badges
+
+**Injection :** `atOnceUsers(1)`
+**Assertions :** p95 < 2s, succès > 95 %
+
+---
+
+### StatsApiSimulation
+
+**Fichier :** `src/main/java/biketory/StatsApiSimulation.java`
+
+Test des 3 endpoints API JSON qui fournissent les données aux graphiques Chart.js.
+Un seul utilisateur appelle séquentiellement chaque endpoint et vérifie que la réponse
+contient les clés `labels` et `datasets`.
+
+**Étapes :**
+
+1. `GET /api/stats/monthly/` — Hexagons acquis par mois
+2. `GET /api/stats/traces/` — Traces uploadées par mois
+3. `GET /api/stats/users/` — Hexagons gagnés par utilisateur par mois
 
 **Injection :** `atOnceUsers(1)`
 **Assertions :** p95 < 2s, succès > 95 %
@@ -119,13 +139,14 @@ Chaque utilisateur exécute :
 
 **Fichier :** `src/main/java/biketory/AllSimulation.java`
 
-Enchaîne séquentiellement les 3 scénarios ci-dessus via `andThen()`.
+Enchaîne séquentiellement les 4 scénarios ci-dessus via `andThen()`.
 C'est la simulation à utiliser en CI pour tout valider en une seule étape.
 
 **Ordre d'exécution :**
 
 1. PublicBrowsing — `atOnceUsers(1)`
-2. Registration — `atOnceUsers(2)`
-3. Upload — `atOnceUsers(2)` puis Verify stats — `atOnceUsers(1)`
+2. API Stats — `atOnceUsers(1)`
+3. Registration — `atOnceUsers(2)`
+4. Upload — `atOnceUsers(2)` puis Verify stats — `atOnceUsers(1)`
 
 **Assertions :** p95 < 5s, succès > 95 %

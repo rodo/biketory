@@ -22,6 +22,10 @@ public class AllSimulation extends BaseSimulation {
                 publicBrowsingScenario()
                         .injectOpen(atOnceUsers(1))
                         .andThen(
+                                statsApiScenario()
+                                        .injectOpen(atOnceUsers(1))
+                        )
+                        .andThen(
                                 registrationScenario()
                                         .injectOpen(atOnceUsers(2))
                         )

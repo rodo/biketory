@@ -118,6 +118,24 @@ public abstract class BaseSimulation extends Simulation {
 
     // -- Scenario builders ------------------------------------------------------
 
+    protected static ScenarioBuilder statsApiScenario() {
+        return scenario("API Stats")
+                .exec(http("API stats monthly").get("/api/stats/monthly/")
+                        .check(status().is(200))
+                        .check(jsonPath("$.labels").exists())
+                        .check(jsonPath("$.datasets").exists()))
+                .pause(1, 2)
+                .exec(http("API stats traces").get("/api/stats/traces/")
+                        .check(status().is(200))
+                        .check(jsonPath("$.labels").exists())
+                        .check(jsonPath("$.datasets").exists()))
+                .pause(1, 2)
+                .exec(http("API stats users").get("/api/stats/users/")
+                        .check(status().is(200))
+                        .check(jsonPath("$.labels").exists())
+                        .check(jsonPath("$.datasets").exists()));
+    }
+
     protected static ScenarioBuilder publicBrowsingScenario() {
         return scenario("Navigation publique")
                 .exec(http("Landing page").get("/").check(status().is(200)))
