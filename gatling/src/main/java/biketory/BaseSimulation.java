@@ -212,6 +212,45 @@ public abstract class BaseSimulation extends Simulation {
                 });
     }
 
+    protected ScenarioBuilder verifyStatsApiScenario(String user1, String user2) {
+        return scenario("Verify Stats API")
+                .exec(
+                        http("API stats monthly")
+                                .get("/api/stats/monthly/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.labels").exists())
+                                .check(jsonPath("$.datasets").exists())
+                                .check(jsonPath("$.datasets[*].label").count().gte(1))
+                                .check(jsonPath("$.datasets[0].data").exists())
+                )
+                .pause(1, 2)
+                .exec(
+                        http("API stats traces")
+                                .get("/api/stats/traces/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.labels").exists())
+                                .check(jsonPath("$.datasets").exists())
+                                .check(jsonPath("$.datasets[0].label").is("Traces"))
+                                .check(jsonPath("$.datasets[0].data").exists())
+                )
+                .pause(1, 2)
+                .exec(
+                        http("API stats users")
+                                .get("/api/stats/users/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.labels").exists())
+                                .check(jsonPath("$.datasets").exists())
+                                .check(jsonPath("$.datasets[*].label").count().gte(2))
+                                .check(
+                                        jsonPath("$.datasets[*].label")
+                                                .findAll()
+                                                .transform(labels -> labels.contains(user1) && labels.contains(user2))
+                                                .is(true)
+                                )
+                                .check(jsonPath("$.datasets[*].backgroundColor").count().gte(2))
+                );
+    }
+
     protected static boolean verifyHexagonCount(String json, String username, int expected) {
         int labelIdx = json.indexOf("\"" + username + "\"");
         if (labelIdx == -1) {
