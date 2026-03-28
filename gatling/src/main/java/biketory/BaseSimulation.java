@@ -215,6 +215,13 @@ public abstract class BaseSimulation extends Simulation {
     protected ScenarioBuilder verifyStatsApiScenario(String user1, String user2) {
         return scenario("Verify Stats API")
                 .exec(
+                        http("Trigger compute_stats")
+                                .get("/api/compute-stats/?granularity=month")
+                                .check(status().is(200))
+                                .check(jsonPath("$.status").is("ok"))
+                )
+                .pause(1, 2)
+                .exec(
                         http("API stats monthly")
                                 .get("/api/stats/monthly/")
                                 .check(status().is(200))
@@ -248,7 +255,66 @@ public abstract class BaseSimulation extends Simulation {
                                                 .is(true)
                                 )
                                 .check(jsonPath("$.datasets[*].backgroundColor").count().gte(2))
-                );
+                                .check(bodyString().saveAs("usersBody"))
+                )
+                .exec(session -> {
+                    String body = session.getString("usersBody");
+                    boolean ok = true;
+                    ok &= verifyUserHexagons(body, user1, 12);
+                    ok &= verifyUserHexagons(body, user2, 10);
+                    if (!ok) {
+                        System.err.println("Stats API hexagon count mismatch: " + body);
+                        return session.markAsFailed();
+                    }
+                    System.out.println("Stats API hexagon counts verified: "
+                            + user1 + "=12, " + user2 + "=10");
+                    return session;
+                });
+    }
+
+    /**
+     * Parse the /api/stats/users/ JSON response and verify that the sum of
+     * a user's data array equals the expected hexagon count.
+     */
+    protected static boolean verifyUserHexagons(String json, String username, int expected) {
+        // Find the dataset object whose "label" matches the username.
+        // JSON structure: {"labels":[...], "datasets":[{"label":"x","data":[...]}, ...]}
+        String needle = "\"label\":\"" + username + "\"";
+        // try with a space after colon too
+        int idx = json.indexOf(needle);
+        if (idx == -1) {
+            needle = "\"label\": \"" + username + "\"";
+            idx = json.indexOf(needle);
+        }
+        if (idx == -1) {
+            System.err.println("Stats API: user " + username + " not found in datasets");
+            return false;
+        }
+
+        // Find the "data" array that follows this label within the same object
+        int dataIdx = json.indexOf("\"data\"", idx);
+        if (dataIdx == -1) {
+            System.err.println("Stats API: data array not found for " + username);
+            return false;
+        }
+        int arrayStart = json.indexOf("[", dataIdx) + 1;
+        int arrayEnd = json.indexOf("]", arrayStart);
+        String[] values = json.substring(arrayStart, arrayEnd).split(",");
+
+        int total = 0;
+        for (String v : values) {
+            String trimmed = v.trim();
+            if (!trimmed.isEmpty()) {
+                total += Integer.parseInt(trimmed);
+            }
+        }
+
+        if (total != expected) {
+            System.err.println("Stats API: user " + username + " expected "
+                    + expected + " hexagons, got " + total);
+            return false;
+        }
+        return true;
     }
 
     protected static boolean verifyHexagonCount(String json, String username, int expected) {
