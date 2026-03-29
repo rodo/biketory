@@ -37,4 +37,4 @@ CREATE EXTENSION postgis;
 | `generate_hexagon_tiles` | Generate static PNG tiles for all hexagons at configurable zoom levels (`--zoom-min`, `--zoom-max`). Use `--clean` to remove existing tiles first. |
 | `generate_premium_user_tiles` | Generate static PNG tiles per premium user who uploaded traces in the last 7 days (`--zoom-min`, `--zoom-max`, `--clean`). |
 | `purge_surfaces` | Delete all closed surfaces, reset `extracted` flags on traces, and clear user surface stats. Requires `--yes` to skip confirmation. |
-| `purge_all` | Delete all traces, closed surfaces, and user surface stats. Requires `--yes` to skip confirmation. |
+| `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
