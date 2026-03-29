@@ -7,10 +7,18 @@ from django.utils import timezone
 
 
 class Trace(models.Model):
+    STATUS_NOT_ANALYZED = "not_analyzed"
+    STATUS_ANALYZED = "analyzed"
+    STATUS_CHOICES = [
+        (STATUS_NOT_ANALYZED, "Not analyzed"),
+        (STATUS_ANALYZED, "Analyzed"),
+    ]
+
     gpx_file = models.FileField(upload_to="gpx/")
     route = models.MultiLineStringField(null=True, blank=True)
     length_km = models.FloatField(null=True, blank=True)
     extracted = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NOT_ANALYZED)
     uploaded_by = models.ForeignKey(
         get_user_model(), null=True, blank=True, on_delete=models.SET_NULL, related_name="traces"
     )

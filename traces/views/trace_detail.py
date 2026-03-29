@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db.models import Union
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 
 from traces.badges import BADGE_CATALOGUE
@@ -63,6 +64,13 @@ def trace_detail(request, pk):
         if ub.badge_id in badge_lookup
     ]
 
+    pending_before = 0
+    if trace.status == Trace.STATUS_NOT_ANALYZED:
+        pending_before = Trace.objects.filter(
+            status=Trace.STATUS_NOT_ANALYZED,
+            uploaded_at__lt=trace.uploaded_at,
+        ).count()
+
     return render(request, "traces/trace_detail.html", {
         "trace": trace,
         "route_geojson": route_geojson,
@@ -74,4 +82,11 @@ def trace_detail(request, pk):
         "prev_trace": prev_trace,
         "next_trace": next_trace,
         "earned_badges": earned_badges,
+        "pending_before": pending_before,
     })
+
+
+@login_required
+def api_trace_status(request, pk):
+    trace = get_object_or_404(Trace, pk=pk)
+    return JsonResponse({"status": trace.status})

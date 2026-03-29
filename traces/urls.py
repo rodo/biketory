@@ -27,6 +27,7 @@ urlpatterns = [
     path("api/stats/monthly/", views.api_stats_monthly, name="api_stats_monthly"),
     path("api/stats/traces/", views.api_stats_traces, name="api_stats_traces"),
     path("api/stats/users/", views.api_stats, name="api_stats"),
+    path("api/traces/<int:pk>/status/", views.api_trace_status, name="api_trace_status"),
     path("api/upload/", views.api_upload_trace, name="api_upload_trace"),
     path("premium/", views.subscription_required, name="subscription_required"),
     path("s/<str:code>/", views.shared_profile, name="shared_profile"),
