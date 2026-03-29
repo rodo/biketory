@@ -56,3 +56,9 @@ biketory/settings_ci.py
 
 *.json
 envdb.sh
+
+# Local files
+assets/
+auth.sh
+gatling/target/
+notes/
