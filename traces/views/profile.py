@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _  # noqa: F401
 
 from traces.base62 import uuid_to_base62
 from traces.models import (

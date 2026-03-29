@@ -30,7 +30,10 @@ def upload_trace(request):
                 if length_km > MAX_TRACE_LENGTH_KM:
                     form.add_error(
                         "gpx_file",
-                        _("Trace too long (%(length).0f km). Maximum allowed is %(max)d km.") % {"length": length_km, "max": MAX_TRACE_LENGTH_KM},
+                        _(
+                            "Trace too long (%(length).0f km)."
+                            " Maximum allowed is %(max)d km."
+                        ) % {"length": length_km, "max": MAX_TRACE_LENGTH_KM},
                     )
                 elif first_point_date and Trace.objects.filter(
                     uploaded_by=request.user, first_point_date=first_point_date

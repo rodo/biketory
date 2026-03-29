@@ -88,7 +88,7 @@ def _build_per_user_data() -> dict:
     user_ids = []
     user_ids_seen = set()
 
-    for period, user_id, _ in qs:
+    for period, user_id, _count in qs:
         m = period.strftime("%Y-%m")
         if m not in months_seen:
             months.append(m)

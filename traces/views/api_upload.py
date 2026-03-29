@@ -43,7 +43,7 @@ def api_upload_trace(request):
     if gpx_file is None:
         return JsonResponse({"error": _("Missing gpx_file field.")}, status=400)
 
-    _, daily_limit, next_slot = _upload_quota(user)
+    _count, daily_limit, next_slot = _upload_quota(user)
     if next_slot is not None:
         return JsonResponse(
             {
@@ -57,7 +57,11 @@ def api_upload_trace(request):
     route, first_point_date, length_km = _parse_route(gpx_file)
     if length_km > MAX_TRACE_LENGTH_KM:
         return JsonResponse(
-            {"error": _("Trace too long (%(length).0f km). Maximum is %(max)d km.") % {"length": length_km, "max": MAX_TRACE_LENGTH_KM}},
+            {
+                "error": _(
+                    "Trace too long (%(length).0f km). Maximum is %(max)d km."
+                ) % {"length": length_km, "max": MAX_TRACE_LENGTH_KM},
+            },
             status=400,
         )
 
