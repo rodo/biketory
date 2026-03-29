@@ -10,8 +10,8 @@ from traces.models import Hexagon, HexagonScore, Trace, UserBadge
 
 
 @login_required
-def trace_detail(request, pk):
-    trace = get_object_or_404(Trace, pk=pk)
+def trace_detail(request, trace_uuid):
+    trace = get_object_or_404(Trace, uuid=trace_uuid)
     surfaces = trace.closed_surfaces.all()
 
     surface_union = surfaces.aggregate(u=Union("polygon"))["u"]

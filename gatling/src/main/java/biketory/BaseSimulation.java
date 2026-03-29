@@ -174,9 +174,14 @@ public abstract class BaseSimulation extends Simulation {
                         http("GET trace detail")
                                 .get("#{traceUrl}")
                                 .check(status().is(200))
-                                .check(regex("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
-                                        .saveAs("traceUuid"))
                 )
+                .exec(session -> {
+                    // Extract UUID from redirect URL: /traces/<uuid>/
+                    String url = session.getString("traceUrl");
+                    String uuid = url.replaceAll(".*/traces/([0-9a-f-]+)/.*", "$1")
+                                      .replaceAll(".*/traces/([0-9a-f-]+)/?$", "$1");
+                    return session.set("traceUuid", uuid);
+                })
                 .asLongAs(session -> !"analyzed".equals(session.getString("traceStatus")))
                 .on(
                         exec(

@@ -54,7 +54,7 @@ def upload_trace(request):
                         _extract_surfaces(trace)
                     from traces.tasks import analyze_trace
                     analyze_trace.defer(trace_id=trace.pk)
-                    return redirect("trace_detail", pk=trace.pk)
+                    return redirect("trace_detail", trace_uuid=trace.uuid)
     else:
         form = TraceUploadForm()
 

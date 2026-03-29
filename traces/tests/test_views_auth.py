@@ -130,9 +130,9 @@ class AuthenticatedViewTest(TestCase):
             route=small_route(),
             uploaded_by=self.user,
         )
-        resp = self.client.get(reverse("trace_detail", args=[trace.pk]))
+        resp = self.client.get(reverse("trace_detail", args=[trace.uuid]))
         self.assertEqual(resp.status_code, 200)
 
     def test_trace_detail_404_on_unknown(self):
-        resp = self.client.get(reverse("trace_detail", args=[99999]))
+        resp = self.client.get(reverse("trace_detail", args=["00000000-0000-0000-0000-000000000000"]))
         self.assertEqual(resp.status_code, 404)

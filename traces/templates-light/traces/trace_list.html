@@ -124,7 +124,7 @@ tbody td {
     {% for trace in page %}
     <tr>
       <td>
-        <a href="{% url 'trace_detail' trace.pk %}" style="color:var(--accent);font-weight:600;text-decoration:none;">{{ trace.gpx_file.name|cut:"gpx/" }}</a>
+        <a href="{% url 'trace_detail' trace.uuid %}" style="color:var(--accent);font-weight:600;text-decoration:none;">{{ trace.gpx_file.name|cut:"gpx/" }}</a>
         {% if trace.status == "not_analyzed" %}
           <span style="display:inline-block;font-size:0.65rem;background:#e8f4fd;color:#1a5276;padding:0.1rem 0.4rem;border-radius:3px;margin-left:0.3rem;vertical-align:middle;" title="{% trans "Analysis in progress..." %}">&#9203;</span>
         {% endif %}

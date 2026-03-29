@@ -302,7 +302,7 @@ h1 {
 
 <div class="nav-bar">
   {% if prev_trace %}
-    <a class="btn-nav" href="{% url 'trace_detail' prev_trace.pk %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
+    <a class="btn-nav" href="{% url 'trace_detail' prev_trace.uuid %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
   {% else %}
     <span class="btn-nav disabled">{% trans "Previous" %}</span>
   {% endif %}
@@ -310,7 +310,7 @@ h1 {
   <button class="btn-delete" id="btn-open-delete">{% trans "Delete" %}</button>
 
   {% if next_trace %}
-    <a class="btn-nav" href="{% url 'trace_detail' next_trace.pk %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
+    <a class="btn-nav" href="{% url 'trace_detail' next_trace.uuid %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
   {% else %}
     <span class="btn-nav disabled">{% trans "Next" %}</span>
   {% endif %}
