@@ -1,6 +1,7 @@
 from .about import about  # noqa: F401
 from .admin_dashboard import admin_dashboard  # noqa: F401
 from .admin_dashboard_premium import admin_dashboard_premium  # noqa: F401
+from .admin_dashboard_traces import admin_dashboard_traces  # noqa: F401
 from .api_stats import api_stats, api_stats_monthly, api_stats_traces  # noqa: F401
 from .api_upload import api_upload_trace  # noqa: F401
 from .badges import badges  # noqa: F401

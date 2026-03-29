@@ -18,6 +18,7 @@ class UserBadgeAdmin(admin.ModelAdmin):
     ordering      = ("-earned_at",)
 
 
+
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display  = ("user", "start_date", "end_date", "is_active")
