@@ -86,7 +86,8 @@ def trace_detail(request, pk):
     })
 
 
-@login_required
-def api_trace_status(request, pk):
-    trace = get_object_or_404(Trace, pk=pk)
-    return JsonResponse({"status": trace.status})
+def api_trace_status(request, trace_uuid):
+    status = Trace.objects.filter(uuid=trace_uuid).values_list("status", flat=True).first()
+    if status is None:
+        return JsonResponse({"error": "not found"}, status=404)
+    return JsonResponse({"status": status})

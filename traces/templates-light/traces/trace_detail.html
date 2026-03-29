@@ -329,7 +329,7 @@ h1 {
     const banner = document.getElementById('analysis-banner');
     if (!banner) return;
     const interval = setInterval(function() {
-      fetch('{% url "api_trace_status" trace.pk %}')
+      fetch('{% url "api_trace_status" trace.uuid %}')
         .then(r => r.json())
         .then(data => {
           if (data.status === 'analyzed') {

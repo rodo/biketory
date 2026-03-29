@@ -19,6 +19,7 @@ class Trace(models.Model):
     length_km = models.FloatField(null=True, blank=True)
     extracted = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NOT_ANALYZED)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     uploaded_by = models.ForeignKey(
         get_user_model(), null=True, blank=True, on_delete=models.SET_NULL, related_name="traces"
     )
@@ -28,6 +29,7 @@ class Trace(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["uploaded_by", "uploaded_at"], name="trace_user_uploaded_at"),
+            models.Index(fields=["uuid", "status"], name="trace_uuid_status"),
         ]
         constraints = [
             models.UniqueConstraint(
