@@ -55,7 +55,7 @@ traces/            Main application
     generate_hexagon_tiles.py    Generate static PNG tiles for hexagons
     generate_premium_user_tiles.py  Generate static tiles per premium user
     purge_surfaces.py            Delete all surfaces and reset extraction flags
-    purge_all.py                 Delete all traces, surfaces, and user stats
+    reset_data.py                Reset all data (traces, badges, hexagons). DEBUG only
 ```
 
 ## Models
@@ -90,14 +90,16 @@ python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--c
 # Delete all surfaces, reset trace.extracted flags, clear user stats
 python manage.py purge_surfaces [--yes]
 
-# Delete all traces, surfaces, and user stats
-python manage.py purge_all [--yes]
 
 # Defer badge analysis jobs for unanalyzed traces
 python manage.py analyze_traces
 
 # Start the procrastinate background worker (processes badges)
 python manage.py procrastinate worker --processes=1
+
+# Reset all data: traces, surfaces, hexagons, badges, stats (DEBUG only)
+python manage.py reset_data [--yes]
+
 ```
 
 ## Authentication
