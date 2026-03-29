@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from traces.base62 import uuid_to_base62
 from traces.models import (
@@ -40,7 +41,7 @@ def profile(request):
                 lat = float(request.POST.get("lat", ""))
                 lng = float(request.POST.get("lng", ""))
                 from django.contrib.gis.geos import Point
-                profile, _ = UserProfile.objects.get_or_create(user=request.user)
+                profile, _created = UserProfile.objects.get_or_create(user=request.user)
                 profile.home_location = Point(lng, lat, srid=4326)
                 profile.save(update_fields=["home_location"])
             except (ValueError, TypeError):
@@ -51,14 +52,14 @@ def profile(request):
             new_email = request.POST.get("email", "").strip()
             email_error = None
             if not new_email:
-                email_error = "L'adresse email ne peut pas être vide."
+                email_error = _("The email address cannot be empty.")
             elif "@" not in new_email:
-                email_error = "Adresse email invalide."
+                email_error = _("Invalid email address.")
             else:
                 from django.contrib.auth import get_user_model
                 user = get_user_model()
                 if user.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
-                    email_error = "Cette adresse email est déjà utilisée."
+                    email_error = _("This email address is already in use.")
                 else:
                     request.user.email = new_email
                     request.user.save(update_fields=["email"])
@@ -102,7 +103,7 @@ def profile(request):
         ],
     })
 
-    stats, _ = UserSurfaceStats.objects.get_or_create(user=user)
+    stats, _created = UserSurfaceStats.objects.get_or_create(user=user)
 
     # Friends summary
     pending_received = Friendship.objects.filter(
@@ -120,7 +121,7 @@ def profile(request):
     api_token = ApiToken.objects.filter(user=user).first() if is_premium else None
     email_error = getattr(request, "email_error", None)
     home_location = stats.profile.home_location if hasattr(stats, "profile") else None
-    user_profile, _ = UserProfile.objects.get_or_create(user=user)
+    user_profile, _created = UserProfile.objects.get_or_create(user=user)
     home_location = user_profile.home_location
 
     share_code = uuid_to_base62(stats.secret_uuid)

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Créer une trace — Biketory{% endblock %}
+{% block title %}{% trans "Create a trace" %} — Biketory{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -88,18 +89,18 @@ html, body { overflow: hidden; padding-top: 0; }
 
 <div class="toolbar" id="toolbar">
   <div class="info-row">
-    <span class="info-label">Distance</span>
+    <span class="info-label">{% trans "Distance" %}</span>
     <span class="info-value" id="distance">0.00 km</span>
   </div>
   <div class="info-row">
-    <span class="info-label">Points</span>
+    <span class="info-label">{% trans "Points" %}</span>
     <span class="info-value" id="point-count">0</span>
   </div>
   <div class="btn-row">
-    <button id="btn-undo" disabled onclick="undoPoint()">Annuler</button>
-    <button id="btn-clear" disabled onclick="clearAll()">Effacer</button>
+    <button id="btn-undo" disabled onclick="undoPoint()">{% trans "Undo" %}</button>
+    <button id="btn-clear" disabled onclick="clearAll()">{% trans "Clear" %}</button>
   </div>
-  <button id="btn-download" class="btn-accent" disabled onclick="downloadGpx()">Télécharger GPX</button>
+  <button id="btn-download" class="btn-accent" disabled onclick="downloadGpx()">{% trans "Download GPX" %}</button>
 </div>
 {% endblock %}
 

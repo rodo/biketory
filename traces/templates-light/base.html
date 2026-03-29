@@ -1,5 +1,6 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}Biketory{% endblock %}</title>
@@ -168,6 +169,17 @@
 
     .nav-auth .dropdown.open .dropdown-menu { display: block; }
 
+    .lang-select {
+      background: none;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      padding: 0.15rem 0.3rem;
+      color: var(--bar-text);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
     #page {
       min-height: 100vh;
     }
@@ -195,42 +207,53 @@
     </a>
     <div class="nav-links">
       {% block topbar_extra %}{% endblock %}
-      <a href="{% url 'trace_create' %}">Créer</a>
-      <a href="{% url 'stats' %}">Stats</a>
-      <a href="{% url 'badges' %}">Badges</a>
+      <a href="{% url 'trace_create' %}">{% trans "Create" %}</a>
+      <a href="{% url 'stats' %}">{% trans "Stats" %}</a>
+      <a href="{% url 'badges' %}">{% trans "Badges" %}</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'upload_trace' %}" class="btn-upload">Envoyer</a>
+        <a href="{% url 'upload_trace' %}" class="btn-upload">{% trans "Upload" %}</a>
       {% endif %}
     </div>
     <div class="nav-auth">
       {% if user.is_superuser %}
-        <a href="{% url 'admin_dashboard' %}">Admin</a>
+        <a href="{% url 'admin_dashboard' %}">{% trans "Admin" %}</a>
       {% endif %}
       {% if user.is_authenticated %}
         <div class="dropdown" id="dropdown-user">
           <button class="dropdown-toggle" onclick="toggleDropdown()">{{ user.username }} &#9662;</button>
           <div class="dropdown-menu">
-            <a href="{% url 'profile' %}">Profil
+            <a href="{% url 'profile' %}">{% trans "Profile" %}
               {% with sub=user.subscription %}
                 {% if sub and sub.is_active %}
                   <span style="margin-left:0.4rem;font-size:0.7rem;font-weight:700;background:var(--accent);color:#fff;padding:0.1rem 0.4rem;border-radius:4px;letter-spacing:0.06em;vertical-align:middle;">PREMIUM</span>
                 {% endif %}
               {% endwith %}
             </a>
-            <a href="{% url 'trace_list' %}">Mes traces</a>
-            <a href="{% url 'friends' %}">Mes amis</a>
-            <a href="{% url 'legal' %}">Mentions légales</a>
-            <a href="https://github.com/rodo/biketory/tree/main/doc">Documentation</a>
-            <a href="{% url 'about' %}">À propos</a>
+            <a href="{% url 'trace_list' %}">{% trans "My traces" %}</a>
+            <a href="{% url 'friends' %}">{% trans "My friends" %}</a>
+            <a href="{% url 'legal' %}">{% trans "Legal notice" %}</a>
+            <a href="https://github.com/rodo/biketory/tree/main/doc">{% trans "Documentation" %}</a>
+            <a href="{% url 'about' %}">{% trans "About" %}</a>
             <form method="post" action="{% url 'account_logout' %}" style="margin:0">
               {% csrf_token %}
-              <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #eee;cursor:pointer;font-family:inherit;">Déconnexion</button>
+              <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #eee;cursor:pointer;font-family:inherit;">{% trans "Log out" %}</button>
             </form>
           </div>
         </div>
       {% else %}
-        <a href="{% url 'account_login' %}">Connexion</a>
-        <a class="btn-primary" href="{% url 'register' %}">S'inscrire</a>
+        <form id="lang-form" method="post" action="{% url 'set_language' %}" style="margin:0;display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <select name="language" class="lang-select" onchange="document.getElementById('lang-form').submit();">
+            {% get_current_language as CURRENT_LANGUAGE %}
+            {% get_available_languages as LANGUAGES %}
+            {% for lang_code, lang_name in LANGUAGES %}
+              <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>{{ lang_code|upper }}</option>
+            {% endfor %}
+          </select>
+        </form>
+        <a href="{% url 'account_login' %}">{% trans "Log in" %}</a>
+        <a class="btn-primary" href="{% url 'register' %}">{% trans "Sign up" %}</a>
       {% endif %}
     </div>
   </div>

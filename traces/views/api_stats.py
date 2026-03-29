@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import date
 
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 
 from statistics.models import MonthlyStats, UserMonthlyStats
 
@@ -40,12 +41,12 @@ def _build_monthly_data() -> dict:
 
     datasets = [
         {
-            "label": "Hexagons acquis",
+            "label": _("Hexagons acquired"),
             "data": [acquired_by_month.get(m, 0) for m in all_months],
             "backgroundColor": "#2980b9",
         },
         {
-            "label": "Nouveaux hexagons",
+            "label": _("New hexagons"),
             "data": [new_by_month.get(m, 0) for m in all_months],
             "backgroundColor": "#27ae60",
         },
@@ -69,7 +70,7 @@ def _build_traces_data() -> dict:
     by_month = {r[0].strftime("%Y-%m"): r[1] for r in rows}
 
     datasets = [{
-        "label": "Traces",
+        "label": _("Traces"),
         "data": [by_month.get(m, 0) for m in all_months],
         "backgroundColor": "#e74c3c",
     }]
@@ -87,7 +88,7 @@ def _build_per_user_data() -> dict:
     user_ids = []
     user_ids_seen = set()
 
-    for period, user_id, _ in qs:
+    for period, user_id, _count in qs:
         m = period.strftime("%Y-%m")
         if m not in months_seen:
             months.append(m)

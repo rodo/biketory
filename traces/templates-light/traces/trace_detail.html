@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block head %}
@@ -179,31 +180,31 @@ h1 {
 {% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'trace_list' %}">← Retour aux traces</a>
+<a class="back" href="{% url 'trace_list' %}">{% trans "Back to traces" %}</a>
 <h1>{{ trace.gpx_file.name|cut:"gpx/" }}</h1>
 
 <div class="meta-grid">
   <div class="meta-card">
-    <div class="label">Date du premier point</div>
+    <div class="label">{% trans "First point date" %}</div>
     <div class="value">{{ trace.first_point_date|date:"Y-m-d H:i"|default:"—" }}</div>
   </div>
   <div class="meta-card">
-    <div class="label">Envoyé le</div>
+    <div class="label">{% trans "Uploaded on" %}</div>
     <div class="value">{{ trace.uploaded_at|date:"Y-m-d H:i" }}</div>
   </div>
   <div class="meta-card">
-    <div class="label">Surfaces extraites</div>
+    <div class="label">{% trans "Extracted surfaces" %}</div>
     <div class="value">{{ surfaces_count }}</div>
   </div>
   <div class="meta-card">
-    <div class="label">Hexagons</div>
+    <div class="label">{% trans "Hexagons" %}</div>
     <div class="value">{{ hexagons_count }}</div>
   </div>
 </div>
 
 {% if earned_badges %}
 <div class="badges-box">
-  <div class="label">Badges débloqués</div>
+  <div class="label">{% trans "Unlocked badges" %}</div>
   <div class="badges-list">
     {% for badge in earned_badges %}
     <div class="badge-item">
@@ -218,14 +219,14 @@ h1 {
 {% if surfaces_count == 0 %}
 <div style="background:#fef9e7;border:1px solid #e0d5a0;border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;color:#7a6c00;">
   <span style="font-size:1.1rem;">⚠</span>
-  Cette trace ne contient aucune surface fermée. Assurez-vous que votre parcours forme une boucle.
+  {% trans "This trace does not contain any closed surface. Make sure your route forms a loop." %}
 </div>
 {% endif %}
 
 <div class="layer-toggles">
-  <button class="layer-btn active" id="btn-trace"    style="--c:#e74c3c">Trace</button>
-  <button class="layer-btn active" id="btn-surfaces" style="--c:#2980b9">Surfaces</button>
-  <button class="layer-btn active" id="btn-hexagons" style="--c:#27ae60">Hexagons</button>
+  <button class="layer-btn active" id="btn-trace"    style="--c:#e74c3c">{% trans "Trace" %}</button>
+  <button class="layer-btn active" id="btn-surfaces" style="--c:#2980b9">{% trans "Surfaces" %}</button>
+  <button class="layer-btn active" id="btn-hexagons" style="--c:#27ae60">{% trans "Hexagons" %}</button>
 </div>
 
 <div id="map"></div>
@@ -234,13 +235,13 @@ h1 {
   {% if prev_trace %}
     <a class="btn-nav" href="{% url 'trace_detail' prev_trace.pk %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
   {% else %}
-    <span class="btn-nav disabled">← Précédent</span>
+    <span class="btn-nav disabled">{% trans "Previous" %}</span>
   {% endif %}
 
   {% if next_trace %}
     <a class="btn-nav" href="{% url 'trace_detail' next_trace.pk %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
   {% else %}
-    <span class="btn-nav disabled">Suivant →</span>
+    <span class="btn-nav disabled">{% trans "Next" %}</span>
   {% endif %}
 </div>
 {% endblock %}

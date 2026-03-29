@@ -68,9 +68,9 @@ class StatsApiMonthlyTest(TestCase):
 
         self.assertEqual(data["labels"], ["2025-01", "2025-02", "2025-03"])
         self.assertEqual(len(data["datasets"]), 2)
-        self.assertEqual(data["datasets"][0]["label"], "Hexagons acquis")
+        self.assertEqual(data["datasets"][0]["label"], "Hexagons acquired")
         self.assertEqual(data["datasets"][0]["data"], [10, 0, 20])
-        self.assertEqual(data["datasets"][1]["label"], "Nouveaux hexagons")
+        self.assertEqual(data["datasets"][1]["label"], "New hexagons")
         self.assertEqual(data["datasets"][1]["data"], [5, 0, 8])
 
     @patch("traces.views.api_stats.date")

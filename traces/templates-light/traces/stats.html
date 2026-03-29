@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block extra_css %}
 #page-inner {
@@ -155,21 +155,21 @@ h1 {
 {% block content %}
 <div id="page-inner">
   <nav class="tabs">
-    <a href="{% url 'stats_monthly' %}">Par mois</a>
-    <a href="{% url 'stats' %}" class="active">Par utilisateur</a>
-    <a href="{% url 'stats_traces' %}">Traces</a>
-    <a href="{% url 'stats_badges' %}">Badges</a>
+    <a href="{% url 'stats_monthly' %}">{% trans "By month" %}</a>
+    <a href="{% url 'stats' %}" class="active">{% trans "By user" %}</a>
+    <a href="{% url 'stats_traces' %}">{% trans "Traces" %}</a>
+    <a href="{% url 'stats_badges' %}">{% trans "Badges" %}</a>
   </nav>
-  <h1>Hexagons gagnés par mois</h1>
+  <h1>{% trans "Hexagons earned per month" %}</h1>
 
   <div class="card">
     <div class="chart-wrap">
       <canvas id="chart" style="display:none"></canvas>
       <div class="loading" id="loading-msg">
         <div class="spinner"></div>
-        <span>Chargement...</span>
+        <span>{% trans "Loading..." %}</span>
       </div>
-      <div class="empty" id="empty-msg" style="display:none;">Aucune donnée.</div>
+      <div class="empty" id="empty-msg" style="display:none;">{% trans "No data." %}</div>
     </div>
 
     <div class="slider-section" id="slider-section" style="display:none;">

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}{{ username }} — Biketory{% endblock %}
 
@@ -79,15 +80,15 @@ h1 {
 <div class="layout">
   <div>
     <div class="stat-card">
-      <div class="label">Traces uploadées</div>
+      <div class="label">{% trans "Uploaded traces" %}</div>
       <div class="value">{{ traces_count }}</div>
     </div>
     <div class="stat-card">
-      <div class="label">Hexagons</div>
+      <div class="label">{% trans "Hexagons" %}</div>
       <div class="value">{{ hexagons_count }}</div>
     </div>
     <div class="stat-card">
-      <div class="label">Points totaux</div>
+      <div class="label">{% trans "Total points" %}</div>
       <div class="value">{{ total_points }}</div>
     </div>
   </div>

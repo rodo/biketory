@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block extra_css %}
 #page {
@@ -74,46 +74,46 @@ code {
 {% endblock %}
 
 {% block content %}
-<h1>Mentions légales et cookies</h1>
+<h1>{% trans "Legal notice and cookies" %}</h1>
 
 <p>
-  Biketory utilise un nombre limité de cookies strictement nécessaires au fonctionnement de l'application.
-  Aucun cookie de suivi, publicitaire ou tiers n'est utilisé.
+  {% blocktrans %}Biketory uses a limited number of cookies strictly necessary for the application to function.
+  No tracking, advertising, or third-party cookies are used.{% endblocktrans %}
 </p>
 
-<h2>Cookies utilisés</h2>
+<h2>{% trans "Cookies used" %}</h2>
 
 <table>
   <thead>
     <tr>
-      <th>Nom</th>
-      <th>Fonction</th>
-      <th>Durée</th>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Purpose" %}</th>
+      <th>{% trans "Duration" %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><code>sessionid</code></td>
-      <td>Maintient votre connexion entre les pages. Géré par le système d'authentification Django.</td>
-      <td>Session (supprimé à la fermeture du navigateur, ou après 2 semaines)</td>
+      <td>{% trans "Maintains your session across pages. Managed by the Django authentication system." %}</td>
+      <td>{% trans "Session (deleted when the browser is closed, or after 2 weeks)" %}</td>
     </tr>
     <tr>
       <td><code>csrftoken</code></td>
-      <td>Protège les formulaires contre les attaques CSRF. Requis par Django pour toute requête POST (connexion, déconnexion, envoi…).</td>
-      <td>1 an</td>
+      <td>{% trans "Protects forms against CSRF attacks. Required by Django for any POST request (login, logout, upload, etc.)." %}</td>
+      <td>{% trans "1 year" %}</td>
     </tr>
     <tr>
       <td><code>map_pos</code></td>
-      <td>Mémorise la dernière position et le niveau de zoom de la carte sur la page d'accueil. Contient trois nombres séparés par des virgules : <code>latitude,longitude,zoom</code>.</td>
-      <td>1 an</td>
+      <td>{% blocktrans %}Remembers the last position and zoom level of the map on the home page. Contains three comma-separated numbers: <code>latitude,longitude,zoom</code>.{% endblocktrans %}</td>
+      <td>{% trans "1 year" %}</td>
     </tr>
   </tbody>
 </table>
 
-<h2>Aucune donnée personnelle vendue ou partagée</h2>
+<h2>{% trans "No personal data sold or shared" %}</h2>
 
 <p>
-  Aucun des cookies ci-dessus n'est partagé avec des tiers. Le cookie <code>map_pos</code>
-  est stocké uniquement dans votre navigateur et n'est jamais transmis à un service externe.
+  {% blocktrans %}None of the cookies listed above are shared with third parties. The <code>map_pos</code> cookie
+  is stored only in your browser and is never transmitted to an external service.{% endblocktrans %}
 </p>
 {% endblock %}

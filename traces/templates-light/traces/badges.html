@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}Badges — Biketory{% endblock %}
+{% block title %}{% trans "Badges" %} — Biketory{% endblock %}
 
 {% block extra_css %}
 .badges-header {
@@ -89,12 +90,12 @@
 
 {% block content %}
 <div class="badges-header">
-  <h1>Badges</h1>
-  <p>Catalogue complet des récompenses</p>
+  <h1>{% trans "Badges" %}</h1>
+  <p>{% trans "Complete rewards catalogue" %}</p>
   {% if user.is_authenticated %}
     <span class="badges-pill">{{ earned_count }} / {{ total }}</span>
   {% else %}
-    <span class="badges-pill">{{ total }} badges</span>
+    <span class="badges-pill">{{ total }} {% trans "badges" %}</span>
   {% endif %}
 </div>
 
@@ -109,7 +110,7 @@
         <div class="badge-name">{{ badge.name }}</div>
         <div class="badge-desc">{{ badge.desc }}</div>
         {% if user.is_authenticated and badge.earned %}
-          <div class="badge-earned">Débloqué</div>
+          <div class="badge-earned">{% trans "Unlocked" %}</div>
         {% endif %}
       </div>
       {% endfor %}

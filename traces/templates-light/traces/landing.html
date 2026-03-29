@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -107,27 +107,27 @@ html, body { overflow: hidden; padding-top: 0; }
 {% block topbar_extra %}
 <span id="zoom-display" style="color:var(--bg);font-size:0.85rem;opacity:0.6;">zoom —</span>
 <div class="layers-menu" id="layers-menu">
-  <button class="layers-btn" id="layers-btn" onclick="toggleLayersMenu()">Calques &#9662;</button>
+  <button class="layers-btn" id="layers-btn" onclick="toggleLayersMenu()">{% trans "Layers" %} &#9662;</button>
   <div class="layers-dropdown" id="layers-dropdown">
     {% if user.is_authenticated %}
     <label class="layer-item">
       <input type="checkbox" id="toggle-mine" checked onchange="toggleLayer('mine', this.checked)">
       <span class="layer-swatch" style="background:linear-gradient(to right, #6bb5e0, #1a4971)"></span>
-      Mes hexagons
+      {% trans "My hexagons" %}
     </label>
     {% endif %}
     <label class="layer-item">
       <input type="checkbox" id="toggle-others" checked onchange="toggleLayer('others', this.checked)">
       <span class="layer-swatch" style="background:linear-gradient(to right, #b0bfb1, #4a5e4c)"></span>
-      Autres utilisateurs
+      {% trans "Other users" %}
     </label>
     {% if user.is_authenticated %}
     <hr class="layers-separator">
-    <div class="layer-sub-label">Amis</div>
+    <div class="layer-sub-label">{% trans "Friends" %}</div>
     <label class="layer-item" id="toggle-friends-row">
       <input type="checkbox" id="toggle-friends" checked onchange="toggleFriendsLayer(this.checked)">
       <span class="layer-swatch" style="background:#e67e22;border-radius:50%"></span>
-      Tous les amis
+      {% trans "All friends" %}
     </label>
     <div id="friend-toggles"></div>
     {% endif %}
@@ -286,7 +286,7 @@ html, body { overflow: hidden; padding-top: 0; }
                     `<tr><td>${s.username}</td><td>${s.points}pt</td><td>${s.last_earned_at}</td></tr>`
                   ).join('');
                   popup.setContent(`<table>
-                    <thead><tr><th>Utilisateur</th><th>Points</th><th>Dernière activité</th></tr></thead>
+                    <thead><tr><th>{% trans "User" %}</th><th>{% trans "Points" %}</th><th>{% trans "Last activity" %}</th></tr></thead>
                     <tbody>${rows}</tbody>
                   </table>`);
                 });

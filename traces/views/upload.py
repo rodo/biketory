@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext as _
 
 from traces.badge_award import award_badges
 from traces.forms import TraceUploadForm
@@ -29,14 +30,17 @@ def upload_trace(request):
                 if length_km > MAX_TRACE_LENGTH_KM:
                     form.add_error(
                         "gpx_file",
-                        f"Trace too long ({length_km:.0f} km). Maximum allowed is {MAX_TRACE_LENGTH_KM} km.",
+                        _(
+                            "Trace too long (%(length).0f km)."
+                            " Maximum allowed is %(max)d km."
+                        ) % {"length": length_km, "max": MAX_TRACE_LENGTH_KM},
                     )
                 elif first_point_date and Trace.objects.filter(
                     uploaded_by=request.user, first_point_date=first_point_date
                 ).exists():
                     form.add_error(
                         "gpx_file",
-                        "Cette trace a déjà été uploadée (même date de départ détectée).",
+                        _("This trace has already been uploaded (same start date detected)."),
                     )
                 else:
                     trace = Trace.objects.create(
