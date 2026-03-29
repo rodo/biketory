@@ -3,39 +3,54 @@
 This document lists all procrastinate queues and tasks used in the project.
 **It must be updated** whenever a queue or task is added, modified, or removed.
 
-## Worker
+## Workers
+
+Each queue can have its own worker:
 
 ```bash
-python manage.py procrastinate worker --processes=1
+python manage.py procrastinate worker -q surface_extraction
+python manage.py procrastinate worker -q badges
 ```
 
-A single process is used to guarantee sequential task execution.
+Or a single worker listening on both queues:
+
+```bash
+python manage.py procrastinate worker -q surface_extraction,badges
+```
 
 ## Queues
 
 | Queue | Description |
 |---|---|
-| `default` | General-purpose queue for background tasks |
+| `surface_extraction` | Extract closed surfaces from uploaded traces |
+| `badges` | Award badges after surface extraction |
 
 ## Tasks
 
 | Task | Queue | Queueing lock | Description |
 |---|---|---|---|
-| `analyze_trace` | `default` | `analyze_trace` | Award badges for a trace and set its status to `analyzed`. The queueing lock ensures only one analysis runs at a time, preserving upload order. |
+| `extract_surfaces` | `surface_extraction` | `extract_surfaces_{trace_id}` | Extract closed surfaces from a trace and set status to `surface_extracted`. |
+| `award_trace_badges` | `badges` | `award_badges_{trace_id}` | Award badges for a trace and set status to `analyzed`. Reschedules itself (5s delay) if the trace is not yet `surface_extracted`. |
+
+## Trace lifecycle
+
+`not_analyzed` → `surface_extracted` → `analyzed`
 
 ## How it works
 
-1. When a user uploads a trace, `upload.py` defers an `analyze_trace` job.
-2. The worker picks up jobs sequentially (single process + queueing lock).
-3. `analyze_trace` calls `award_badges()` then sets `trace.status = "analyzed"`.
-4. The trace detail page polls `/api/traces/<pk>/status/` every 5 seconds and reloads when analysis is complete.
+1. When a user uploads a trace, `upload.py` defers both `extract_surfaces` and `award_trace_badges` in parallel.
+2. `extract_surfaces` runs first, calls `_extract_surfaces()`, then sets `status = "surface_extracted"`.
+3. `award_trace_badges` checks the trace status. If not yet `surface_extracted`, it reschedules itself after 5 seconds. Otherwise it calls `award_badges()` then sets `status = "analyzed"`.
+4. The trace detail page polls `/api/traces/<uuid>/status/` every 5 seconds and reloads when the status changes (both intermediate and final transitions).
 
 ## Catch-up command
 
-If traces are stuck in `not_analyzed` (e.g., worker was down during uploads), run:
+If traces are stuck in `not_analyzed` or `surface_extracted` (e.g., worker was down), run:
 
 ```bash
 python manage.py analyze_traces
 ```
 
-This defers an `analyze_trace` job for every trace with `status="not_analyzed"`, ordered by upload date.
+This defers the appropriate jobs:
+- `not_analyzed` traces → `extract_surfaces` + `award_trace_badges`
+- `surface_extracted` traces → `award_trace_badges` only

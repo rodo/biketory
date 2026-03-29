@@ -8,9 +8,11 @@ from django.utils import timezone
 
 class Trace(models.Model):
     STATUS_NOT_ANALYZED = "not_analyzed"
+    STATUS_SURFACE_EXTRACTED = "surface_extracted"
     STATUS_ANALYZED = "analyzed"
     STATUS_CHOICES = [
         (STATUS_NOT_ANALYZED, "Not analyzed"),
+        (STATUS_SURFACE_EXTRACTED, "Surface extracted"),
         (STATUS_ANALYZED, "Analyzed"),
     ]
 
