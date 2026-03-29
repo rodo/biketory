@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block extra_css %}
@@ -203,26 +204,26 @@ tbody td {
 {% block content %}
 <div id="page-inner">
   <nav class="tabs">
-    <a href="{% url 'stats_monthly' %}">Par mois</a>
-    <a href="{% url 'stats' %}">Par utilisateur</a>
-    <a href="{% url 'stats_traces' %}">Traces</a>
-    <a href="{% url 'stats_badges' %}" class="active">Badges</a>
+    <a href="{% url 'stats_monthly' %}">{% trans "By month" %}</a>
+    <a href="{% url 'stats' %}">{% trans "By user" %}</a>
+    <a href="{% url 'stats_traces' %}">{% trans "Traces" %}</a>
+    <a href="{% url 'stats_badges' %}" class="active">{% trans "Badges" %}</a>
   </nav>
 
-  <h1>Badges</h1>
+  <h1>{% trans "Badges" %}</h1>
 
   <div class="stat-cards-row">
     <div class="stat-card">
       <span class="value">{{ total_badges }}</span>
-      <span class="label">badges débloqués</span>
+      <span class="label">{% trans "badges unlocked" %}</span>
     </div>
     <div class="stat-card">
       <span class="value">{{ avg_badges }}</span>
-      <span class="label">moyenne / utilisateur</span>
+      <span class="label">{% trans "average / user" %}</span>
     </div>
   </div>
 
-  <div class="section-title">Badges les plus rares</div>
+  <div class="section-title">{% trans "Rarest badges" %}</div>
   <div class="badge-grid">
     {% for b in rarest %}
     <div class="badge-item">
@@ -233,7 +234,7 @@ tbody td {
     {% endfor %}
   </div>
 
-  <div class="section-title">Badges les plus communs</div>
+  <div class="section-title">{% trans "Most common badges" %}</div>
   <div class="badge-grid">
     {% for b in most_common %}
     <div class="badge-item">
@@ -245,13 +246,13 @@ tbody td {
   </div>
 
   {% if badge_leaderboard %}
-  <div class="section-title">Top 10 collectionneurs</div>
+  <div class="section-title">{% trans "Top 10 collectors" %}</div>
   <table>
     <thead>
       <tr>
-        <th>Rang</th>
-        <th>Utilisateur</th>
-        <th>Badges</th>
+        <th>{% trans "Rank" %}</th>
+        <th>{% trans "User" %}</th>
+        <th>{% trans "Badges" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -267,13 +268,13 @@ tbody td {
   {% endif %}
 
   {% if recent_activity %}
-  <div class="section-title">Activité récente</div>
+  <div class="section-title">{% trans "Recent activity" %}</div>
   <div class="activity-feed">
     {% for a in recent_activity %}
     <div class="activity-item">
       <img src="{% static 'badges/svg/' %}{{ a.id }}.svg" alt="{{ a.name }}">
       <div class="activity-text">
-        <strong>{{ a.username }}</strong> a débloqué <strong>{{ a.name }}</strong>
+        {% blocktrans with username=a.username name=a.name %}<strong>{{ username }}</strong> unlocked <strong>{{ name }}</strong>{% endblocktrans %}
       </div>
       <div class="activity-date">{{ a.earned_at|timesince }}</div>
     </div>

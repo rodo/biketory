@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Admin Dashboard — Biketory{% endblock %}
+{% block title %}{% trans "Admin Dashboard" %} — Biketory{% endblock %}
 
 {% block extra_css %}
 #page-inner {
@@ -97,23 +98,23 @@ h1 {
 {% block content %}
 <div id="page-inner">
   <nav class="tabs">
-    <a href="{% url 'admin_dashboard' %}" class="active">Utilisateurs</a>
-    <a href="{% url 'admin_dashboard_premium' %}">Premium</a>
+    <a href="{% url 'admin_dashboard' %}" class="active">{% trans "Users" %}</a>
+    <a href="{% url 'admin_dashboard_premium' %}">{% trans "Premium" %}</a>
   </nav>
 
-  <h1>Inscriptions</h1>
+  <h1>{% trans "Registrations" %}</h1>
 
   <div class="card">
     <div class="granularity-bar">
-      <a href="?granularity=day"{% if granularity == "day" %} class="active"{% endif %}>Jour</a>
-      <a href="?granularity=week"{% if granularity == "week" %} class="active"{% endif %}>Semaine</a>
-      <a href="?granularity=month"{% if granularity == "month" %} class="active"{% endif %}>Mois</a>
-      <a href="?granularity=year"{% if granularity == "year" %} class="active"{% endif %}>Année</a>
+      <a href="?granularity=day"{% if granularity == "day" %} class="active"{% endif %}>{% trans "Day" %}</a>
+      <a href="?granularity=week"{% if granularity == "week" %} class="active"{% endif %}>{% trans "Week" %}</a>
+      <a href="?granularity=month"{% if granularity == "month" %} class="active"{% endif %}>{% trans "Month" %}</a>
+      <a href="?granularity=year"{% if granularity == "year" %} class="active"{% endif %}>{% trans "Year" %}</a>
     </div>
 
     <div class="chart-wrap">
       <canvas id="chart"></canvas>
-      <div class="empty" id="empty-msg" style="display:none;">Aucune donnée.</div>
+      <div class="empty" id="empty-msg" style="display:none;">{% trans "No data." %}</div>
     </div>
   </div>
 </div>
@@ -135,14 +136,14 @@ h1 {
         labels: DATA.labels,
         datasets: [
           {
-            label: 'Nouvelles inscriptions',
+            label: '{% trans "New registrations" %}',
             data: DATA.new_users,
             backgroundColor: 'rgba(79,104,20,0.7)',
             borderRadius: 4,
             order: 2
           },
           {
-            label: 'Cumul',
+            label: '{% trans "Cumulative" %}',
             data: DATA.cumulative,
             type: 'line',
             borderColor: '#e0a020',
@@ -179,14 +180,14 @@ h1 {
           y: {
             beginAtZero: true,
             position: 'left',
-            title: { display: true, text: 'Nouvelles inscriptions' },
+            title: { display: true, text: '{% trans "New registrations" %}' },
             ticks: { precision: 0, font: { size: 11 } },
             grid: { color: 'rgba(0,0,0,0.06)' }
           },
           yCumul: {
             beginAtZero: true,
             position: 'right',
-            title: { display: true, text: 'Cumul' },
+            title: { display: true, text: '{% trans "Cumulative" %}' },
             ticks: { precision: 0, font: { size: 11 } },
             grid: { drawOnChartArea: false }
           }

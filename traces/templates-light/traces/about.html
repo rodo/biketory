@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block extra_css %}
 #page {
@@ -37,36 +37,36 @@ a {
 {% endblock %}
 
 {% block content %}
-<h1>À propos de Biketory</h1>
+<h1>{% trans "About Biketory" %}</h1>
 
 <p>
-  Biketory est une application web qui permet aux cyclistes d'importer leurs traces GPX
-  et de visualiser les surfaces géographiques fermées parcourues sur une carte interactive.
+  {% blocktrans %}Biketory is a web application that allows cyclists to import their GPX traces
+  and visualise the closed geographic surfaces covered on an interactive map.{% endblocktrans %}
 </p>
 
-<h2>Comment ça marche</h2>
+<h2>{% trans "How it works" %}</h2>
 
 <p>
-  Importez vos fichiers GPX, et Biketory détecte automatiquement les boucles fermées
-  dans vos parcours. Ces surfaces sont ensuite affichées sur une carte et découpées
-  en hexagones pour suivre votre progression.
+  {% blocktrans %}Upload your GPX files, and Biketory automatically detects closed loops
+  in your routes. These surfaces are then displayed on a map and divided
+  into hexagons to track your progress.{% endblocktrans %}
 </p>
 
-<h2>L'histoire</h2>
+<h2>{% trans "The story" %}</h2>
 
 <p>
-  Biketory est né de la passion d'un amoureux du vélo qui ne se lasse jamais
-  d'explorer de nouveaux chemins en gravel. Partir à l'aventure, découvrir un
-  sentier inconnu, rouler pour le plaisir de rouler — c'est ça l'esprit du projet.
-  L'idée était simple : avoir un moyen ludique de visualiser tout le terrain
-  couvert au fil des sorties, et transformer chaque boucle en une petite victoire
-  sur la carte.
+  {% blocktrans %}Biketory was born from the passion of a cycling enthusiast who never tires
+  of exploring new gravel paths. Setting off on an adventure, discovering an
+  unknown trail, riding for the sheer joy of riding — that is the spirit of the project.
+  The idea was simple: have a fun way to visualise all the ground
+  covered over your rides, and turn each loop into a small victory
+  on the map.{% endblocktrans %}
 </p>
 
-<h2>Code source</h2>
+<h2>{% trans "Source code" %}</h2>
 
 <p>
-  Biketory est un projet open source. Le code est disponible sur
-  <a href="https://github.com/rodo/biketory">GitHub</a>.
+  {% blocktrans %}Biketory is an open source project. The code is available on
+  <a href="https://github.com/rodo/biketory">GitHub</a>.{% endblocktrans %}
 </p>
 {% endblock %}

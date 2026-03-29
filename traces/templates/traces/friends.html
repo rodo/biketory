@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block extra_css %}
 #page { padding: 2rem 1.5rem; max-width: 760px; margin: 0 auto; }
@@ -102,20 +102,20 @@ h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
 {% endblock %}
 
 {% block content %}
-<h1>Amis</h1>
+<h1>{% trans "Friends" %}</h1>
 
 <!-- Search -->
 <form method="post">
   {% csrf_token %}
   <input type="hidden" name="action" value="search">
   <div class="search-row">
-    <input type="text" name="q" value="{{ query }}" placeholder="Nom d'utilisateur ou UUID secret…" autofocus>
-    <button type="submit" class="btn-accent">Rechercher</button>
+    <input type="text" name="q" value="{{ query }}" placeholder="{% trans "Username or secret UUID..." %}" autofocus>
+    <button type="submit" class="btn-accent">{% trans "Search" %}</button>
   </div>
 </form>
 
 {% if search_results is not None %}
-  <h2>Résultats</h2>
+  <h2>{% trans "Results" %}</h2>
   {% if search_results %}
     <div class="card-list">
     {% for r in search_results %}
@@ -125,35 +125,35 @@ h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
         </div>
         <div class="actions">
           {% if r.rel == "friend" %}
-            <span class="tag tag-friend">Ami ✓</span>
+            <span class="tag tag-friend">{% trans "Friend" %} &#10003;</span>
             <form method="post" style="margin:0">{% csrf_token %}
               <input type="hidden" name="action" value="remove">
               <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
-              <button class="btn-danger" type="submit">Retirer</button>
+              <button class="btn-danger" type="submit">{% trans "Remove" %}</button>
             </form>
           {% elif r.rel == "sent" %}
-            <span class="tag tag-pending">Demande envoyée</span>
+            <span class="tag tag-pending">{% trans "Request sent" %}</span>
             <form method="post" style="margin:0">{% csrf_token %}
               <input type="hidden" name="action" value="cancel">
               <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
-              <button class="btn-ghost" type="submit">Annuler</button>
+              <button class="btn-ghost" type="submit">{% trans "Cancel" %}</button>
             </form>
           {% elif r.rel == "received" %}
             <form method="post" style="margin:0">{% csrf_token %}
               <input type="hidden" name="action" value="accept">
               <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
-              <button class="btn-accent" type="submit">Accepter</button>
+              <button class="btn-accent" type="submit">{% trans "Accept" %}</button>
             </form>
             <form method="post" style="margin:0">{% csrf_token %}
               <input type="hidden" name="action" value="decline">
               <input type="hidden" name="friendship_id" value="{{ r.friendship.pk }}">
-              <button class="btn-ghost" type="submit">Refuser</button>
+              <button class="btn-ghost" type="submit">{% trans "Decline" %}</button>
             </form>
           {% else %}
             <form method="post" style="margin:0">{% csrf_token %}
               <input type="hidden" name="action" value="send">
               <input type="hidden" name="to_user_id" value="{{ r.user.pk }}">
-              <button class="btn-accent" type="submit">Ajouter</button>
+              <button class="btn-accent" type="submit">{% trans "Add" %}</button>
             </form>
           {% endif %}
         </div>
@@ -161,30 +161,30 @@ h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
     {% endfor %}
     </div>
   {% else %}
-    <p class="hint">Aucun utilisateur trouvé pour « {{ query }} ».</p>
+    <p class="hint">{% blocktrans with query=query %}No user found for "{{ query }}".{% endblocktrans %}</p>
   {% endif %}
 {% endif %}
 
 <!-- Pending received -->
 {% if pending_received %}
-  <h2>Demandes reçues</h2>
+  <h2>{% trans "Received requests" %}</h2>
   <div class="card-list">
   {% for f in pending_received %}
     <div class="user-card">
       <div>
         <div class="name">{{ f.from_user.username }}</div>
-        <div class="meta">reçue le {{ f.created_at|date:"d/m/Y" }}</div>
+        <div class="meta">{% trans "received on" %} {{ f.created_at|date:"d/m/Y" }}</div>
       </div>
       <div class="actions">
         <form method="post" style="margin:0">{% csrf_token %}
           <input type="hidden" name="action" value="accept">
           <input type="hidden" name="friendship_id" value="{{ f.pk }}">
-          <button class="btn-accent" type="submit">Accepter</button>
+          <button class="btn-accent" type="submit">{% trans "Accept" %}</button>
         </form>
         <form method="post" style="margin:0">{% csrf_token %}
           <input type="hidden" name="action" value="decline">
           <input type="hidden" name="friendship_id" value="{{ f.pk }}">
-          <button class="btn-ghost" type="submit">Refuser</button>
+          <button class="btn-ghost" type="submit">{% trans "Decline" %}</button>
         </form>
       </div>
     </div>
@@ -194,20 +194,20 @@ h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
 
 <!-- Pending sent -->
 {% if pending_sent %}
-  <h2>Demandes envoyées</h2>
+  <h2>{% trans "Sent requests" %}</h2>
   <div class="card-list">
   {% for f in pending_sent %}
     <div class="user-card">
       <div>
         <div class="name">{{ f.to_user.username }}</div>
-        <div class="meta">envoyée le {{ f.created_at|date:"d/m/Y" }}</div>
+        <div class="meta">{% trans "sent on" %} {{ f.created_at|date:"d/m/Y" }}</div>
       </div>
       <div class="actions">
-        <span class="tag tag-pending">En attente</span>
+        <span class="tag tag-pending">{% trans "Pending" %}</span>
         <form method="post" style="margin:0">{% csrf_token %}
           <input type="hidden" name="action" value="cancel">
           <input type="hidden" name="friendship_id" value="{{ f.pk }}">
-          <button class="btn-ghost" type="submit">Annuler</button>
+          <button class="btn-ghost" type="submit">{% trans "Cancel" %}</button>
         </form>
       </div>
     </div>
@@ -216,7 +216,7 @@ h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
 {% endif %}
 
 <!-- Friends list -->
-<h2>Mes amis ({{ friends_data|length }})</h2>
+<h2>{% blocktrans with count=friends_data|length %}My friends ({{ count }}){% endblocktrans %}</h2>
 {% if friends_data %}
   <div class="card-list">
   {% for fd in friends_data %}
@@ -224,20 +224,20 @@ h2 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
       <div>
         <div class="name">{{ fd.user.username }}</div>
         {% if fd.stats %}
-          <div class="meta">{{ fd.stats.total_area|floatformat:4 }} deg²</div>
+          <div class="meta">{{ fd.stats.total_area|floatformat:4 }} deg&sup2;</div>
         {% endif %}
       </div>
       <div class="actions">
         <form method="post" style="margin:0">{% csrf_token %}
           <input type="hidden" name="action" value="remove">
           <input type="hidden" name="friendship_id" value="{{ fd.friendship_id }}">
-          <button class="btn-danger" type="submit">Retirer</button>
+          <button class="btn-danger" type="submit">{% trans "Remove" %}</button>
         </form>
       </div>
     </div>
   {% endfor %}
   </div>
 {% else %}
-  <p class="hint">Tu n'as pas encore d'amis. Recherche un utilisateur ci-dessus !</p>
+  <p class="hint">{% trans "You don't have any friends yet. Search for a user above!" %}</p>
 {% endif %}
 {% endblock %}

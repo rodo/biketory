@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from traces.base62 import uuid_to_base62
 from traces.models import (
@@ -51,14 +52,14 @@ def profile(request):
             new_email = request.POST.get("email", "").strip()
             email_error = None
             if not new_email:
-                email_error = "L'adresse email ne peut pas être vide."
+                email_error = _("The email address cannot be empty.")
             elif "@" not in new_email:
-                email_error = "Adresse email invalide."
+                email_error = _("Invalid email address.")
             else:
                 from django.contrib.auth import get_user_model
                 user = get_user_model()
                 if user.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
-                    email_error = "Cette adresse email est déjà utilisée."
+                    email_error = _("This email address is already in use.")
                 else:
                     request.user.email = new_email
                     request.user.save(update_fields=["email"])

@@ -1,0 +1,1194 @@
+# Italian translations for Biketory.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-28 23:17+0000\n"
+"PO-Revision-Date: 2026-03-29 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: traces/badges.py:7
+msgid "Territory"
+msgstr "Territorio"
+
+#: traces/badges.py:9
+msgid "First step"
+msgstr "Primo passo"
+
+#: traces/badges.py:9
+msgid "Conquer your 1st hexagon"
+msgstr "Conquista il tuo primo esagono"
+
+#: traces/badges.py:10
+msgid "Explorer"
+msgstr "Esploratore"
+
+#: traces/badges.py:10
+msgid "100 hexagons conquered"
+msgstr "100 esagoni conquistati"
+
+#: traces/badges.py:11
+msgid "Conqueror"
+msgstr "Conquistatore"
+
+#: traces/badges.py:11
+msgid "500 hexagons conquered"
+msgstr "500 esagoni conquistati"
+
+#: traces/badges.py:12
+msgid "Lord"
+msgstr "Signore"
+
+#: traces/badges.py:12
+msgid "2,000 hexagons conquered"
+msgstr "2.000 esagoni conquistati"
+
+#: traces/badges.py:13
+msgid "Legend"
+msgstr "Leggenda"
+
+#: traces/badges.py:13
+msgid "10,000 hexagons conquered"
+msgstr "10.000 esagoni conquistati"
+
+#: traces/badges.py:17
+msgid "Activity"
+msgstr "Attività"
+
+#: traces/badges.py:19 traces/templates/traces/profile.html:166
+msgid "First trace"
+msgstr "Prima traccia"
+
+#: traces/badges.py:19
+msgid "Upload your 1st GPX trace"
+msgstr "Carica la tua prima traccia GPX"
+
+#: traces/badges.py:20 traces/badges.py:60
+msgid "Regular"
+msgstr "Costante"
+
+#: traces/badges.py:20
+msgid "7 consecutive days with a trace"
+msgstr "7 giorni consecutivi con una traccia"
+
+#: traces/badges.py:21
+msgid "Centurion"
+msgstr "Centurione"
+
+#: traces/badges.py:21
+msgid "100 traces uploaded"
+msgstr "100 tracce caricate"
+
+#: traces/badges.py:22
+msgid "Hiker"
+msgstr "Escursionista"
+
+#: traces/badges.py:22
+msgid "Trace > 100 km"
+msgstr "Traccia > 100 km"
+
+#: traces/badges.py:26
+msgid "Social"
+msgstr "Sociale"
+
+#: traces/badges.py:28
+msgid "First friend"
+msgstr "Primo amico"
+
+#: traces/badges.py:28
+msgid "Add your 1st friend"
+msgstr "Aggiungi il tuo primo amico"
+
+#: traces/badges.py:29
+msgid "Community"
+msgstr "Comunità"
+
+#: traces/badges.py:29
+msgid "10 friends added"
+msgstr "10 amici aggiunti"
+
+#: traces/badges.py:33 traces/templates-light/traces/trace_detail.html:228
+#: traces/templates-light/traces/trace_list.html:195
+msgid "Surfaces"
+msgstr "Superfici"
+
+#: traces/badges.py:35
+msgid "Surveyor"
+msgstr "Geometra"
+
+#: traces/badges.py:35
+msgid "1st closed surface detected"
+msgstr "Prima superficie chiusa rilevata"
+
+#: traces/badges.py:36
+msgid "Architect"
+msgstr "Architetto"
+
+#: traces/badges.py:36
+msgid "50 closed surfaces detected"
+msgstr "50 superfici chiuse rilevate"
+
+#: traces/badges.py:40
+msgid "Special"
+msgstr "Speciale"
+
+#: traces/badges.py:42
+msgid "Dark night"
+msgstr "Notte fonda"
+
+#: traces/badges.py:42
+msgid "Trace uploaded between 0am and 5am"
+msgstr "Traccia caricata tra le 0 e le 5 del mattino"
+
+#: traces/badges.py:43
+msgid "Indestructible"
+msgstr "Indistruttibile"
+
+#: traces/badges.py:43
+msgid "Keep a hexagon for 30 days"
+msgstr "Mantieni un esagono per 30 giorni"
+
+#: traces/badges.py:44
+msgid "Sprint"
+msgstr "Scatto"
+
+#: traces/badges.py:44
+msgid "Average speed > 35 km/h"
+msgstr "Velocità media > 35 km/h"
+
+#: traces/badges.py:48
+msgid "Daily streaks"
+msgstr "Serie giornaliere"
+
+#: traces/badges.py:50
+msgid "Flame"
+msgstr "Fiamma"
+
+#: traces/badges.py:50
+msgid "3 consecutive days"
+msgstr "3 giorni consecutivi"
+
+#: traces/badges.py:51
+msgid "7-day streak"
+msgstr "Serie di 7 giorni"
+
+#: traces/badges.py:51
+msgid "7 consecutive days"
+msgstr "7 giorni consecutivi"
+
+#: traces/badges.py:52
+msgid "14-day streak"
+msgstr "Serie di 14 giorni"
+
+#: traces/badges.py:52
+msgid "14 consecutive days"
+msgstr "14 giorni consecutivi"
+
+#: traces/badges.py:53
+msgid "Month of fire"
+msgstr "Mese di fuoco"
+
+#: traces/badges.py:53
+msgid "30 consecutive days"
+msgstr "30 giorni consecutivi"
+
+#: traces/badges.py:54
+msgid "Centenarian"
+msgstr "Centenario"
+
+#: traces/badges.py:54
+msgid "100 consecutive days"
+msgstr "100 giorni consecutivi"
+
+#: traces/badges.py:58
+msgid "Weekly streaks"
+msgstr "Serie settimanali"
+
+#: traces/badges.py:60
+msgid "1 trace/week for 2 weeks in a row"
+msgstr "1 traccia/settimana per 2 settimane di fila"
+
+#: traces/badges.py:61
+msgid "Rhythm"
+msgstr "Ritmo"
+
+#: traces/badges.py:61
+msgid "1 trace/week for 4 weeks in a row"
+msgstr "1 traccia/settimana per 4 settimane di fila"
+
+#: traces/badges.py:62
+msgid "Cadenced"
+msgstr "Cadenzato"
+
+#: traces/badges.py:62
+msgid "1 trace/week for 8 weeks in a row"
+msgstr "1 traccia/settimana per 8 settimane di fila"
+
+#: traces/badges.py:63 traces/badges.py:72
+msgid "Half-year"
+msgstr "Semestre"
+
+#: traces/badges.py:63
+msgid "1 trace/week for 26 weeks in a row"
+msgstr "1 traccia/settimana per 26 settimane di fila"
+
+#: traces/badges.py:64
+msgid "All seasons"
+msgstr "Tutte le stagioni"
+
+#: traces/badges.py:64
+msgid "1 trace/week for 52 weeks in a row"
+msgstr "1 traccia/settimana per 52 settimane di fila"
+
+#: traces/badges.py:68
+msgid "Monthly streaks"
+msgstr "Serie mensili"
+
+#: traces/badges.py:70
+msgid "Dedicated"
+msgstr "Devoto"
+
+#: traces/badges.py:70
+msgid "1 trace/month for 2 months"
+msgstr "1 traccia/mese per 2 mesi"
+
+#: traces/badges.py:71
+msgid "Season"
+msgstr "Stagione"
+
+#: traces/badges.py:71
+msgid "1 trace/month for 3 months"
+msgstr "1 traccia/mese per 3 mesi"
+
+#: traces/badges.py:72
+msgid "1 trace/month for 6 months"
+msgstr "1 traccia/mese per 6 mesi"
+
+#: traces/badges.py:73
+msgid "One year"
+msgstr "Un anno"
+
+#: traces/badges.py:73
+msgid "1 trace/month for 12 months"
+msgstr "1 traccia/mese per 12 mesi"
+
+#: traces/badges.py:77
+msgid "Weekly volume"
+msgstr "Volume settimanale"
+
+#: traces/badges.py:79
+msgid "Duo"
+msgstr "Duo"
+
+#: traces/badges.py:79
+msgid "2 traces/week for 4 weeks"
+msgstr "2 tracce/settimana per 4 settimane"
+
+#: traces/badges.py:80
+msgid "Trio"
+msgstr "Trio"
+
+#: traces/badges.py:80
+msgid "3 traces/week for 4 weeks"
+msgstr "3 tracce/settimana per 4 settimane"
+
+#: traces/badges.py:81
+msgid "Machine"
+msgstr "Macchina"
+
+#: traces/badges.py:81
+msgid "5 traces/week for 4 weeks"
+msgstr "5 tracce/settimana per 4 settimane"
+
+#: traces/badges.py:82
+msgid "Daily"
+msgstr "Quotidiano"
+
+#: traces/badges.py:82
+msgid "7 traces/week for 4 weeks"
+msgstr "7 tracce/settimana per 4 settimane"
+
+#: traces/badges.py:86
+msgid "Seasonal"
+msgstr "Stagionale"
+
+#: traces/badges.py:88
+msgid "Spring"
+msgstr "Primavera"
+
+#: traces/badges.py:88
+msgid "1 trace/week from March to May"
+msgstr "1 traccia/settimana da marzo a maggio"
+
+#: traces/badges.py:89
+msgid "Summer"
+msgstr "Estate"
+
+#: traces/badges.py:89
+msgid "1 trace/week from June to August"
+msgstr "1 traccia/settimana da giugno ad agosto"
+
+#: traces/badges.py:90
+msgid "Autumn"
+msgstr "Autunno"
+
+#: traces/badges.py:90
+msgid "1 trace/week from September to November"
+msgstr "1 traccia/settimana da settembre a novembre"
+
+#: traces/badges.py:91
+msgid "Winter"
+msgstr "Inverno"
+
+#: traces/badges.py:91
+msgid "1 trace/week from December to February"
+msgstr "1 traccia/settimana da dicembre a febbraio"
+
+#: traces/badges.py:92
+msgid "4 seasons"
+msgstr "4 stagioni"
+
+#: traces/badges.py:92
+msgid "Earn all 4 seasonal badges"
+msgstr "Ottieni tutti e 4 i badge stagionali"
+
+#: traces/badges.py:96 traces/templates-light/traces/trace_create.html:92
+#: traces/templates-light/traces/trace_list.html:170
+msgid "Distance"
+msgstr "Distanza"
+
+#: traces/badges.py:98
+msgid "Centurion km"
+msgstr "Centurione km"
+
+#: traces/badges.py:98
+msgid "100 km covered in 1 month"
+msgstr "100 km percorsi in 1 mese"
+
+#: traces/badges.py:99
+msgid "Roller"
+msgstr "Rullo"
+
+#: traces/badges.py:99
+msgid "500 km covered in 1 month"
+msgstr "500 km percorsi in 1 mese"
+
+#: traces/badges.py:100
+msgid "Ironman"
+msgstr "Uomo d'acciaio"
+
+#: traces/badges.py:100
+msgid "1,000 km covered in 1 month"
+msgstr "1.000 km percorsi in 1 mese"
+
+#: traces/badges.py:101
+msgid "Odyssey"
+msgstr "Odissea"
+
+#: traces/badges.py:101
+msgid "10,000 km total on the odometer"
+msgstr "10.000 km totali sul contachilometri"
+
+#: traces/forms.py:8
+msgid "GPX file"
+msgstr "File GPX"
+
+#: traces/forms.py:12 traces/templates/traces/profile.html:223
+msgid "Email"
+msgstr "Email"
+
+#: traces/forms.py:21 traces/views/profile.py:62
+msgid "This email address is already in use."
+msgstr "Questo indirizzo email è già in uso."
+
+#: traces/templates-light/account/login.html:141
+msgid "Welcome back"
+msgstr "Bentornato"
+
+#: traces/templates-light/account/login.html:142
+msgid "Log in to upload your traces."
+msgstr "Accedi per caricare le tue tracce."
+
+#: traces/templates-light/account/login.html:145
+msgid "Invalid username or password."
+msgstr "Nome utente o password non validi."
+
+#: traces/templates-light/account/login.html:151
+msgid "Username"
+msgstr "Nome utente"
+
+#: traces/templates-light/account/login.html:155
+msgid "Password"
+msgstr "Password"
+
+#: traces/templates-light/account/login.html:159
+#: traces/templates-light/base.html:255
+#: traces/templates-light/registration/register.html:166
+msgid "Log in"
+msgstr "Accedi"
+
+#: traces/templates-light/account/login.html:162
+#: traces/templates-light/registration/register.html:154
+msgid "or"
+msgstr "oppure"
+
+#: traces/templates-light/account/login.html:165
+#: traces/templates-light/registration/register.html:157
+msgid "Continue with Google"
+msgstr "Continua con Google"
+
+#: traces/templates-light/account/login.html:170
+msgid "Continue with Strava"
+msgstr "Continua con Strava"
+
+#: traces/templates-light/account/login.html:174
+msgid "Forgot password?"
+msgstr "Password dimenticata?"
+
+#: traces/templates-light/account/login.html:175
+msgid "Don't have an account?"
+msgstr "Non hai un account?"
+
+#: traces/templates-light/account/login.html:175
+#: traces/templates-light/registration/register.html:134
+#: traces/templates-light/registration/register.html:151
+msgid "Create an account"
+msgstr "Crea un account"
+
+#: traces/templates-light/base.html:210
+msgid "Create"
+msgstr "Crea"
+
+#: traces/templates-light/base.html:211
+msgid "Stats"
+msgstr "Statistiche"
+
+#: traces/templates-light/base.html:212
+#: traces/templates-light/traces/badges.html:5
+#: traces/templates-light/traces/badges.html:93
+#: traces/templates-light/traces/stats.html:161
+#: traces/templates-light/traces/stats_badges.html:210
+#: traces/templates-light/traces/stats_badges.html:213
+#: traces/templates-light/traces/stats_badges.html:255
+#: traces/templates-light/traces/stats_monthly.html:88
+#: traces/templates-light/traces/stats_traces.html:88
+#: traces/templates/traces/profile.html:174
+msgid "Badges"
+msgstr "Badge"
+
+#: traces/templates-light/base.html:214
+msgid "Upload"
+msgstr "Carica"
+
+#: traces/templates-light/base.html:219
+msgid "Admin"
+msgstr "Amministrazione"
+
+#: traces/templates-light/base.html:225
+#: traces/templates/traces/profile.html:145
+msgid "Profile"
+msgstr "Profilo"
+
+#: traces/templates-light/base.html:232
+#: traces/templates-light/traces/trace_list.html:161
+msgid "My traces"
+msgstr "Le mie tracce"
+
+#: traces/templates-light/base.html:233
+msgid "My friends"
+msgstr "I miei amici"
+
+#: traces/templates-light/base.html:234
+msgid "Legal notice"
+msgstr "Note legali"
+
+#: traces/templates-light/base.html:235
+msgid "Documentation"
+msgstr "Documentazione"
+
+#: traces/templates-light/base.html:236
+msgid "About"
+msgstr "Informazioni"
+
+#: traces/templates-light/base.html:239
+msgid "Log out"
+msgstr "Esci"
+
+#: traces/templates-light/base.html:256
+msgid "Sign up"
+msgstr "Registrati"
+
+#: traces/templates-light/registration/register.html:135
+msgid "Join Biketory and start uploading your traces."
+msgstr "Unisciti a Biketory e inizia a caricare le tue tracce."
+
+#: traces/templates-light/registration/register.html:162
+msgid "Sign up with Strava"
+msgstr "Registrati con Strava"
+
+#: traces/templates-light/registration/register.html:166
+msgid "Already have an account?"
+msgstr "Hai già un account?"
+
+#: traces/templates-light/traces/about.html:40
+msgid "About Biketory"
+msgstr "Informazioni su Biketory"
+
+#: traces/templates-light/traces/about.html:43
+msgid ""
+"Biketory is a web application that allows cyclists to import their GPX "
+"traces\n"
+"  and visualise the closed geographic surfaces covered on an interactive map."
+msgstr ""
+"Biketory è un'applicazione web che permette ai ciclisti di importare le "
+"proprie tracce GPX\n"
+"  e visualizzare le superfici geografiche chiuse coperte su una mappa interattiva."
+
+#: traces/templates-light/traces/about.html:47
+msgid "How it works"
+msgstr "Come funziona"
+
+#: traces/templates-light/traces/about.html:50
+msgid ""
+"Upload your GPX files, and Biketory automatically detects closed loops\n"
+"  in your routes. These surfaces are then displayed on a map and divided\n"
+"  into hexagons to track your progress."
+msgstr ""
+"Carica i tuoi file GPX, e Biketory rileva automaticamente i circuiti chiusi\n"
+"  nei tuoi percorsi. Queste superfici vengono poi visualizzate su una mappa e suddivise\n"
+"  in esagoni per monitorare i tuoi progressi."
+
+#: traces/templates-light/traces/about.html:55
+msgid "The story"
+msgstr "La storia"
+
+#: traces/templates-light/traces/about.html:58
+msgid ""
+"Biketory was born from the passion of a cycling enthusiast who never tires\n"
+"  of exploring new gravel paths. Setting off on an adventure, discovering "
+"an\n"
+"  unknown trail, riding for the sheer joy of riding — that is the spirit of "
+"the project.\n"
+"  The idea was simple: have a fun way to visualise all the ground\n"
+"  covered over your rides, and turn each loop into a small victory\n"
+"  on the map."
+msgstr ""
+"Biketory è nato dalla passione di un appassionato di ciclismo che non si "
+"stanca mai\n"
+"  di esplorare nuovi sentieri sterrati. Partire all'avventura, scoprire "
+"un\n"
+"  percorso sconosciuto, pedalare per il puro piacere di pedalare — questo è "
+"lo spirito del progetto.\n"
+"  L'idea era semplice: avere un modo divertente per visualizzare tutto il "
+"terreno\n"
+"  percorso durante le uscite, e trasformare ogni circuito in una piccola "
+"vittoria\n"
+"  sulla mappa."
+
+#: traces/templates-light/traces/about.html:66
+msgid "Source code"
+msgstr "Codice sorgente"
+
+#: traces/templates-light/traces/about.html:69
+msgid ""
+"Biketory is an open source project. The code is available on\n"
+"  <a href=\"https://github.com/rodo/biketory\">GitHub</a>."
+msgstr ""
+"Biketory è un progetto open source. Il codice è disponibile su\n"
+"  <a href=\"https://github.com/rodo/biketory\">GitHub</a>."
+
+#: traces/templates-light/traces/admin_dashboard.html:4
+#: traces/templates-light/traces/admin_dashboard_premium.html:4
+msgid "Admin Dashboard"
+msgstr "Pannello di amministrazione"
+
+#: traces/templates-light/traces/admin_dashboard.html:101
+#: traces/templates-light/traces/admin_dashboard_premium.html:101
+msgid "Users"
+msgstr "Utenti"
+
+#: traces/templates-light/traces/admin_dashboard.html:102
+#: traces/templates-light/traces/admin_dashboard_premium.html:4
+#: traces/templates-light/traces/admin_dashboard_premium.html:102
+msgid "Premium"
+msgstr "Premium"
+
+#: traces/templates-light/traces/admin_dashboard.html:105
+msgid "Registrations"
+msgstr "Registrazioni"
+
+#: traces/templates-light/traces/admin_dashboard.html:109
+#: traces/templates-light/traces/admin_dashboard_premium.html:109
+msgid "Day"
+msgstr "Giorno"
+
+#: traces/templates-light/traces/admin_dashboard.html:110
+#: traces/templates-light/traces/admin_dashboard_premium.html:110
+msgid "Week"
+msgstr "Settimana"
+
+#: traces/templates-light/traces/admin_dashboard.html:111
+#: traces/templates-light/traces/admin_dashboard_premium.html:111
+msgid "Month"
+msgstr "Mese"
+
+#: traces/templates-light/traces/admin_dashboard.html:112
+#: traces/templates-light/traces/admin_dashboard_premium.html:112
+msgid "Year"
+msgstr "Anno"
+
+#: traces/templates-light/traces/admin_dashboard.html:117
+#: traces/templates-light/traces/admin_dashboard_premium.html:117
+#: traces/templates-light/traces/stats.html:172
+#: traces/templates-light/traces/stats_monthly.html:99
+#: traces/templates-light/traces/stats_traces.html:99
+msgid "No data."
+msgstr "Nessun dato."
+
+#: traces/templates-light/traces/admin_dashboard.html:139
+#: traces/templates-light/traces/admin_dashboard.html:183
+msgid "New registrations"
+msgstr "Nuove registrazioni"
+
+#: traces/templates-light/traces/admin_dashboard.html:146
+#: traces/templates-light/traces/admin_dashboard.html:190
+#: traces/templates-light/traces/admin_dashboard_premium.html:146
+#: traces/templates-light/traces/admin_dashboard_premium.html:190
+msgid "Cumulative"
+msgstr "Cumulativo"
+
+#: traces/templates-light/traces/admin_dashboard_premium.html:105
+msgid "Premium subscriptions"
+msgstr "Abbonamenti Premium"
+
+#: traces/templates-light/traces/admin_dashboard_premium.html:139
+#: traces/templates-light/traces/admin_dashboard_premium.html:183
+msgid "New subscriptions"
+msgstr "Nuovi abbonamenti"
+
+#: traces/templates-light/traces/badges.html:94
+msgid "Complete rewards catalogue"
+msgstr "Catalogo completo dei premi"
+
+#: traces/templates-light/traces/badges.html:98
+msgid "badges"
+msgstr "badge"
+
+#: traces/templates-light/traces/badges.html:113
+msgid "Unlocked"
+msgstr "Sbloccato"
+
+#: traces/templates-light/traces/landing.html:110
+msgid "Layers"
+msgstr "Livelli"
+
+#: traces/templates-light/traces/landing.html:116
+msgid "My hexagons"
+msgstr "I miei esagoni"
+
+#: traces/templates-light/traces/landing.html:122
+msgid "Other users"
+msgstr "Altri utenti"
+
+#: traces/templates-light/traces/landing.html:126
+#: traces/templates/traces/friends.html:105
+#: traces/templates/traces/profile.html:170
+msgid "Friends"
+msgstr "Amici"
+
+#: traces/templates-light/traces/landing.html:130
+msgid "All friends"
+msgstr "Tutti gli amici"
+
+#: traces/templates-light/traces/landing.html:289
+#: traces/templates-light/traces/stats_badges.html:254
+msgid "User"
+msgstr "Utente"
+
+#: traces/templates-light/traces/landing.html:289
+#: traces/templates-light/traces/trace_create.html:96
+msgid "Points"
+msgstr "Punti"
+
+#: traces/templates-light/traces/landing.html:289
+msgid "Last activity"
+msgstr "Ultima attività"
+
+#: traces/templates-light/traces/legal.html:77
+msgid "Legal notice and cookies"
+msgstr "Note legali e cookie"
+
+#: traces/templates-light/traces/legal.html:80
+msgid ""
+"Biketory uses a limited number of cookies strictly necessary for the "
+"application to function.\n"
+"  No tracking, advertising, or third-party cookies are used."
+msgstr ""
+"Biketory utilizza un numero limitato di cookie strettamente necessari al "
+"funzionamento dell'applicazione.\n"
+"  Non vengono utilizzati cookie di tracciamento, pubblicitari o di terze parti."
+
+#: traces/templates-light/traces/legal.html:84
+msgid "Cookies used"
+msgstr "Cookie utilizzati"
+
+#: traces/templates-light/traces/legal.html:89
+msgid "Name"
+msgstr "Nome"
+
+#: traces/templates-light/traces/legal.html:90
+msgid "Purpose"
+msgstr "Scopo"
+
+#: traces/templates-light/traces/legal.html:91
+msgid "Duration"
+msgstr "Durata"
+
+#: traces/templates-light/traces/legal.html:97
+msgid ""
+"Maintains your session across pages. Managed by the Django authentication "
+"system."
+msgstr ""
+"Mantiene la sessione tra le pagine. Gestito dal sistema di autenticazione "
+"Django."
+
+#: traces/templates-light/traces/legal.html:98
+msgid "Session (deleted when the browser is closed, or after 2 weeks)"
+msgstr "Sessione (eliminato alla chiusura del browser, o dopo 2 settimane)"
+
+#: traces/templates-light/traces/legal.html:102
+msgid ""
+"Protects forms against CSRF attacks. Required by Django for any POST request "
+"(login, logout, upload, etc.)."
+msgstr ""
+"Protegge i moduli contro gli attacchi CSRF. Richiesto da Django per ogni "
+"richiesta POST (accesso, disconnessione, caricamento, ecc.)."
+
+#: traces/templates-light/traces/legal.html:103
+#: traces/templates-light/traces/legal.html:108
+msgid "1 year"
+msgstr "1 anno"
+
+#: traces/templates-light/traces/legal.html:107
+msgid ""
+"Remembers the last position and zoom level of the map on the home page. "
+"Contains three comma-separated numbers: <code>latitude,longitude,zoom</code>."
+msgstr ""
+"Ricorda l'ultima posizione e il livello di zoom della mappa nella pagina "
+"iniziale. Contiene tre numeri separati da virgola: <code>latitudine,longitudine,zoom</code>."
+
+#: traces/templates-light/traces/legal.html:113
+msgid "No personal data sold or shared"
+msgstr "Nessun dato personale venduto o condiviso"
+
+#: traces/templates-light/traces/legal.html:116
+msgid ""
+"None of the cookies listed above are shared with third parties. The "
+"<code>map_pos</code> cookie\n"
+"  is stored only in your browser and is never transmitted to an external "
+"service."
+msgstr ""
+"Nessuno dei cookie sopra elencati viene condiviso con terze parti. Il cookie "
+"<code>map_pos</code>\n"
+"  è memorizzato solo nel tuo browser e non viene mai trasmesso a un servizio "
+"esterno."
+
+#: traces/templates-light/traces/share.html:83
+#: traces/templates/traces/profile.html:154
+msgid "Uploaded traces"
+msgstr "Tracce caricate"
+
+#: traces/templates-light/traces/share.html:87
+#: traces/templates-light/traces/trace_detail.html:200
+#: traces/templates-light/traces/trace_detail.html:229
+#: traces/templates/traces/profile.html:158
+msgid "Hexagons"
+msgstr "Esagoni"
+
+#: traces/templates-light/traces/share.html:91
+#: traces/templates/traces/profile.html:162
+msgid "Total points"
+msgstr "Punti totali"
+
+#: traces/templates-light/traces/stats.html:158
+#: traces/templates-light/traces/stats_badges.html:207
+#: traces/templates-light/traces/stats_monthly.html:85
+#: traces/templates-light/traces/stats_traces.html:85
+msgid "By month"
+msgstr "Per mese"
+
+#: traces/templates-light/traces/stats.html:159
+#: traces/templates-light/traces/stats_badges.html:208
+#: traces/templates-light/traces/stats_monthly.html:86
+#: traces/templates-light/traces/stats_traces.html:86
+msgid "By user"
+msgstr "Per utente"
+
+#: traces/templates-light/traces/stats.html:160
+#: traces/templates-light/traces/stats_badges.html:209
+#: traces/templates-light/traces/stats_monthly.html:87
+#: traces/templates-light/traces/stats_traces.html:87
+#: traces/views/api_stats.py:73
+msgid "Traces"
+msgstr "Tracce"
+
+#: traces/templates-light/traces/stats.html:163
+msgid "Hexagons earned per month"
+msgstr "Esagoni guadagnati per mese"
+
+#: traces/templates-light/traces/stats.html:170
+#: traces/templates-light/traces/stats_monthly.html:97
+#: traces/templates-light/traces/stats_traces.html:97
+msgid "Loading..."
+msgstr "Caricamento..."
+
+#: traces/templates-light/traces/stats_badges.html:218
+msgid "badges unlocked"
+msgstr "badge sbloccati"
+
+#: traces/templates-light/traces/stats_badges.html:222
+msgid "average / user"
+msgstr "media / utente"
+
+#: traces/templates-light/traces/stats_badges.html:226
+msgid "Rarest badges"
+msgstr "Badge più rari"
+
+#: traces/templates-light/traces/stats_badges.html:237
+msgid "Most common badges"
+msgstr "Badge più comuni"
+
+#: traces/templates-light/traces/stats_badges.html:249
+msgid "Top 10 collectors"
+msgstr "Top 10 collezionisti"
+
+#: traces/templates-light/traces/stats_badges.html:253
+msgid "Rank"
+msgstr "Posizione"
+
+#: traces/templates-light/traces/stats_badges.html:271
+msgid "Recent activity"
+msgstr "Attività recente"
+
+#: traces/templates-light/traces/stats_badges.html:277
+#, python-format
+msgid "<strong>%(username)s</strong> unlocked <strong>%(name)s</strong>"
+msgstr "<strong>%(username)s</strong> ha sbloccato <strong>%(name)s</strong>"
+
+#: traces/templates-light/traces/stats_monthly.html:90
+msgid "Hexagons acquired per month"
+msgstr "Esagoni acquisiti per mese"
+
+#: traces/templates-light/traces/stats_traces.html:90
+msgid "Traces uploaded per month"
+msgstr "Tracce caricate per mese"
+
+#: traces/templates-light/traces/trace_create.html:4
+msgid "Create a trace"
+msgstr "Crea una traccia"
+
+#: traces/templates-light/traces/trace_create.html:100
+msgid "Undo"
+msgstr "Annulla"
+
+#: traces/templates-light/traces/trace_create.html:101
+msgid "Clear"
+msgstr "Cancella"
+
+#: traces/templates-light/traces/trace_create.html:103
+msgid "Download GPX"
+msgstr "Scarica GPX"
+
+#: traces/templates-light/traces/trace_detail.html:183
+msgid "Back to traces"
+msgstr "Torna alle tracce"
+
+#: traces/templates-light/traces/trace_detail.html:188
+#: traces/templates-light/traces/trace_list.html:169
+msgid "First point date"
+msgstr "Data del primo punto"
+
+#: traces/templates-light/traces/trace_detail.html:192
+#: traces/templates-light/traces/trace_list.html:171
+msgid "Uploaded on"
+msgstr "Caricato il"
+
+#: traces/templates-light/traces/trace_detail.html:196
+msgid "Extracted surfaces"
+msgstr "Superfici estratte"
+
+#: traces/templates-light/traces/trace_detail.html:207
+msgid "Unlocked badges"
+msgstr "Badge sbloccati"
+
+#: traces/templates-light/traces/trace_detail.html:222
+msgid ""
+"This trace does not contain any closed surface. Make sure your route forms a "
+"loop."
+msgstr ""
+"Questa traccia non contiene alcuna superficie chiusa. Assicurati che il tuo "
+"percorso formi un circuito."
+
+#: traces/templates-light/traces/trace_detail.html:227
+msgid "Trace"
+msgstr "Traccia"
+
+#: traces/templates-light/traces/trace_detail.html:238
+msgid "Previous"
+msgstr "Precedente"
+
+#: traces/templates-light/traces/trace_detail.html:244
+msgid "Next"
+msgstr "Successivo"
+
+#: traces/templates-light/traces/trace_list.html:168
+msgid "File"
+msgstr "File"
+
+#: traces/templates-light/traces/trace_list.html:195
+msgid "View closed surfaces"
+msgstr "Visualizza superfici chiuse"
+
+#: traces/templates-light/traces/trace_list.html:200
+#: traces/templates-light/traces/trace_list.html:231
+msgid "Delete"
+msgstr "Elimina"
+
+#: traces/templates-light/traces/trace_list.html:208
+msgid "No traces uploaded yet."
+msgstr "Nessuna traccia caricata."
+
+#: traces/templates-light/traces/trace_list.html:225
+msgid "Delete trace"
+msgstr "Elimina traccia"
+
+#: traces/templates-light/traces/trace_list.html:226
+msgid "Are you sure you want to delete this trace?"
+msgstr "Sei sicuro di voler eliminare questa traccia?"
+
+#: traces/templates-light/traces/trace_list.html:228
+#: traces/templates/traces/friends.html:139
+#: traces/templates/traces/friends.html:210
+msgid "Cancel"
+msgstr "Annulla"
+
+#: traces/templates/traces/friends.html:112
+msgid "Username or secret UUID..."
+msgstr "Nome utente o UUID segreto..."
+
+#: traces/templates/traces/friends.html:113
+msgid "Search"
+msgstr "Cerca"
+
+#: traces/templates/traces/friends.html:118
+msgid "Results"
+msgstr "Risultati"
+
+#: traces/templates/traces/friends.html:128
+msgid "Friend"
+msgstr "Amico"
+
+#: traces/templates/traces/friends.html:132
+#: traces/templates/traces/friends.html:234
+msgid "Remove"
+msgstr "Rimuovi"
+
+#: traces/templates/traces/friends.html:135
+msgid "Request sent"
+msgstr "Richiesta inviata"
+
+#: traces/templates/traces/friends.html:145
+#: traces/templates/traces/friends.html:182
+msgid "Accept"
+msgstr "Accetta"
+
+#: traces/templates/traces/friends.html:150
+#: traces/templates/traces/friends.html:187
+msgid "Decline"
+msgstr "Rifiuta"
+
+#: traces/templates/traces/friends.html:156
+msgid "Add"
+msgstr "Aggiungi"
+
+#: traces/templates/traces/friends.html:164
+#, python-format
+msgid "No user found for \"%(query)s\"."
+msgstr "Nessun utente trovato per \"%(query)s\"."
+
+#: traces/templates/traces/friends.html:170
+#: traces/templates/traces/profile.html:192
+msgid "Received requests"
+msgstr "Richieste ricevute"
+
+#: traces/templates/traces/friends.html:176
+msgid "received on"
+msgstr "ricevuta il"
+
+#: traces/templates/traces/friends.html:197
+msgid "Sent requests"
+msgstr "Richieste inviate"
+
+#: traces/templates/traces/friends.html:203
+msgid "sent on"
+msgstr "inviata il"
+
+#: traces/templates/traces/friends.html:206
+msgid "Pending"
+msgstr "In attesa"
+
+#: traces/templates/traces/friends.html:219
+#, python-format
+msgid "My friends (%(count)s)"
+msgstr "I miei amici (%(count)s)"
+
+#: traces/templates/traces/friends.html:241
+msgid "You don't have any friends yet. Search for a user above!"
+msgstr "Non hai ancora amici. Cerca un utente qui sopra!"
+
+#: traces/templates/traces/profile.html:146
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: traces/templates/traces/profile.html:171
+msgid "manage"
+msgstr "gestisci"
+
+#: traces/templates/traces/profile.html:175
+msgid "view all"
+msgstr "vedi tutti"
+
+#: traces/templates/traces/profile.html:178
+msgid "Subscription"
+msgstr "Abbonamento"
+
+#: traces/templates/traces/profile.html:183
+msgid "until"
+msgstr "fino al"
+
+#: traces/templates/traces/profile.html:186
+msgid "Free"
+msgstr "Gratuito"
+
+#: traces/templates/traces/profile.html:230
+#: traces/templates/traces/profile.html:314
+msgid "Save"
+msgstr "Salva"
+
+#: traces/templates/traces/profile.html:239
+msgid "Home location"
+msgstr "Posizione di casa"
+
+#: traces/templates/traces/profile.html:245
+msgid "Not set"
+msgstr "Non impostata"
+
+#: traces/templates/traces/profile.html:253
+msgid "Use map center"
+msgstr "Usa il centro della mappa"
+
+#: traces/templates/traces/profile.html:259
+msgid "Share my profile"
+msgstr "Condividi il mio profilo"
+
+#: traces/templates/traces/profile.html:262
+#: traces/templates/traces/profile.html:270
+#: traces/templates/traces/profile.html:281
+msgid "Copy"
+msgstr "Copia"
+
+#: traces/templates/traces/profile.html:267
+msgid "Secret UUID"
+msgstr "UUID segreto"
+
+#: traces/templates/traces/profile.html:275
+msgid "API Token"
+msgstr "Token API"
+
+#: traces/templates/traces/profile.html:283
+msgid "Expires on"
+msgstr "Scade il"
+
+#: traces/templates/traces/profile.html:285
+msgid "Token expired"
+msgstr "Token scaduto"
+
+#: traces/templates/traces/profile.html:288
+msgid "No active token."
+msgstr "Nessun token attivo."
+
+#: traces/templates/traces/profile.html:294
+msgid "Regenerate"
+msgstr "Rigenera"
+
+#: traces/templates/traces/profile.html:294
+msgid "Generate"
+msgstr "Genera"
+
+#: traces/templates/traces/profile.html:298
+#, python-format
+msgid ""
+"Available with a <a href=\"%(premium_url)s\" style=\"color:var(--accent);"
+"font-weight:600;text-decoration:none;\">Premium</a> subscription."
+msgstr ""
+"Disponibile con un abbonamento <a href=\"%(premium_url)s\" style=\"color:var(--accent);"
+"font-weight:600;text-decoration:none;\">Premium</a>."
+
+#: traces/templates/traces/profile.html:303
+msgid "Language"
+msgstr "Lingua"
+
+#: traces/views/api_stats.py:44
+msgid "Hexagons acquired"
+msgstr "Esagoni acquisiti"
+
+#: traces/views/api_stats.py:49
+msgid "New hexagons"
+msgstr "Nuovi esagoni"
+
+#: traces/views/api_upload.py:36
+msgid "Invalid or expired token."
+msgstr "Token non valido o scaduto."
+
+#: traces/views/api_upload.py:40
+msgid "API access requires an active Premium subscription."
+msgstr "L'accesso API richiede un abbonamento Premium attivo."
+
+#: traces/views/api_upload.py:44
+msgid "Missing gpx_file field."
+msgstr "Campo gpx_file mancante."
+
+#: traces/views/api_upload.py:50
+msgid "Daily upload limit reached."
+msgstr "Limite giornaliero di caricamento raggiunto."
+
+#: traces/views/api_upload.py:60
+#, python-format
+msgid "Trace too long (%(length).0f km). Maximum is %(max)d km."
+msgstr "Traccia troppo lunga (%(length).0f km). Il massimo è %(max)d km."
+
+#: traces/views/profile.py:55
+msgid "The email address cannot be empty."
+msgstr "L'indirizzo email non può essere vuoto."
+
+#: traces/views/profile.py:57
+msgid "Invalid email address."
+msgstr "Indirizzo email non valido."
+
+#: traces/views/upload.py:33
+#, python-format
+msgid "Trace too long (%(length).0f km). Maximum allowed is %(max)d km."
+msgstr "Traccia troppo lunga (%(length).0f km). Il massimo consentito è %(max)d km."
+
+#: traces/views/upload.py:40
+msgid "This trace has already been uploaded (same start date detected)."
+msgstr "Questa traccia è già stata caricata (stessa data di inizio rilevata)."

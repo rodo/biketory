@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -32,21 +33,21 @@ def _authenticate(request):
 def api_upload_trace(request):
     user = _authenticate(request)
     if user is None:
-        return JsonResponse({"error": "Invalid or expired token."}, status=401)
+        return JsonResponse({"error": _("Invalid or expired token.")}, status=401)
 
     sub = Subscription.objects.filter(user=user).first()
     if not sub or not sub.is_active():
-        return JsonResponse({"error": "API access requires an active Premium subscription."}, status=403)
+        return JsonResponse({"error": _("API access requires an active Premium subscription.")}, status=403)
 
     gpx_file = request.FILES.get("gpx_file")
     if gpx_file is None:
-        return JsonResponse({"error": "Missing gpx_file field."}, status=400)
+        return JsonResponse({"error": _("Missing gpx_file field.")}, status=400)
 
     _, daily_limit, next_slot = _upload_quota(user)
     if next_slot is not None:
         return JsonResponse(
             {
-                "error": "Daily upload limit reached.",
+                "error": _("Daily upload limit reached."),
                 "limit": daily_limit,
                 "next_slot": next_slot.isoformat(),
             },
@@ -56,7 +57,7 @@ def api_upload_trace(request):
     route, first_point_date, length_km = _parse_route(gpx_file)
     if length_km > MAX_TRACE_LENGTH_KM:
         return JsonResponse(
-            {"error": f"Trace too long ({length_km:.0f} km). Maximum is {MAX_TRACE_LENGTH_KM} km."},
+            {"error": _("Trace too long (%(length).0f km). Maximum is %(max)d km.") % {"length": length_km, "max": MAX_TRACE_LENGTH_KM}},
             status=400,
         )
 
