@@ -174,22 +174,18 @@ public abstract class BaseSimulation extends Simulation {
                         http("GET trace detail")
                                 .get("#{traceUrl}")
                                 .check(status().is(200))
-                                .check(regex("/api/traces/([0-9a-f-]{36})/status/")
-                                        .optional()
+                                .check(regex("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
                                         .saveAs("traceUuid"))
                 )
-                .doIf(session -> session.contains("traceUuid"))
-                .then(
-                        asLongAs(session -> !"analyzed".equals(session.getString("traceStatus")))
-                        .on(
-                                exec(
-                                        http("Poll trace status")
-                                                .get("/api/traces/#{traceUuid}/status/")
-                                                .check(status().is(200))
-                                                .check(jsonPath("$.status").saveAs("traceStatus"))
-                                )
-                                .pause(2)
+                .asLongAs(session -> !"analyzed".equals(session.getString("traceStatus")))
+                .on(
+                        exec(
+                                http("Poll trace status")
+                                        .get("/api/traces/#{traceUuid}/status/")
+                                        .check(status().is(200))
+                                        .check(jsonPath("$.status").saveAs("traceStatus"))
                         )
+                        .pause(2)
                 );
     }
 
