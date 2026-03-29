@@ -162,6 +162,62 @@ h1 {
   margin-top: 1.25rem;
 }
 
+.btn-delete {
+  display: inline-block;
+  padding: 0.55rem 1.2rem;
+  border-radius: 6px;
+  background: none;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+.btn-delete:hover { background: #c0392b; color: white; }
+
+#confirm-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+#confirm-modal.open { display: flex; }
+
+.modal-card {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 2rem 2.5rem;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  text-align: center;
+}
+
+.modal-card h2 { color: var(--bg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+.modal-card p  { color: var(--muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+
+.modal-actions { display: flex; gap: 0.75rem; justify-content: center; }
+
+.modal-actions button {
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+#btn-cancel  { background: #e0dcd5; color: var(--bg); }
+#btn-confirm { background: #c0392b; color: white; }
+#btn-cancel:hover  { background: #d4cfc7; }
+#btn-confirm:hover { background: #a93226; }
+
 .btn-nav {
   display: inline-block;
   padding: 0.55rem 1.2rem;
@@ -202,6 +258,18 @@ h1 {
   </div>
 </div>
 
+{% if trace.status == "not_analyzed" %}
+<div id="analysis-banner" style="background:#e8f4fd;border:1px solid #a0c4e8;border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;color:#1a5276;">
+  <span style="font-size:1.1rem;">&#9203;</span>
+  {% trans "Analysis in progress..." %}
+  {% if pending_before > 0 %}
+    <span style="margin-left:0.3rem;opacity:0.7;">
+      ({% blocktrans count counter=pending_before %}{{ counter }} trace ahead in the queue{% plural %}{{ counter }} traces ahead in the queue{% endblocktrans %})
+    </span>
+  {% endif %}
+</div>
+{% endif %}
+
 {% if earned_badges %}
 <div class="badges-box">
   <div class="label">{% trans "Unlocked badges" %}</div>
@@ -230,6 +298,7 @@ h1 {
 </div>
 
 <div id="map"></div>
+<div style="font-size:0.7rem;color:#b0a99a;margin-top:0.3rem;text-align:right;">{{ trace.uuid }}</div>
 
 <div class="nav-bar">
   {% if prev_trace %}
@@ -238,11 +307,27 @@ h1 {
     <span class="btn-nav disabled">{% trans "Previous" %}</span>
   {% endif %}
 
+  <button class="btn-delete" id="btn-open-delete">{% trans "Delete" %}</button>
+
   {% if next_trace %}
     <a class="btn-nav" href="{% url 'trace_detail' next_trace.pk %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
   {% else %}
     <span class="btn-nav disabled">{% trans "Next" %}</span>
   {% endif %}
+</div>
+
+<div id="confirm-modal">
+  <div class="modal-card">
+    <h2>{% trans "Delete trace" %}</h2>
+    <p>{% trans "Are you sure you want to delete this trace?" %}</p>
+    <div class="modal-actions">
+      <button id="btn-cancel">{% trans "Cancel" %}</button>
+      <form method="post" action="{% url 'delete_trace' trace.pk %}">
+        {% csrf_token %}
+        <button id="btn-confirm" type="submit">{% trans "Delete" %}</button>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -310,5 +395,31 @@ h1 {
   makeToggle('btn-trace',    traceGroup);
   makeToggle('btn-surfaces', surfaceGroup);
   makeToggle('btn-hexagons', hexGroup);
+
+  // Poll trace analysis status
+  {% if trace.status == "not_analyzed" %}
+  (function() {
+    const banner = document.getElementById('analysis-banner');
+    if (!banner) return;
+    const interval = setInterval(function() {
+      fetch('{% url "api_trace_status" trace.uuid %}')
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'analyzed') {
+            clearInterval(interval);
+            location.reload();
+          }
+        })
+        .catch(() => {});
+    }, 5000);
+  })();
+  {% endif %}
+
+  // Delete confirmation modal
+  const modal  = document.getElementById('confirm-modal');
+  const cancel = document.getElementById('btn-cancel');
+  document.getElementById('btn-open-delete').addEventListener('click', () => modal.classList.add('open'));
+  cancel.addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
 </script>
 {% endblock %}

@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 
-from traces.badge_award import award_badges
 from traces.forms import TraceUploadForm
 from traces.models import Trace
 from traces.trace_processing import (
@@ -53,7 +52,8 @@ def upload_trace(request):
                     if route:
                         _create_trace_hexagons(route)
                         _extract_surfaces(trace)
-                    award_badges(request.user, trace)
+                    from traces.tasks import analyze_trace
+                    analyze_trace.defer(trace_id=trace.pk)
                     return redirect("trace_detail", pk=trace.pk)
     else:
         form = TraceUploadForm()

@@ -62,7 +62,7 @@ traces/            Main application
 
 | Model | Key fields |
 |---|---|
-| `Trace` | `gpx_file`, `route` (MultiLineString), `uploaded_by` (FK User), `extracted` (bool), `first_point_date`, `uploaded_at` |
+| `Trace` | `gpx_file`, `route` (MultiLineString), `uploaded_by` (FK User), `extracted` (bool), `status` (not_analyzed/analyzed), `first_point_date`, `uploaded_at` |
 | `ClosedSurface` | `trace` (FK), `owner` (FK User), `segment_index`, `polygon` (Polygon), `detected_at` |
 | `Hexagon` | `geom` (Polygon, unique), `created_at` |
 | `HexagonScore` | `hexagon` (FK), `user` (FK), `points`, `last_earned_at` — unique (hexagon, user) |
@@ -90,8 +90,16 @@ python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--c
 # Delete all surfaces, reset trace.extracted flags, clear user stats
 python manage.py purge_surfaces [--yes]
 
+
+# Defer badge analysis jobs for unanalyzed traces
+python manage.py analyze_traces
+
+# Start the procrastinate background worker (processes badges)
+python manage.py procrastinate worker --processes=1
+
 # Reset all data: traces, surfaces, hexagons, badges, stats (DEBUG only)
 python manage.py reset_data [--yes]
+
 ```
 
 ## Authentication
