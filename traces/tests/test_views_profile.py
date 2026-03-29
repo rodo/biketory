@@ -13,7 +13,7 @@ class ProfileGetTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def test_get_returns_200(self):
         resp = self.client.get(reverse("profile"))
@@ -35,7 +35,7 @@ class ProfileGenerateTokenTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
         today = timezone.now().date()
         Subscription.objects.create(
             user=self.user,
@@ -60,7 +60,7 @@ class ProfileUpdateEmailTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def test_update_email(self):
         resp = self.client.post(reverse("profile"), {
@@ -100,7 +100,7 @@ class ProfileUpdateHomeLocationTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def test_update_home_location(self):
         resp = self.client.post(reverse("profile"), {

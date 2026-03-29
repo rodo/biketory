@@ -10,7 +10,7 @@ class TraceSurfacesTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
         self.trace = Trace.objects.create(route=small_route(), uploaded_by=self.user)
 
     def test_returns_200(self):

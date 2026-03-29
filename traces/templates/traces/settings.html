@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+#page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  color: var(--accent);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 1.75rem 0 0.75rem;
+}
+
+/* ── Cards ── */
+.stat-card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 0.75rem;
+}
+
+.stat-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+/* ── Form inputs ── */
+.form-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1.5px solid #ccc6bc;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: var(--bg);
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input::placeholder { color: var(--muted); }
+.form-input:focus { outline: none; border-color: var(--accent); }
+
+/* ── Buttons ── */
+.btn-accent {
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn-accent:hover { opacity: 0.88; }
+
+.btn-ghost {
+  background: none;
+  border: 1.5px solid #c8c0b4;
+  border-radius: 6px;
+  color: var(--bg);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.75;
+}
+.btn-ghost:hover { opacity: 1; border-color: #a09890; }
+
+/* ── UUID rows ── */
+.uuid-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.uuid-row code {
+  font-size: 0.78rem;
+  word-break: break-all;
+  color: var(--bg);
+}
+
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.hint { font-size: 0.78rem; color: var(--muted); }
+.error { color: #c0392b; font-size: 0.78rem; margin-top: 0.35rem; }
+
+/* ── Select ── */
+.form-select {
+  background: var(--surface);
+  border: 1.5px solid #ccc6bc;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--bg);
+  transition: border-color 0.2s;
+}
+.form-select:focus { outline: none; border-color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Settings" %}</h1>
+
+<!-- ── Account ── -->
+<h2>{% trans "Account" %}</h2>
+
+<div class="stat-card">
+  <div class="label">{% trans "Username" %}</div>
+  <form method="post" style="margin-top:0.3rem;">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_username">
+    <div class="form-row">
+      <input type="text" name="username" value="{{ user.username }}" class="form-input">
+      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+    </div>
+    {% if username_error %}
+      <div class="error">{{ username_error }}</div>
+    {% endif %}
+  </form>
+</div>
+
+<div class="stat-card">
+  <div class="label">{% trans "Email" %}</div>
+  <form method="post" style="margin-top:0.3rem;">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_email">
+    <div class="form-row">
+      <input type="email" name="email" value="{{ user.email }}" class="form-input">
+      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+    </div>
+    {% if email_error %}
+      <div class="error">{{ email_error }}</div>
+    {% endif %}
+  </form>
+</div>
+
+<div class="stat-card">
+  <div class="label">{% trans "Home location" %}</div>
+  {% if home_location %}
+    <div class="hint" style="margin-bottom:0.5rem;">
+      {{ home_location.y|floatformat:5 }}, {{ home_location.x|floatformat:5 }}
+    </div>
+  {% else %}
+    <div class="hint" style="margin-bottom:0.5rem;">{% trans "Not set" %}</div>
+  {% endif %}
+  <form method="post" id="home-location-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_home_location">
+    <div class="form-row" style="margin-top:0.3rem;">
+      <input type="text" id="home-lat" name="lat" placeholder="{% trans 'Latitude' %}"
+             {% if home_location %}value="{{ home_location.y|floatformat:5 }}"{% endif %}
+             class="form-input">
+      <input type="text" id="home-lng" name="lng" placeholder="{% trans 'Longitude' %}"
+             {% if home_location %}value="{{ home_location.x|floatformat:5 }}"{% endif %}
+             class="form-input">
+      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+    </div>
+  </form>
+</div>
+
+<div class="stat-card">
+  <div class="label">{% trans "Language" %}</div>
+  <form method="post" action="{% url 'set_language' %}" style="margin-top:0.3rem;">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    {% get_current_language as CURRENT_LANGUAGE %}
+    {% get_available_languages as LANGUAGES %}
+    <div class="form-row">
+      <select name="language" class="form-select">
+        {% for lang_code, lang_name in LANGUAGES %}
+          <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>{{ lang_name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+    </div>
+  </form>
+</div>
+
+<!-- ── Sharing ── -->
+<h2>{% trans "Sharing" %}</h2>
+
+<div class="stat-card">
+  <div class="label">{% trans "Share my profile" %}</div>
+  <div class="uuid-row">
+    <code id="share-url">{{ share_url }}</code>
+    <button class="btn-ghost" onclick="navigator.clipboard.writeText('{{ share_url }}')">{% trans "Copy" %}</button>
+  </div>
+</div>
+
+<div class="stat-card">
+  <div class="label">{% trans "Secret UUID" %}</div>
+  <div class="uuid-row">
+    <code id="secret-uuid">{{ secret_uuid }}</code>
+    <button class="btn-ghost" onclick="navigator.clipboard.writeText('{{ secret_uuid }}')">{% trans "Copy" %}</button>
+  </div>
+</div>
+
+<!-- ── API ── -->
+<h2>{% trans "API" %}</h2>
+
+<div class="stat-card">
+  <div class="label">{% trans "API Token" %}</div>
+  {% if is_premium %}
+    {% if api_token %}
+      {% if api_token.is_valid %}
+        <div class="uuid-row" style="margin-bottom:0.4rem;">
+          <code id="api-token-val">{{ api_token.token }}</code>
+          <button class="btn-ghost" onclick="navigator.clipboard.writeText('{{ api_token.token }}')">{% trans "Copy" %}</button>
+        </div>
+        <div class="hint">{% trans "Expires on" %} {{ api_token.expires_at|date:"d/m/Y" }}</div>
+      {% else %}
+        <div class="hint" style="color:#c0392b;margin-bottom:0.5rem;">{% trans "Token expired" %}</div>
+      {% endif %}
+    {% else %}
+      <div class="hint" style="margin-bottom:0.5rem;">{% trans "No active token." %}</div>
+    {% endif %}
+    <form method="post" style="margin-top:0.6rem;">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="generate_token">
+      <button type="submit" class="btn-accent">
+        {% if api_token %}{% trans "Regenerate" %}{% else %}{% trans "Generate" %}{% endif %}
+      </button>
+    </form>
+  {% else %}
+    <div class="hint">{% url 'subscription_required' as premium_url %}{% blocktrans %}Available with a <a href="{{ premium_url }}" style="color:var(--accent);font-weight:600;text-decoration:none;">Premium</a> subscription.{% endblocktrans %}</div>
+  {% endif %}
+</div>
+{% endblock %}

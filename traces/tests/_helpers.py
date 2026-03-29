@@ -2,8 +2,12 @@ from django.contrib.auth.models import User
 from django.contrib.gis.geos import LineString, MultiLineString, Polygon
 
 
-def make_user(username="alice", password="pass"):
-    return User.objects.create_user(username=username, password=password)
+def make_user(username="alice", password="pass", email=None):
+    if email is None:
+        email = f"{username}@test.local"
+    user = User.objects.create_user(username=username, email=email, password=password)
+    user.refresh_from_db()
+    return user
 
 
 def small_route():

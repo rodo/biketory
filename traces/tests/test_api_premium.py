@@ -89,7 +89,7 @@ class ProfileTokenPremiumTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def test_generate_token_without_premium_creates_nothing(self):
         self.client.post(reverse("profile"), {"action": "generate_token"})

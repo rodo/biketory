@@ -175,7 +175,9 @@ class StatsApiPerUserTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.alice = User.objects.create_user(username="alice", password="test")
+        cls.alice.refresh_from_db()
         cls.bob = User.objects.create_user(username="bob", password="test")
+        cls.bob.refresh_from_db()
 
     def test_returns_per_user_datasets(self):
         UserMonthlyStats.objects.create(
@@ -194,8 +196,8 @@ class StatsApiPerUserTest(TestCase):
         self.assertEqual(data["labels"], ["2025-01", "2025-02"])
         self.assertEqual(len(data["datasets"]), 2)
 
-        alice_ds = next(d for d in data["datasets"] if d["label"] == "alice")
-        bob_ds = next(d for d in data["datasets"] if d["label"] == "bob")
+        alice_ds = next(d for d in data["datasets"] if d["label"] == self.alice.username)
+        bob_ds = next(d for d in data["datasets"] if d["label"] == self.bob.username)
 
         self.assertEqual(alice_ds["data"], [1, 1])
         self.assertEqual(bob_ds["data"], [1, 0])

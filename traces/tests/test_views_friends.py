@@ -10,7 +10,7 @@ class FriendsViewGetTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def test_get_returns_200(self):
         resp = self.client.get(reverse("friends"))
@@ -27,7 +27,7 @@ class FriendsSendTest(TestCase):
     def setUp(self):
         self.alice = make_user("alice")
         self.bob = make_user("bob")
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.alice)
 
     def test_send_creates_pending_friendship(self):
         self.client.post(reverse("friends"), {
@@ -55,7 +55,7 @@ class FriendsAcceptDeclineTest(TestCase):
         )
 
     def test_accept(self):
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.alice)
         self.client.post(reverse("friends"), {
             "action": "accept",
             "friendship_id": self.friendship.pk,
@@ -64,7 +64,7 @@ class FriendsAcceptDeclineTest(TestCase):
         self.assertEqual(self.friendship.status, Friendship.STATUS_ACCEPTED)
 
     def test_decline_deletes(self):
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.alice)
         self.client.post(reverse("friends"), {
             "action": "decline",
             "friendship_id": self.friendship.pk,
@@ -80,7 +80,7 @@ class FriendsCancelRemoveTest(TestCase):
 
     def test_cancel_sent_request(self):
         f = Friendship.objects.create(from_user=self.alice, to_user=self.bob)
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.alice)
         self.client.post(reverse("friends"), {
             "action": "cancel",
             "friendship_id": f.pk,
@@ -92,7 +92,7 @@ class FriendsCancelRemoveTest(TestCase):
             from_user=self.alice, to_user=self.bob,
             status=Friendship.STATUS_ACCEPTED,
         )
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.alice)
         self.client.post(reverse("friends"), {
             "action": "remove",
             "friendship_id": f.pk,
@@ -105,12 +105,12 @@ class FriendsSearchTest(TestCase):
     def setUp(self):
         self.alice = make_user("alice")
         self.bob = make_user("bob")
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.alice)
 
     def test_search_by_username(self):
         resp = self.client.post(reverse("friends"), {
             "action": "search",
-            "q": "bob",
+            "q": self.bob.username,
         })
         self.assertEqual(resp.status_code, 200)
         results = resp.context["search_results"]

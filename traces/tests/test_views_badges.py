@@ -11,8 +11,8 @@ class BadgesViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_authenticated_returns_200(self):
-        make_user()
-        self.client.login(username="alice", password="pass")
+        user = make_user()
+        self.client.force_login(user)
         resp = self.client.get(reverse("badges"))
         self.assertEqual(resp.status_code, 200)
 
