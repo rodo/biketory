@@ -7,7 +7,6 @@ from traces.models import Trace
 from traces.trace_processing import (
     MAX_TRACE_LENGTH_KM,
     _create_trace_hexagons,
-    _extract_surfaces,
     _parse_route,
     _upload_quota,
 )
@@ -51,10 +50,10 @@ def upload_trace(request):
                     )
                     if route:
                         _create_trace_hexagons(route)
-                        _extract_surfaces(trace)
-                    from traces.tasks import analyze_trace
-                    analyze_trace.defer(trace_id=trace.pk)
-                    return redirect("trace_detail", pk=trace.pk)
+                    from traces.tasks import award_trace_badges, extract_surfaces
+                    extract_surfaces.defer(trace_id=trace.pk)
+                    award_trace_badges.defer(trace_id=trace.pk)
+                    return redirect("trace_detail", trace_uuid=trace.uuid)
     else:
         form = TraceUploadForm()
 

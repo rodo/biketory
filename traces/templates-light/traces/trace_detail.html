@@ -268,6 +268,11 @@ h1 {
     </span>
   {% endif %}
 </div>
+{% elif trace.status == "surface_extracted" %}
+<div id="analysis-banner" style="background:#e8f4fd;border:1px solid #a0c4e8;border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;color:#1a5276;">
+  <span style="font-size:1.1rem;">&#9203;</span>
+  {% trans "Surfaces extracted, computing badges..." %}
+</div>
 {% endif %}
 
 {% if earned_badges %}
@@ -302,7 +307,7 @@ h1 {
 
 <div class="nav-bar">
   {% if prev_trace %}
-    <a class="btn-nav" href="{% url 'trace_detail' prev_trace.pk %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
+    <a class="btn-nav" href="{% url 'trace_detail' prev_trace.uuid %}">← {{ prev_trace.gpx_file.name|cut:"gpx/" }}</a>
   {% else %}
     <span class="btn-nav disabled">{% trans "Previous" %}</span>
   {% endif %}
@@ -310,7 +315,7 @@ h1 {
   <button class="btn-delete" id="btn-open-delete">{% trans "Delete" %}</button>
 
   {% if next_trace %}
-    <a class="btn-nav" href="{% url 'trace_detail' next_trace.pk %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
+    <a class="btn-nav" href="{% url 'trace_detail' next_trace.uuid %}">{{ next_trace.gpx_file.name|cut:"gpx/" }} →</a>
   {% else %}
     <span class="btn-nav disabled">{% trans "Next" %}</span>
   {% endif %}
@@ -397,15 +402,16 @@ h1 {
   makeToggle('btn-hexagons', hexGroup);
 
   // Poll trace analysis status
-  {% if trace.status == "not_analyzed" %}
+  {% if trace.status != "analyzed" %}
   (function() {
     const banner = document.getElementById('analysis-banner');
     if (!banner) return;
+    const currentStatus = '{{ trace.status }}';
     const interval = setInterval(function() {
       fetch('{% url "api_trace_status" trace.uuid %}')
         .then(r => r.json())
         .then(data => {
-          if (data.status === 'analyzed') {
+          if (data.status !== currentStatus) {
             clearInterval(interval);
             location.reload();
           }

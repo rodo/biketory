@@ -37,14 +37,14 @@ CREATE EXTENSION postgis;
 | `generate_hexagon_tiles` | Generate static PNG tiles for all hexagons at configurable zoom levels (`--zoom-min`, `--zoom-max`). Use `--clean` to remove existing tiles first. |
 | `generate_premium_user_tiles` | Generate static PNG tiles per premium user who uploaded traces in the last 7 days (`--zoom-min`, `--zoom-max`, `--clean`). |
 | `purge_surfaces` | Delete all closed surfaces, reset `extracted` flags on traces, and clear user surface stats. Requires `--yes` to skip confirmation. |
-| `analyze_traces` | Defer analysis jobs (badge award) for all traces with status `not_analyzed`. |
+| `analyze_traces` | Defer analysis jobs for traces stuck in `not_analyzed` or `surface_extracted` status. |
 
-## Background worker
+## Background workers
 
-Badge analysis is processed asynchronously via [procrastinate](https://procrastinate.readthedocs.io/). Start the worker with:
+Surface extraction and badge analysis are processed asynchronously via [procrastinate](https://procrastinate.readthedocs.io/). Start workers with:
 
 ```bash
-python manage.py procrastinate worker --processes=1
+python manage.py procrastinate worker -q surface_extraction,badges
 ```
 
 | `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
