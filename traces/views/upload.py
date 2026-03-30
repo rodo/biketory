@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.gis.geos import Polygon
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
+from procrastinate.exceptions import AlreadyEnqueued
 
 from traces.forms import TraceUploadForm
 from traces.models import Trace
@@ -50,9 +52,40 @@ def upload_trace(request):
                     )
                     if route:
                         _create_trace_hexagons(route)
-                    from traces.tasks import award_trace_badges, extract_surfaces
-                    extract_surfaces.defer(trace_id=trace.pk)
-                    award_trace_badges.defer(trace_id=trace.pk)
+                        extent = route.extent  # (xmin, ymin, xmax, ymax)
+                        buf = 0.01
+                        bbox = Polygon.from_bbox((
+                            extent[0] - buf, extent[1] - buf,
+                            extent[2] + buf, extent[3] + buf,
+                        ))
+                        bbox.srid = 4326
+                        trace.bbox = bbox
+                        trace.save(update_fields=["bbox"])
+                    from traces.tasks import (
+                        award_trace_badges,
+                        extract_surfaces,
+                        generate_tiles,
+                    )
+                    try:
+                        extract_surfaces.configure(
+                            queueing_lock=f"extract_surfaces_{trace.pk}",
+                        ).defer(trace_id=trace.pk)
+                    except AlreadyEnqueued:
+                        pass
+                    try:
+                        award_trace_badges.configure(
+                            queueing_lock=f"award_badges_{trace.pk}",
+                        ).defer(trace_id=trace.pk)
+                    except AlreadyEnqueued:
+                        pass
+                    if route:
+                        for zoom in range(4, 13):
+                            try:
+                                generate_tiles.configure(
+                                    queueing_lock=f"generate_tiles_{trace.pk}_{zoom}",
+                                ).defer(trace_id=trace.pk, zoom=zoom)
+                            except AlreadyEnqueued:
+                                pass
                     return redirect("trace_detail", trace_uuid=trace.uuid)
     else:
         form = TraceUploadForm()

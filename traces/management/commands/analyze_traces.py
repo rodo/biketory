@@ -1,6 +1,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from procrastinate.exceptions import AlreadyEnqueued
 
 from traces.models import Trace
 from traces.tasks import award_trace_badges, extract_surfaces
@@ -18,8 +19,18 @@ class Command(BaseCommand):
 
         count_extract = 0
         for trace in not_analyzed.iterator():
-            extract_surfaces.defer(trace_id=trace.pk)
-            award_trace_badges.defer(trace_id=trace.pk)
+            try:
+                extract_surfaces.configure(
+                    queueing_lock=f"extract_surfaces_{trace.pk}",
+                ).defer(trace_id=trace.pk)
+            except AlreadyEnqueued:
+                pass
+            try:
+                award_trace_badges.configure(
+                    queueing_lock=f"award_badges_{trace.pk}",
+                ).defer(trace_id=trace.pk)
+            except AlreadyEnqueued:
+                pass
             count_extract += 1
 
         surface_extracted = Trace.objects.filter(
@@ -28,7 +39,12 @@ class Command(BaseCommand):
 
         count_badges = 0
         for trace in surface_extracted.iterator():
-            award_trace_badges.defer(trace_id=trace.pk)
+            try:
+                award_trace_badges.configure(
+                    queueing_lock=f"award_badges_{trace.pk}",
+                ).defer(trace_id=trace.pk)
+            except AlreadyEnqueued:
+                pass
             count_badges += 1
 
         total = count_extract + count_badges
