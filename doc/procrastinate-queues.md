@@ -31,9 +31,9 @@ python manage.py procrastinate worker -q surface_extraction,badges,tiles
 
 | Task | Queue | Queueing lock | Description |
 |---|---|---|---|
-| `extract_surfaces` | `surface_extraction` | `extract_surfaces_{trace_id}` | Extract closed surfaces from a trace and set status to `surface_extracted`. |
-| `award_trace_badges` | `badges` | `award_badges_{trace_id}` | Award badges for a trace and set status to `analyzed`. Reschedules itself (5s delay) if the trace is not yet `surface_extracted`. |
-| `generate_tiles` | `tiles` | `generate_tiles_<trace_id>_<zoom>` (set at defer time) | Generate hexagon PNG tiles for a trace's bbox at a given zoom level (7–12). Reschedules itself (5s delay) if the trace is still `not_analyzed`. |
+| `extract_surfaces` | `surface_extraction` | `extract_surfaces_<trace_id>` (set at defer time) | Extract closed surfaces from a trace and set status to `surface_extracted`. |
+| `award_trace_badges` | `badges` | `award_badges_<trace_id>` (set at defer time) | Award badges for a trace and set status to `analyzed`. Reschedules itself (5s delay) if the trace is not yet `surface_extracted`. |
+| `generate_tiles` | `tiles` | `generate_tiles_<trace_id>_<zoom>` (set at defer time) | Generate hexagon PNG tiles for a trace's bbox at a given zoom level. Reschedules itself (5s delay) if the trace is still `not_analyzed`. |
 
 ## Trace lifecycle
 

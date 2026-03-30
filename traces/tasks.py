@@ -11,7 +11,7 @@ from traces.trace_processing import _extract_surfaces
 logger = logging.getLogger(__name__)
 
 
-@app.task(queue="surface_extraction", queueing_lock="extract_surfaces_{trace_id}")
+@app.task(queue="surface_extraction")
 def extract_surfaces(trace_id: int):
     """Extract closed surfaces from a trace and mark it as surface_extracted."""
     try:
@@ -30,7 +30,7 @@ def extract_surfaces(trace_id: int):
     logger.info("Trace %d surfaces extracted.", trace_id)
 
 
-@app.task(queue="badges", queueing_lock="award_badges_{trace_id}")
+@app.task(queue="badges")
 def award_trace_badges(trace_id: int):
     """Award badges for a trace and mark it as analyzed."""
     try:
@@ -48,7 +48,13 @@ def award_trace_badges(trace_id: int):
             "Trace %d not ready for badges (status=%s), rescheduling.",
             trace_id, trace.status,
         )
-        award_trace_badges.defer(trace_id=trace_id, schedule_in={"seconds": 5})
+        try:
+            award_trace_badges.configure(
+                queueing_lock=f"award_badges_{trace_id}",
+                schedule_in={"seconds": 5},
+            ).defer(trace_id=trace_id)
+        except AlreadyEnqueued:
+            pass
         return
 
     if trace.uploaded_by is None:

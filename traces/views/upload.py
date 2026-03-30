@@ -66,8 +66,18 @@ def upload_trace(request):
                         extract_surfaces,
                         generate_tiles,
                     )
-                    extract_surfaces.defer(trace_id=trace.pk)
-                    award_trace_badges.defer(trace_id=trace.pk)
+                    try:
+                        extract_surfaces.configure(
+                            queueing_lock=f"extract_surfaces_{trace.pk}",
+                        ).defer(trace_id=trace.pk)
+                    except AlreadyEnqueued:
+                        pass
+                    try:
+                        award_trace_badges.configure(
+                            queueing_lock=f"award_badges_{trace.pk}",
+                        ).defer(trace_id=trace.pk)
+                    except AlreadyEnqueued:
+                        pass
                     if route:
                         for zoom in range(4, 13):
                             try:
