@@ -28,7 +28,7 @@ public class UploadAndStatsApiSimulation extends BaseSimulation {
                 uploadScenario(USER1, USER2, PASSWORD)
                         .injectOpen(atOnceUsers(2))
                         .andThen(
-                                verifyStatsApiScenario(USER1, USER2)
+                                verifyStatsApiScenario()
                                         .injectOpen(atOnceUsers(1))
                         )
         )

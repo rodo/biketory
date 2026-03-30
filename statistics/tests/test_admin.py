@@ -1,18 +1,21 @@
 import datetime
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from statistics.models import DailyStats, MonthlyStats, WeeklyStats, YearlyStats
+
+user_model = get_user_model()
 
 
 class StatsAdminTest(TestCase):
     """All four stats models are accessible in the Django admin."""
 
     def setUp(self):
-        self.admin = User.objects.create_superuser("admin", "admin@test.com", "pass")
-        self.client.login(username="admin", password="pass")
+        self.admin = user_model.objects.create_superuser("admin", "admin@test.com", "pass")
+        self.admin.refresh_from_db()
+        self.client.force_login(self.admin)
         DailyStats.objects.create(period=datetime.date(2025, 1, 1))
         WeeklyStats.objects.create(period=datetime.date(2025, 1, 6))  # Monday
         MonthlyStats.objects.create(period=datetime.date(2025, 1, 1))

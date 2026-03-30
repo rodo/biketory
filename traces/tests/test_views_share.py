@@ -28,7 +28,7 @@ class SharedProfileViewTest(TestCase):
 
     def test_context_contains_username(self):
         resp = self.client.get(reverse("shared_profile", args=[self.code]))
-        self.assertEqual(resp.context["username"], "alice")
+        self.assertEqual(resp.context["username"], self.user.username)
 
     def test_context_contains_stats(self):
         resp = self.client.get(reverse("shared_profile", args=[self.code]))

@@ -38,11 +38,11 @@ class LandingViewTest(TestCase):
         self.assertIsNone(data["current_user"])
 
     def test_hexagons_api_current_user_when_authenticated(self):
-        make_user()
-        self.client.login(username="alice", password="pass")
+        user = make_user()
+        self.client.force_login(user)
         resp = self.client.get(reverse("landing_hexagons"))
         data = resp.json()
-        self.assertEqual(data["current_user"], "alice")
+        self.assertEqual(data["current_user"], user.username)
 
     def test_hexagons_api_with_bbox(self):
         resp = self.client.get(
@@ -68,9 +68,8 @@ class RegisterViewTest(TestCase):
 
     def test_post_creates_user(self):
         self.client.post(reverse("register"), {
-            "username": "newuser",
             "email": "newuser@example.com",
             "password1": "Str0ngPass!",
             "password2": "Str0ngPass!",
         })
-        self.assertTrue(User.objects.filter(username="newuser").exists())
+        self.assertTrue(User.objects.filter(email="newuser@example.com").exists())

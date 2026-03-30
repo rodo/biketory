@@ -35,11 +35,11 @@ public class AllSimulation extends BaseSimulation {
                                 uploadScenario(USER1, USER2, PASSWORD)
                                         .injectOpen(atOnceUsers(2))
                                         .andThen(
-                                                verifyStatsScenario(USER1, USER2)
+                                                verifyStatsScenario()
                                                         .injectOpen(atOnceUsers(1))
                                         )
                                         .andThen(
-                                                verifyStatsApiScenario(USER1, USER2)
+                                                verifyStatsApiScenario()
                                                         .injectOpen(atOnceUsers(1))
                                         )
                         )

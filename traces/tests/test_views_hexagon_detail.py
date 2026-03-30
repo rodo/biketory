@@ -35,7 +35,7 @@ class HexagonDetailTest(TestCase):
         resp = self.client.get(reverse("hexagon_detail", args=[self.hexagon.pk]))
         data = json.loads(resp.content)
         self.assertEqual(len(data["scores"]), 1)
-        self.assertEqual(data["scores"][0]["username"], "alice")
+        self.assertEqual(data["scores"][0]["username"], self.user.username)
         self.assertEqual(data["scores"][0]["points"], 5)
 
     def test_unknown_hexagon_returns_404(self):

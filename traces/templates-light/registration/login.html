@@ -142,14 +142,14 @@ button[type="submit"]:hover { opacity: 0.88; }
   <p class="subtitle">Connectez-vous pour envoyer vos traces.</p>
 
   {% if form.errors %}
-    <div class="errors">Nom d'utilisateur ou mot de passe invalide.</div>
+    <div class="errors">Email ou mot de passe invalide.</div>
   {% endif %}
 
   <form method="post">
     {% csrf_token %}
     <div class="field">
-      <label for="id_username">Nom d'utilisateur</label>
-      <input type="text" name="username" id="id_username" autofocus autocomplete="username">
+      <label for="id_email">Email</label>
+      <input type="email" name="email" id="id_email" autofocus autocomplete="email">
     </div>
     <div class="field">
       <label for="id_password">Mot de passe</label>

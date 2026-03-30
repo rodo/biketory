@@ -14,7 +14,7 @@ class TraceLengthLimitTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def _gpx_with_length(self, length_km):
         """Build a minimal GPX string spanning approximately length_km."""
@@ -59,7 +59,7 @@ class UploadQuotaTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def _minimal_gpx(self, time_tag="2024-01-01T00:00:00Z"):
         return (
@@ -115,7 +115,7 @@ class AuthenticatedViewTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
-        self.client.login(username="alice", password="pass")
+        self.client.force_login(self.user)
 
     def test_upload_get_returns_200(self):
         resp = self.client.get(reverse("upload_trace"))
