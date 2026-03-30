@@ -182,15 +182,11 @@ public abstract class BaseSimulation extends Simulation {
                                       .replaceAll(".*/traces/([0-9a-f-]+)/?$", "$1");
                     return session.set("traceUuid", uuid);
                 })
-                .asLongAs(session -> !"analyzed".equals(session.getString("traceStatus")))
-                .on(
-                        exec(
-                                http("Poll trace status")
-                                        .get("/api/traces/#{traceUuid}/status/")
-                                        .check(status().is(200))
-                                        .check(jsonPath("$.status").saveAs("traceStatus"))
-                        )
-                        .pause(2)
+                .exec(
+                        http("GET trace status")
+                                .get("/api/traces/#{traceUuid}/status/")
+                                .check(status().is(200))
+                                .check(jsonPath("$.status").exists().saveAs("traceStatus"))
                 );
     }
 
