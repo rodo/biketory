@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from statistics.models import MonthlyStats, UserMonthlyStats
 
-User = get_user_model()
+user_model = get_user_model()
 
 
 class StatsViewTest(TestCase):
@@ -174,9 +174,9 @@ class StatsApiPerUserTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.alice = User.objects.create_user(username="alice", password="test")
+        cls.alice = user_model.objects.create_user(username="alice", password="test")
         cls.alice.refresh_from_db()
-        cls.bob = User.objects.create_user(username="bob", password="test")
+        cls.bob = user_model.objects.create_user(username="bob", password="test")
         cls.bob.refresh_from_db()
 
     def test_returns_per_user_datasets(self):
@@ -232,7 +232,7 @@ class StatsApiPerUserTest(TestCase):
 
     def test_colors_cycle_beyond_palette(self):
         users = [
-            User.objects.create_user(username=f"user{i}", password="test")
+            user_model.objects.create_user(username=f"user{i}", password="test")
             for i in range(12)
         ]
         for u in users:

@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from traces.models import Friendship, UserSurfaceStats
 
-User = get_user_model()
+user_model = get_user_model()
 
 
 def _get_friends(user):
@@ -15,7 +15,7 @@ def _get_friends(user):
         Q(to_user=user, status=Friendship.STATUS_ACCEPTED)
     ).values_list("from_user_id", "to_user_id")
     ids = {uid for pair in friend_ids for uid in pair} - {user.pk}
-    return User.objects.filter(pk__in=ids)
+    return user_model.objects.filter(pk__in=ids)
 
 
 @login_required
@@ -41,7 +41,7 @@ def friends(request):
                 except ValueError:
                     # Search by username (case-insensitive partial)
                     candidates = list(
-                        User.objects.filter(username__icontains=query).exclude(pk=user.pk)[:20]
+                        user_model.objects.filter(username__icontains=query).exclude(pk=user.pk)[:20]
                     )
 
                 # Annotate each candidate with friendship status
@@ -70,7 +70,7 @@ def friends(request):
 
         elif action == "send":
             to_id = request.POST.get("to_user_id")
-            to_user = get_object_or_404(User, pk=to_id)
+            to_user = get_object_or_404(user_model, pk=to_id)
             if to_user != user:
                 Friendship.objects.get_or_create(from_user=user, to_user=to_user)
             return redirect("friends")
