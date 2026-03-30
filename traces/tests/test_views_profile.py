@@ -56,6 +56,51 @@ class ProfileGenerateTokenTest(TestCase):
         self.assertEqual(ApiToken.objects.filter(user=self.user).count(), 1)
 
 
+class ProfileUpdateUsernameTest(TestCase):
+
+    def setUp(self):
+        self.user = make_user()
+        self.client.force_login(self.user)
+
+    def test_update_username(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_username",
+            "username": "new_name",
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, "new_name")
+
+    def test_empty_username_shows_error(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_username",
+            "username": "",
+        })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_too_long_username_shows_error(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_username",
+            "username": "a" * 151,
+        })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_invalid_chars_shows_error(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_username",
+            "username": "bad name!",
+        })
+        self.assertEqual(resp.status_code, 200)
+
+    def test_duplicate_username_shows_error(self):
+        other = make_user("bob")
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_username",
+            "username": other.username,
+        })
+        self.assertEqual(resp.status_code, 200)
+
+
 class ProfileUpdateEmailTest(TestCase):
 
     def setUp(self):
