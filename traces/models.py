@@ -18,6 +18,7 @@ class Trace(models.Model):
 
     gpx_file = models.FileField(upload_to="gpx/")
     route = models.MultiLineStringField(null=True, blank=True)
+    bbox = models.PolygonField(null=True, blank=True, srid=4326)
     length_km = models.FloatField(null=True, blank=True)
     extracted = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NOT_ANALYZED)
