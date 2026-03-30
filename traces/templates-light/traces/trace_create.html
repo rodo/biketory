@@ -110,7 +110,7 @@ html, body { overflow: hidden; padding-top: 0; }
 (function() {
   const saved = document.cookie.split('; ').find(r => r.startsWith('map_pos='));
   const pos = saved ? saved.split('=')[1].split(',').map(Number) : null;
-  const map = L.map('map').setView(pos ? [pos[0], pos[1]] : [46.8, 2.3], pos ? pos[2] : 6);
+  const map = L.map('map', { minZoom: {{ map_zoom_min }}, maxZoom: {{ map_zoom_max }} }).setView(pos ? [pos[0], pos[1]] : [46.8, 2.3], pos ? pos[2] : 6);
 
   map.on('moveend', () => {
     const c = map.getCenter();

@@ -158,8 +158,17 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-# Maximum zoom level for pre-generated hexagon PNG tiles
-HEXAGON_TILE_MAX_ZOOM = 10
+# Map zoom bounds (all maps)
+MAP_ZOOM_MIN = 5
+MAP_ZOOM_MAX = 14
+
+# Zoom range for serving static hexagon tiles from media/
+TILES_STATIC_MIN_ZOOM = 5
+TILES_STATIC_MAX_ZOOM = 10
+
+# Zoom range for dynamic (GeoJSON) hexagon loading
+TILES_DYNAMIC_MIN_ZOOM = 11
+TILES_DYNAMIC_MAX_ZOOM = 14
 
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "profile"

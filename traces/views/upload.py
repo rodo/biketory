@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Polygon
 from django.shortcuts import redirect, render
@@ -79,7 +80,7 @@ def upload_trace(request):
                     except AlreadyEnqueued:
                         pass
                     if route:
-                        for zoom in range(4, 13):
+                        for zoom in range(settings.TILES_STATIC_MIN_ZOOM, settings.TILES_STATIC_MAX_ZOOM + 1):
                             try:
                                 generate_tiles.configure(
                                     queueing_lock=f"generate_tiles_{trace.pk}_{zoom}",

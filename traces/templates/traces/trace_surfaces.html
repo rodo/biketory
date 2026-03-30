@@ -100,7 +100,7 @@ h1 {
 {% if surfaces %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  const map = L.map('map');
+  const map = L.map('map', { minZoom: {{ map_zoom_min }}, maxZoom: {{ map_zoom_max }} });
   L.tileLayer('{{ tile_server_url }}', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
