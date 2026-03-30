@@ -28,7 +28,7 @@ class ProfileGetTest(TestCase):
         resp = self.client.get(reverse("profile"))
         for key in ("traces_count", "hexagons_count", "total_points",
                      "hexagons_geojson", "secret_uuid", "friends_count"):
-            self.assertIn(key, resp.context)
+            self.assertIn(key, resp.context, f"Missing context key: {key}")
 
 
 class ProfileGenerateTokenTest(TestCase):
@@ -44,7 +44,7 @@ class ProfileGenerateTokenTest(TestCase):
         )
 
     def test_generate_token(self):
-        resp = self.client.post(reverse("profile"), {"action": "generate_token"})
+        resp = self.client.post(reverse("settings"), {"action": "generate_token"})
         self.assertEqual(resp.status_code, 302)
         self.assertTrue(ApiToken.objects.filter(user=self.user).exists())
 
@@ -52,7 +52,7 @@ class ProfileGenerateTokenTest(TestCase):
         ApiToken.objects.create(
             user=self.user, expires_at=timezone.now() + timedelta(days=31),
         )
-        self.client.post(reverse("profile"), {"action": "generate_token"})
+        self.client.post(reverse("settings"), {"action": "generate_token"})
         self.assertEqual(ApiToken.objects.filter(user=self.user).count(), 1)
 
 
@@ -63,7 +63,7 @@ class ProfileUpdateEmailTest(TestCase):
         self.client.force_login(self.user)
 
     def test_update_email(self):
-        resp = self.client.post(reverse("profile"), {
+        resp = self.client.post(reverse("settings"), {
             "action": "update_email",
             "email": "new@example.com",
         })
@@ -72,14 +72,14 @@ class ProfileUpdateEmailTest(TestCase):
         self.assertEqual(self.user.email, "new@example.com")
 
     def test_empty_email_shows_error(self):
-        resp = self.client.post(reverse("profile"), {
+        resp = self.client.post(reverse("settings"), {
             "action": "update_email",
             "email": "",
         })
         self.assertEqual(resp.status_code, 200)
 
     def test_invalid_email_shows_error(self):
-        resp = self.client.post(reverse("profile"), {
+        resp = self.client.post(reverse("settings"), {
             "action": "update_email",
             "email": "notanemail",
         })
@@ -89,7 +89,7 @@ class ProfileUpdateEmailTest(TestCase):
         other = make_user("bob")
         other.email = "taken@example.com"
         other.save()
-        resp = self.client.post(reverse("profile"), {
+        resp = self.client.post(reverse("settings"), {
             "action": "update_email",
             "email": "taken@example.com",
         })
@@ -103,7 +103,7 @@ class ProfileUpdateHomeLocationTest(TestCase):
         self.client.force_login(self.user)
 
     def test_update_home_location(self):
-        resp = self.client.post(reverse("profile"), {
+        resp = self.client.post(reverse("settings"), {
             "action": "update_home_location",
             "lat": "48.85",
             "lng": "2.35",
@@ -111,7 +111,7 @@ class ProfileUpdateHomeLocationTest(TestCase):
         self.assertEqual(resp.status_code, 302)
 
     def test_invalid_coords_ignored(self):
-        resp = self.client.post(reverse("profile"), {
+        resp = self.client.post(reverse("settings"), {
             "action": "update_home_location",
             "lat": "abc",
             "lng": "2.35",

@@ -11,6 +11,7 @@ from traces.models import (
     Trace,
     UserBadge,
     UserProfile,
+    UserSurfaceStats,
 )
 
 
@@ -68,6 +69,8 @@ def profile(request):
     user_profile, _created = UserProfile.objects.get_or_create(user=user)
     home_location = user_profile.home_location
 
+    stats, _created = UserSurfaceStats.objects.get_or_create(user=user)
+
     return render(request, "traces/profile.html", {
         "traces_count": traces_count,
         "first_trace_date": first_trace_date,
@@ -78,4 +81,5 @@ def profile(request):
         "pending_received": pending_received,
         "home_location": home_location,
         "badges_earned": badges_earned,
+        "secret_uuid": stats.secret_uuid,
     })

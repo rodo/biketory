@@ -92,7 +92,7 @@ class ProfileTokenPremiumTest(TestCase):
         self.client.force_login(self.user)
 
     def test_generate_token_without_premium_creates_nothing(self):
-        self.client.post(reverse("profile"), {"action": "generate_token"})
+        self.client.post(reverse("settings"), {"action": "generate_token"})
         self.assertFalse(ApiToken.objects.filter(user=self.user).exists())
 
     def test_generate_token_with_premium_creates_token(self):
@@ -101,19 +101,19 @@ class ProfileTokenPremiumTest(TestCase):
             start_date=_today() - datetime.timedelta(days=1),
             end_date=_today() + datetime.timedelta(days=30),
         )
-        self.client.post(reverse("profile"), {"action": "generate_token"})
+        self.client.post(reverse("settings"), {"action": "generate_token"})
         self.assertTrue(ApiToken.objects.filter(user=self.user).exists())
 
-    def test_profile_context_is_premium_false_without_subscription(self):
-        resp = self.client.get(reverse("profile"))
+    def test_settings_context_is_premium_false_without_subscription(self):
+        resp = self.client.get(reverse("settings"))
         self.assertFalse(resp.context["is_premium"])
         self.assertIsNone(resp.context["api_token"])
 
-    def test_profile_context_is_premium_true_with_subscription(self):
+    def test_settings_context_is_premium_true_with_subscription(self):
         Subscription.objects.create(
             user=self.user,
             start_date=_today() - datetime.timedelta(days=1),
             end_date=_today() + datetime.timedelta(days=30),
         )
-        resp = self.client.get(reverse("profile"))
+        resp = self.client.get(reverse("settings"))
         self.assertTrue(resp.context["is_premium"])
