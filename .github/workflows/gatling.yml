@@ -62,6 +62,9 @@ jobs:
       - name: Run migrations
         run: python manage.py migrate --no-input
 
+      - name: Start procrastinate worker
+        run: python manage.py procrastinate worker -q surface_extraction,badges,tiles &
+
       - name: Start Django server
         run: |
           python manage.py runserver 0.0.0.0:8000 &
@@ -69,9 +72,6 @@ jobs:
             curl -sf http://localhost:8000/ > /dev/null && break
             sleep 1
           done
-
-      - name: Start procrastinate worker
-        run: python manage.py procrastinate worker -q surface_extraction,badges &
 
       - name: Set up Java
         uses: actions/setup-java@v4
