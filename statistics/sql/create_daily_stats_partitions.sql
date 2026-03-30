@@ -22,10 +22,10 @@ BEGIN
                 SELECT 1 FROM pg_class WHERE relname = subname
             ) THEN
                 EXECUTE format(
-                    'CREATE TABLE %I PARTITION OF %I FOR VALUES FROM (%L) TO (%L)',
+                    'CREATE TABLE %%I PARTITION OF %%I FOR VALUES FROM (%%L) TO (%%L)',
                     subname, parent.relname, m, m_end
                 );
-                RAISE NOTICE 'Created %', subname;
+                RAISE NOTICE 'Created %%', subname;
             END IF;
 
             m := m_end;
