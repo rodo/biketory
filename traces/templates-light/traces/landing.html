@@ -147,7 +147,7 @@ html, body { overflow: hidden; padding-top: 0; }
   const _lastCenter = {{ last_center|safe }};
   const _defaultPos = _lastCenter || [0, 0];
   const _defaultZoom = _lastCenter ? 14 : 2;
-  const map = L.map('map').setView(_pos ? [_pos[0], _pos[1]] : _defaultPos, _pos ? _pos[2] : _defaultZoom);
+  const map = L.map('map', { minZoom: {{ map_zoom_min }}, maxZoom: {{ map_zoom_max }} }).setView(_pos ? [_pos[0], _pos[1]] : _defaultPos, _pos ? _pos[2] : _defaultZoom);
 
   map.on('moveend', () => {
     const c = map.getCenter();
@@ -183,7 +183,7 @@ html, body { overflow: hidden; padding-top: 0; }
     '#f39c12', '#1abc9c', '#c0392b', '#3498db',
   ];
 
-  const MIN_HEX_ZOOM = 11;
+  const MIN_HEX_ZOOM = {{ tiles_dynamic_min_zoom }};
   let hexLayer = null;
   let hexAbort = null;
   let friendUsernames = new Set();
@@ -191,7 +191,7 @@ html, body { overflow: hidden; padding-top: 0; }
 
   // Static PNG tile overlay for low zoom levels
   const hexTileLayer = L.tileLayer('{{ media_url }}tiles/{z}/{x}/{y}.png', {
-    maxZoom: 10, minZoom: 0, opacity: 0.8, errorTileUrl: ''
+    minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
   });
 
   function updateOverlayVisibility() {

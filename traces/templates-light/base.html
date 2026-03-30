@@ -41,13 +41,11 @@
     }
 
     .topbar-inner {
-      max-width: 1200px;
-      margin: 0 auto;
       height: 100%;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 0 1.5rem;
+      gap: 1.75rem;
     }
 
     .topbar .logo {
@@ -80,24 +78,27 @@
 
     .nav-links a:hover { opacity: 1; color: var(--bar-accent); }
 
-    .nav-links .btn-upload {
+    .btn-upload {
       background: var(--bar-accent);
       color: #ffffff;
       padding: 0.35rem 1rem;
       border-radius: 6px;
       font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
       opacity: 1;
     }
 
-    .nav-links .btn-upload:hover { opacity: 0.88; color: #ffffff; }
+    .btn-upload:hover { opacity: 0.88; color: #ffffff; }
 
     .nav-auth {
       display: flex;
       align-items: center;
       gap: 1rem;
+      margin-left: auto;
     }
 
-    .nav-auth a {
+    .nav-auth a:not(.btn-upload):not(.btn-primary) {
       color: var(--bar-text);
       text-decoration: none;
       font-size: 0.88rem;
@@ -106,7 +107,7 @@
       transition: opacity 0.2s;
     }
 
-    .nav-auth a:hover { opacity: 1; }
+    .nav-auth a:not(.btn-upload):not(.btn-primary):hover { opacity: 1; }
 
     .nav-auth .btn-primary {
       background: var(--bar-accent);
@@ -114,6 +115,8 @@
       padding: 0.4rem 1.1rem;
       border-radius: 6px;
       font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
       opacity: 1;
       transition: opacity 0.2s;
     }
@@ -207,14 +210,13 @@
     </a>
     <div class="nav-links">
       {% block topbar_extra %}{% endblock %}
-      <a href="{% url 'trace_create' %}">{% trans "Create" %}</a>
       <a href="{% url 'stats' %}">{% trans "Stats" %}</a>
       <a href="{% url 'badges' %}">{% trans "Badges" %}</a>
+    </div>
+    <div class="nav-auth">
       {% if user.is_authenticated %}
         <a href="{% url 'upload_trace' %}" class="btn-upload">{% trans "Upload" %}</a>
       {% endif %}
-    </div>
-    <div class="nav-auth">
       {% if user.is_superuser %}
         <a href="{% url 'admin_dashboard' %}">{% trans "Admin" %}</a>
       {% endif %}

@@ -173,7 +173,7 @@ h1 {
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  const map = L.map('map');
+  const map = L.map('map', { minZoom: {{ map_zoom_min }}, maxZoom: {{ map_zoom_max }} });
   L.tileLayer('{{ tile_server_url }}', {
     attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
@@ -186,7 +186,7 @@ h1 {
         layer.bindTooltip(`${feature.properties.points}pt`, { sticky: true, className: 'surface-tooltip' });
       },
     }).addTo(map);
-    map.fitBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 10 });
+    map.fitBounds(layer.getBounds(), { padding: [40, 40] });
   } else {
     {% if home_location %}
     map.setView([{{ home_location.y }}, {{ home_location.x }}], 9);

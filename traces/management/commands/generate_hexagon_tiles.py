@@ -16,12 +16,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--zoom-min", type=int, default=0,
-            help="Minimum zoom level (default: 0)",
+            "--zoom-min", type=int, default=settings.TILES_STATIC_MIN_ZOOM,
+            help="Minimum zoom level (default: TILES_STATIC_MIN_ZOOM)",
         )
         parser.add_argument(
-            "--zoom-max", type=int, default=settings.HEXAGON_TILE_MAX_ZOOM,
-            help="Maximum zoom level (default: HEXAGON_TILE_MAX_ZOOM)",
+            "--zoom-max", type=int, default=settings.TILES_STATIC_MAX_ZOOM,
+            help="Maximum zoom level (default: TILES_STATIC_MAX_ZOOM)",
         )
         parser.add_argument(
             "--clean", action="store_true",
