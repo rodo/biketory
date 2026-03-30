@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render
 from django.utils import timezone
-
 from procrastinate.contrib.django.models import ProcrastinateJob, ProcrastinateWorker
 
 

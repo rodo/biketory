@@ -122,14 +122,14 @@ button[type="submit"]:hover { opacity: 0.88; }
   <p class="subtitle">Sign in to upload your traces.</p>
 
   {% if form.errors %}
-    <div class="errors">Invalid username or password.</div>
+    <div class="errors">Invalid email or password.</div>
   {% endif %}
 
   <form method="post">
     {% csrf_token %}
     <div class="field">
-      <label for="id_username">Username</label>
-      <input type="text" name="username" id="id_username" autofocus autocomplete="username">
+      <label for="id_email">Email</label>
+      <input type="email" name="email" id="id_email" autofocus autocomplete="email">
     </div>
     <div class="field">
       <label for="id_password">Password</label>
