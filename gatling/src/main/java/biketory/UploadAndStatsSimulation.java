@@ -15,7 +15,7 @@ public class UploadAndStatsSimulation extends BaseSimulation {
         setUp(
                 uploadScenario(USER1, USER2, PASSWORD).injectOpen(atOnceUsers(2))
                         .andThen(
-                                verifyStatsScenario(USER1, USER2).injectOpen(atOnceUsers(1))
+                                verifyStatsScenario().injectOpen(atOnceUsers(1))
                         )
         )
                 .protocols(httpProtocol)
