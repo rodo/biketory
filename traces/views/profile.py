@@ -11,7 +11,6 @@ from traces.models import (
     Trace,
     UserBadge,
     UserProfile,
-    UserSurfaceStats,
 )
 
 
