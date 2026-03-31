@@ -103,6 +103,8 @@ h2 {
 
 .hint { font-size: 0.78rem; color: var(--muted); }
 .error { color: #c0392b; font-size: 0.78rem; margin-top: 0.35rem; }
+.success { color: #27ae60; font-size: 0.78rem; margin-top: 0.35rem; }
+.btn-accent:disabled { opacity: 0.45; cursor: default; }
 
 /* ── Select ── */
 .form-select {
@@ -131,10 +133,12 @@ h2 {
     <input type="hidden" name="action" value="update_username">
     <div class="form-row">
       <input type="text" name="username" value="{{ user.username }}" class="form-input">
-      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+      <button type="submit" class="btn-accent" {% if success_field == "username" %}disabled{% endif %}>{% trans "Save" %}</button>
     </div>
     {% if username_error %}
       <div class="error">{{ username_error }}</div>
+    {% elif success_field == "username" %}
+      <div class="success">{% trans "Saved." %}</div>
     {% endif %}
   </form>
 </div>
@@ -146,10 +150,12 @@ h2 {
     <input type="hidden" name="action" value="update_email">
     <div class="form-row">
       <input type="email" name="email" value="{{ user.email }}" class="form-input">
-      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+      <button type="submit" class="btn-accent" {% if success_field == "email" %}disabled{% endif %}>{% trans "Save" %}</button>
     </div>
     {% if email_error %}
       <div class="error">{{ email_error }}</div>
+    {% elif success_field == "email" %}
+      <div class="success">{% trans "Saved." %}</div>
     {% endif %}
   </form>
 </div>
@@ -173,8 +179,11 @@ h2 {
       <input type="text" id="home-lng" name="lng" placeholder="{% trans 'Longitude' %}"
              {% if home_location %}value="{{ home_location.x|floatformat:5 }}"{% endif %}
              class="form-input">
-      <button type="submit" class="btn-accent">{% trans "Save" %}</button>
+      <button type="submit" class="btn-accent" {% if success_field == "home_location" %}disabled{% endif %}>{% trans "Save" %}</button>
     </div>
+    {% if success_field == "home_location" %}
+      <div class="success">{% trans "Saved." %}</div>
+    {% endif %}
   </form>
 </div>
 
@@ -245,4 +254,18 @@ h2 {
     <div class="hint">{% url 'subscription_required' as premium_url %}{% blocktrans %}Available with a <a href="{{ premium_url }}" style="color:var(--accent);font-weight:600;text-decoration:none;">Premium</a> subscription.{% endblocktrans %}</div>
   {% endif %}
 </div>
+
+{% if success_field %}
+<script>
+document.querySelectorAll('.stat-card .form-input, .stat-card .form-select').forEach(input => {
+  input.addEventListener('input', () => {
+    const card = input.closest('.stat-card');
+    const btn = card.querySelector('button[disabled]');
+    const msg = card.querySelector('.success');
+    if (btn) btn.disabled = false;
+    if (msg) msg.remove();
+  });
+});
+</script>
+{% endif %}
 {% endblock %}

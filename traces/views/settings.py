@@ -39,9 +39,9 @@ def settings(request):
                 profile, _created = UserProfile.objects.get_or_create(user=request.user)
                 profile.home_location = Point(lng, lat, srid=4326)
                 profile.save(update_fields=["home_location"])
+                request.success_field = "home_location"
             except (ValueError, TypeError):
                 pass
-            return redirect("settings")
 
         if action == "update_username":
             new_username = request.POST.get("username", "").strip()
@@ -59,7 +59,7 @@ def settings(request):
                 else:
                     request.user.username = new_username
                     request.user.save(update_fields=["username"])
-                    return redirect("settings")
+                    request.success_field = "username"
             request.username_error = username_error
 
         if action == "update_email":
@@ -76,7 +76,7 @@ def settings(request):
                 else:
                     request.user.email = new_email
                     request.user.save(update_fields=["email"])
-                    return redirect("settings")
+                    request.success_field = "email"
             request.email_error = email_error
 
     user = request.user
@@ -85,6 +85,7 @@ def settings(request):
     api_token = ApiToken.objects.filter(user=user).first() if is_premium else None
     username_error = getattr(request, "username_error", None)
     email_error = getattr(request, "email_error", None)
+    success_field = getattr(request, "success_field", None)
     user_profile, _created = UserProfile.objects.get_or_create(user=user)
     home_location = user_profile.home_location
 
@@ -100,4 +101,5 @@ def settings(request):
         "username_error": username_error,
         "email_error": email_error,
         "home_location": home_location,
+        "success_field": success_field,
     })
