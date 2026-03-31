@@ -65,6 +65,16 @@ def award_trace_badges(trace_id: int):
     logger.info("Awarding badges for trace %d (user %s)", trace_id, trace.uploaded_by.username)
     award_badges(trace.uploaded_by, trace)
     Trace.objects.filter(pk=trace_id).update(status=Trace.STATUS_ANALYZED)
+
+    from notifs.helpers import notify
+    from notifs.models import Notification
+
+    notify(
+        trace.uploaded_by,
+        Notification.TRACE_ANALYZED,
+        "Your trace has been analyzed",
+        f"/traces/{trace.uuid}/",
+    )
     logger.info("Trace %d analyzed.", trace_id)
 
 

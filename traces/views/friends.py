@@ -72,7 +72,17 @@ def friends(request):
             to_id = request.POST.get("to_user_id")
             to_user = get_object_or_404(user_model, pk=to_id)
             if to_user != user:
-                Friendship.objects.get_or_create(from_user=user, to_user=to_user)
+                _, created = Friendship.objects.get_or_create(from_user=user, to_user=to_user)
+                if created:
+                    from notifs.helpers import notify
+                    from notifs.models import Notification
+
+                    notify(
+                        to_user,
+                        Notification.FRIEND_REQUEST,
+                        f"{user.username} sent you a friend request",
+                        "/friends/",
+                    )
             return redirect("friends")
 
         elif action == "accept":
@@ -80,6 +90,15 @@ def friends(request):
             f = get_object_or_404(Friendship, pk=f_id, to_user=user, status=Friendship.STATUS_PENDING)
             f.status = Friendship.STATUS_ACCEPTED
             f.save()
+            from notifs.helpers import notify
+            from notifs.models import Notification
+
+            notify(
+                f.from_user,
+                Notification.FRIEND_ACCEPTED,
+                f"{user.username} accepted your friend request",
+                "/friends/",
+            )
             return redirect("friends")
 
         elif action == "decline":

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Notifications" %} — Biketory{% endblock %}
+
+{% block extra_css %}
+  .notif-page { max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+  .notif-page h1 { font-size: 1.3rem; margin-bottom: 1.2rem; }
+  .notif-list { list-style: none; }
+  .notif-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e8e5dd;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .notif-item.unread { background: #f0eddf; }
+  .notif-item a { color: var(--bar-accent); text-decoration: none; font-weight: 500; }
+  .notif-item a:hover { text-decoration: underline; }
+  .notif-time { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+  .notif-empty { color: var(--muted); font-size: 0.9rem; }
+{% endblock %}
+
+{% block content %}
+<div class="notif-page">
+  <h1>{% trans "Notifications" %}</h1>
+
+  {% if notifications %}
+    <ul class="notif-list">
+      {% for n in notifications %}
+        <li class="notif-item {% if not n.is_read %}unread{% endif %}">
+          <span>
+            {% if n.link %}
+              <a href="{{ n.link }}">{{ n.message }}</a>
+            {% else %}
+              {{ n.message }}
+            {% endif %}
+          </span>
+          <span class="notif-time">{{ n.created_at|timesince }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="notif-empty">{% trans "No notifications yet." %}</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  fetch("{% url 'notifications_mark_read' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+      "Content-Type": "application/json"
+    }
+  });
+</script>
+{% endblock %}

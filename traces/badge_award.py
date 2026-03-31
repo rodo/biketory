@@ -216,4 +216,14 @@ def award_badges(user, trace):
             ignore_conflicts=True,
         )
 
+    if new_badge_ids:
+        from notifs.helpers import notify_bulk
+        from notifs.models import Notification
+
+        items = [
+            (f"Badge earned: {_BADGE_NAMES.get(bid, bid)}", "/badges/")
+            for bid in new_badge_ids
+        ]
+        notify_bulk(user, Notification.BADGE_AWARDED, items)
+
     return [_BADGE_NAMES.get(bid, bid) for bid in new_badge_ids]
