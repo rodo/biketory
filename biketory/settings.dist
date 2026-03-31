@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "procrastinate.contrib.django",
     "traces",
     "statistics",
+    "notifs",
 ]
 
 if STRAVA_AUTH_ENABLED:
@@ -84,6 +85,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "traces.context_processors.tile_server",
+                "notifs.context_processors.notifications",
             ],
         },
     },

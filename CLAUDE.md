@@ -49,6 +49,7 @@ traces/            Main application
     traces/profile.html          User stats, hexagon map, friends summary
     traces/friends.html          Friend search, pending requests, friends list
     traces/legal.html            Legal notice
+    notifs/notifications.html    Notifications list
     registration/login.html
     registration/register.html
   management/commands/
@@ -69,6 +70,7 @@ traces/            Main application
 | `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5) |
 | `Friendship` | `from_user` (FK), `to_user` (FK), `status` (pending/accepted), `created_at` — unique (from_user, to_user) |
 | `UserSurfaceStats` | `user` (OneToOne), `total_area` (float, deg²), `union` (MultiPolygon), `secret_uuid`, `updated_at` |
+| `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed), `message`, `link`, `is_read`, `created_at` |
 
 ## Management commands
 
@@ -124,6 +126,8 @@ python manage.py reset_data [--yes]
 | `/friends/` | `friends` | required |
 | `/legal/` | `legal` | public |
 | `/s/<code>/` | `shared_profile` | public |
+| `/notifications/` | `notifications_list` | required |
+| `/notifications/mark-read/` | `notifications_mark_read` (POST, JSON) | required |
 
 ## Landing page map
 
