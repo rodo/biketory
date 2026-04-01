@@ -37,9 +37,9 @@ def register(request):
 
 
 def _accept_referral(token, user):
-    from referrals.models import Referral
     from notifs.helpers import notify
     from notifs.models import Notification
+    from referrals.models import Referral
 
     referral = Referral.objects.filter(
         token=token, status=Referral.PENDING
