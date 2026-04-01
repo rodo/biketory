@@ -114,3 +114,26 @@ class UserYearlyStats(BaseUserStats):
                 name="useryearlystats_period_is_jan_first",
             ),
         ]
+
+
+class LeaderboardEntry(models.Model):
+    user_id = models.IntegerField()
+    username = models.CharField(max_length=150)
+    is_premium = models.BooleanField(default=False)
+    hexagons_conquered = models.PositiveIntegerField(default=0)
+    hexagons_acquired = models.PositiveIntegerField(default=0)
+    rank_conquered = models.PositiveIntegerField()
+    rank_acquired = models.PositiveIntegerField()
+    computed_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["rank_conquered"]),
+            models.Index(fields=["rank_acquired"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=["user_id"], name="leaderboard_user_unique"),
+        ]
+
+    def __str__(self):
+        return f"{self.username} — conquered:{self.hexagons_conquered} acquired:{self.hexagons_acquired}"

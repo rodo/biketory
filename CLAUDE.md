@@ -2,6 +2,13 @@
 
 A Django application for uploading GPX traces and visualising closed geographic surfaces on a map.
 
+## Domain vocabulary
+
+| Term | Definition |
+|---|---|
+| **Acquired hexagon** (acquis) | A hexagon that falls within a user's trace. Each time a user's trace crosses a hexagon, its `HexagonScore.points` for that user is incremented. |
+| **Conquered hexagon** (conquis) | A hexagon where the user holds the highest `points` among all users. If user A has 2 points and user B has 3 points on the same hexagon, it is conquered by B. |
+
 ## Setup
 
 ```bash
@@ -39,6 +46,7 @@ traces/            Main application
     hexagon_detail.py JSON API — top scores for a hexagon (public)
     profile.py       User profile with stats and hexagon map (login required)
     friends.py       Friend search, requests, accept/decline/remove (login required)
+    leaderboard.py   Leaderboard — conquered & acquired hexagons (login required)
     legal.py         Legal notice page (public)
   templates/
     base.html                    Shared top bar layout ({% block topbar_extra %} slot)
@@ -57,6 +65,18 @@ traces/            Main application
     generate_premium_user_tiles.py  Generate static tiles per premium user
     purge_surfaces.py            Delete all surfaces and reset extraction flags
     reset_data.py                Reset all data (traces, badges, hexagons). DEBUG only
+geozones/          Geographic zones application
+  models.py        GeoZone, ZoneLeaderboardEntry
+  admin.py         GeoZone admin with Leaflet map
+  urls.py
+  views/
+    zone_leaderboard.py  Per-zone leaderboard (premium, login required)
+  sql/
+    zone_leaderboard_conquered.sql  Conquered hexagons per zone
+    zone_leaderboard_acquired.sql   Acquired hexagons per zone
+  management/commands/
+    load_geozones.py               Load zones from media/src/ GeoJSON files
+    compute_zone_leaderboard.py    Compute per-zone leaderboard entries
 ```
 
 ## Models
@@ -71,6 +91,8 @@ traces/            Main application
 | `Friendship` | `from_user` (FK), `to_user` (FK), `status` (pending/accepted), `created_at` — unique (from_user, to_user) |
 | `UserSurfaceStats` | `user` (OneToOne), `total_area` (float, deg²), `union` (MultiPolygon), `secret_uuid`, `updated_at` |
 | `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed), `message`, `link`, `is_read`, `created_at` |
+| `GeoZone` | `code` (unique), `name`, `admin_level` (OSM admin_level, 2=country), `parent` (self FK), `geom` (MultiPolygon 4326), `loaded_at` |
+| `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 
 ## Management commands
 
@@ -92,6 +114,15 @@ python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--c
 # Delete all surfaces, reset trace.extracted flags, clear user stats
 python manage.py purge_surfaces [--yes]
 
+
+# Compute the leaderboard (hexagons conquered & acquired)
+python manage.py compute_leaderboard
+
+# Load geographic zones from media/src/ GeoJSON files
+python manage.py load_geozones
+
+# Compute per-zone leaderboard (all zones or single --zone-code)
+python manage.py compute_zone_leaderboard [--zone-code FR]
 
 # Defer badge analysis jobs for unanalyzed traces
 python manage.py analyze_traces
@@ -124,6 +155,8 @@ python manage.py reset_data [--yes]
 | `/hexagons/<pk>/` | `hexagon_detail` (JSON API) | public |
 | `/profile/` | `profile` | required |
 | `/friends/` | `friends` | required |
+| `/leaderboard/` | `leaderboard` | required |
+| `/leaderboard/zone/<code>/` | `zone_leaderboard` | required + premium |
 | `/legal/` | `legal` | public |
 | `/s/<code>/` | `shared_profile` | public |
 | `/notifications/` | `notifications_list` | required |
@@ -152,7 +185,7 @@ CREATE EXTENSION postgis;
 
 ## SQL conventions
 
-All SQL queries must be stored in dedicated `.sql` files under `traces/sql/`, never inline in Python code. Load them at module level with `Path(__file__).resolve().parent.parent / "sql" / "my_query.sql").read_text()` and pass the result to `cursor.execute()`.
+All SQL queries must be stored in dedicated `.sql` files under their app's `sql/` directory (e.g. `traces/sql/`, `statistics/sql/`, `geozones/sql/`), never inline in Python code. Load them at module level with `Path(__file__).resolve().parent.parent / "sql" / "my_query.sql").read_text()` and pass the result to `cursor.execute()`.
 
 ```python
 # Good
