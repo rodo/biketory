@@ -27,6 +27,7 @@ urlpatterns = [
     path("", include("notifs.urls")),
     path("", include("traces.urls")),
     path("", include("statistics.urls")),
+    path("", include("geozones.urls")),
 ]
 
 if settings.DEBUG:

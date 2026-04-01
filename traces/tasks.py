@@ -5,7 +5,7 @@ from procrastinate.exceptions import AlreadyEnqueued
 
 from traces.badge_award import award_badges
 from traces.models import Trace
-from traces.tile_generation import generate_tiles_for_bbox
+from traces.tile_generation import generate_tiles_for_bbox, generate_user_tiles_for_bbox
 from traces.trace_processing import _extract_surfaces
 
 logger = logging.getLogger(__name__)
@@ -66,16 +66,40 @@ def award_trace_badges(trace_id: int):
     award_badges(trace.uploaded_by, trace)
     Trace.objects.filter(pk=trace_id).update(status=Trace.STATUS_ANALYZED)
 
-    from notifs.helpers import notify
-    from notifs.models import Notification
+    # from notifs.helpers import notify
+    # from notifs.models import Notification
 
-    notify(
-        trace.uploaded_by,
-        Notification.TRACE_ANALYZED,
-        "Your trace has been analyzed",
-        f"/traces/{trace.uuid}/",
-    )
+    # notify(
+    #     trace.uploaded_by,
+    #     Notification.TRACE_ANALYZED,
+    #     "Your trace has been analyzed",
+    #     f"/traces/{trace.uuid}/",
+    # )
     logger.info("Trace %d analyzed.", trace_id)
+
+    try:
+        recompute_leaderboard.defer()
+    except AlreadyEnqueued:
+        pass
+
+
+@app.task(queue="tiles", queueing_lock="recompute_leaderboard")
+def recompute_leaderboard():
+    """Recompute the leaderboard after trace analysis."""
+    from django.core.management import call_command
+    call_command("compute_leaderboard")
+
+    try:
+        recompute_zone_leaderboard.defer()
+    except AlreadyEnqueued:
+        pass
+
+
+@app.task(queue="tiles", queueing_lock="recompute_zone_leaderboard")
+def recompute_zone_leaderboard():
+    """Recompute per-zone leaderboards."""
+    from django.core.management import call_command
+    call_command("compute_zone_leaderboard")
 
 
 @app.task(queue="tiles")
@@ -108,3 +132,42 @@ def generate_tiles(trace_id: int, zoom: int):
     west, south, east, north = trace.bbox.extent
     count = generate_tiles_for_bbox(zoom, west, south, east, north)
     logger.info("Trace %d zoom %d: %d tiles generated.", trace_id, zoom, count)
+
+
+@app.task(queue="tiles")
+def generate_user_tiles(trace_id: int, user_id: int, zoom: int):
+    """Generate per-user hexagon tiles for a trace's bounding box at a given zoom level."""
+    try:
+        trace = Trace.objects.get(pk=trace_id)
+    except Trace.DoesNotExist:
+        logger.warning("Trace %d does not exist, skipping user tile generation.", trace_id)
+        return
+
+    if trace.status == Trace.STATUS_NOT_ANALYZED:
+        logger.info(
+            "Trace %d not ready for user tiles (status=%s), rescheduling.",
+            trace_id, trace.status,
+        )
+        try:
+            generate_user_tiles.configure(
+                queueing_lock=f"generate_user_tiles_{user_id}_{trace_id}_{zoom}",
+                schedule_in={"seconds": 5},
+            ).defer(trace_id=trace_id, user_id=user_id, zoom=zoom)
+        except AlreadyEnqueued:
+            pass
+        return
+
+    if not trace.bbox:
+        logger.warning("Trace %d has no bbox, skipping user tile generation.", trace_id)
+        return
+
+    from traces.models import UserProfile
+    try:
+        hexagram = UserProfile.objects.values_list("hexagram", flat=True).get(user_id=user_id)
+    except UserProfile.DoesNotExist:
+        logger.warning("User %d has no profile, skipping user tile generation.", user_id)
+        return
+
+    west, south, east, north = trace.bbox.extent
+    count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
+    logger.info("Trace %d user %d zoom %d: %d user tiles generated.", trace_id, user_id, zoom, count)

@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Leaderboard" %} — {{ zone.name }} — Biketory{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.main-content { flex: 1; min-width: 0; }
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.sidebar h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.sidebar li a {
+  display: block;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sidebar li a:hover { background: #f0ede6; }
+
+.sidebar li a.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.computed-at {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: -1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.75rem 2rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+td {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f0ece5;
+}
+
+tr.current-user td {
+  background: rgba(79, 104, 20, 0.08);
+  font-weight: 700;
+}
+
+.rank-col { width: 60px; }
+.count-col { width: 120px; text-align: right; }
+th.count-col { text-align: right; }
+
+.premium-badge {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-left: 0.4rem;
+  vertical-align: -2px;
+  color: #2980b9;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.btn-more {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.6rem;
+  background: none;
+  border: 2px solid #e0dcd5;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-more:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+tr.separator td {
+  padding: 0.3rem 0.75rem;
+  border-bottom: none;
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.15em;
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <div class="main-content">
+    <h1>{% trans "Leaderboard" %} — {{ zone.name }}</h1>
+    {% if computed_at %}
+      <p class="computed-at">{% trans "Last updated:" %} {{ computed_at|date:"d/m/Y H:i" }}</p>
+    {% endif %}
+
+    <div class="card">
+      {% if entries %}
+      <table>
+        <thead>
+          <tr>
+            <th class="rank-col">#</th>
+            <th>{% trans "User" %}</th>
+            <th class="count-col">{% trans "Hexagons" %}</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          {% for e in entries %}
+          <tr{% if e.is_current_user %} class="current-user"{% endif %}>
+            <td class="rank-col">{{ e.rank }}</td>
+            <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
+            <td class="count-col">{{ e.count }}</td>
+          </tr>
+          {% endfor %}
+          {% if user_neighborhood %}
+          <tr class="separator" id="neighborhood-separator"><td colspan="3">&#8942;</td></tr>
+          {% for e in user_neighborhood %}
+          <tr class="neighborhood-row{% if e.is_current_user %} current-user{% endif %}">
+            <td class="rank-col">{{ e.rank }}</td>
+            <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
+            <td class="count-col">{{ e.count }}</td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">{% trans "No data." %}</div>
+      {% endif %}
+    </div>
+    {% if entries %}
+    <button id="btn-more" class="btn-more" {% if not has_more %}style="display:none"{% endif %}>{% trans "Load more" %}</button>
+    {% endif %}
+  </div>
+
+  <aside class="sidebar">
+    <h2>{% trans "Leaderboard" %}</h2>
+    <ul>
+      <li><a href="?type=conquered"{% if lb_type == "conquered" %} class="active"{% endif %}>{% trans "Conquered" %}</a></li>
+      <li><a href="?type=acquired"{% if lb_type == "acquired" %} class="active"{% endif %}>{% trans "Acquired" %}</a></li>
+    </ul>
+
+    <h2>{% trans "Global" %}</h2>
+    <ul>
+      <li><a href="{% url 'leaderboard' %}">{% trans "Global leaderboard" %}</a></li>
+    </ul>
+
+    <h2>{% trans "Zones" %}</h2>
+    <ul>
+      {% for c in zone_countries %}
+      <li><a href="{% url 'zone_leaderboard' zone_code=c.code %}"{% if c.code == zone.code %} class="active"{% endif %}>{{ c.name }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if zone_children %}
+    <h2>{{ zone.name }}</h2>
+    <ul>
+      {% for child in zone_children %}
+      <li><a href="{% url 'zone_leaderboard' zone_code=child.code %}"{% if child.code == zone.code %} class="active"{% endif %}>{{ child.name }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  const btn = document.getElementById('btn-more');
+  if (!btn) return;
+
+  const tbody = document.getElementById('leaderboard-body');
+  const lbType = '{{ lb_type }}';
+  let offset = {{ entries|length }};
+
+  function premiumBadge(isPremium) {
+    return isPremium ? '<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>' : '';
+  }
+
+  function removeNeighborhood() {
+    const sep = document.getElementById('neighborhood-separator');
+    if (!sep) return;
+    const rows = tbody.querySelectorAll('.neighborhood-row');
+    rows.forEach(r => r.remove());
+    sep.remove();
+  }
+
+  btn.addEventListener('click', function() {
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    removeNeighborhood();
+
+    fetch(`?type=${lbType}&offset=${offset}`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      data.entries.forEach(e => {
+        const tr = document.createElement('tr');
+        if (e.is_current_user) tr.className = 'current-user';
+        tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
+        tbody.appendChild(tr);
+      });
+      offset += data.entries.length;
+
+      if (data.user_neighborhood && !data.entries.some(e => e.is_current_user)) {
+        const sep = document.createElement('tr');
+        sep.className = 'separator';
+        sep.id = 'neighborhood-separator';
+        sep.innerHTML = '<td colspan="3">&#8942;</td>';
+        tbody.appendChild(sep);
+        data.user_neighborhood.forEach(e => {
+          const tr = document.createElement('tr');
+          tr.className = 'neighborhood-row';
+          if (e.is_current_user) tr.className += ' current-user';
+          tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      if (!data.has_more) {
+        btn.style.display = 'none';
+      } else {
+        btn.disabled = false;
+        btn.textContent = '{% trans "Load more" %}';
+      }
+    });
+  });
+})();
+</script>
+{% endblock %}

@@ -4,37 +4,50 @@
 
 {% block extra_css %}
 #page-inner {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
+  display: flex;
+  gap: 2rem;
 }
 
-.tabs {
-  display: flex;
-  gap: 0.25rem;
-  margin-bottom: 1.75rem;
-  border-bottom: 2px solid #e0dcd5;
+.main-content { flex: 1; min-width: 0; }
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
 }
-.tabs a {
-  padding: 0.55rem 1.25rem;
-  font-size: 0.88rem;
+
+.sidebar h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.sidebar li a {
+  display: block;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
   color: var(--bg);
-  opacity: 0.55;
-  border-radius: 6px 6px 0 0;
-  border: 2px solid transparent;
-  border-bottom: none;
-  margin-bottom: -2px;
-  transition: opacity 0.15s;
+  border-radius: 6px;
+  transition: background 0.15s;
 }
-.tabs a:hover { opacity: 0.85; }
-.tabs a.active {
-  opacity: 1;
-  border-color: #e0dcd5;
-  border-bottom-color: var(--page);
-  background: var(--page);
-  color: var(--accent);
+
+.sidebar li a:hover { background: #f0ede6; }
+
+.sidebar li a.active {
+  background: var(--accent);
+  color: #fff;
 }
 
 h1 {
@@ -203,13 +216,7 @@ tbody td {
 
 {% block content %}
 <div id="page-inner">
-  <nav class="tabs">
-    <a href="{% url 'stats_monthly' %}">{% trans "By month" %}</a>
-    <a href="{% url 'stats' %}">{% trans "By user" %}</a>
-    <a href="{% url 'stats_traces' %}">{% trans "Traces" %}</a>
-    <a href="{% url 'stats_badges' %}" class="active">{% trans "Badges" %}</a>
-  </nav>
-
+  <div class="main-content">
   <h1>{% trans "Badges" %}</h1>
 
   <div class="stat-cards-row">
@@ -281,5 +288,15 @@ tbody td {
     {% endfor %}
   </div>
   {% endif %}
+  </div>
+
+  <aside class="sidebar">
+    <h2>{% trans "Statistics" %}</h2>
+    <ul>
+      <li><a href="{% url 'stats_monthly' %}">{% trans "By month" %}</a></li>
+      <li><a href="{% url 'stats_traces' %}">{% trans "Traces" %}</a></li>
+      <li><a href="{% url 'stats_badges' %}" class="active">{% trans "Badges" %}</a></li>
+    </ul>
+  </aside>
 </div>
 {% endblock %}

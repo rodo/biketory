@@ -7,20 +7,21 @@ Ce document liste tous les scénarios de performance Gatling du projet.
 
 ```
 BaseSimulation (abstraite)
-├── PublicBrowsingSimulation       — navigation publique
-├── StatsApiSimulation             — endpoints API stats JSON
-├── RegistrationSimulation         — création de comptes
-├── UploadAndStatsSimulation       — upload GPX + vérification hexagons (page HTML)
-├── UploadAndStatsApiSimulation    — upload GPX + vérification cohérence API stats
-└── AllSimulation                  — enchaîne les 5 scénarios ci-dessus
+├── PublicBrowsingSimulation            — navigation publique
+├── StatsApiSimulation                  — endpoints API stats JSON
+├── RegistrationSimulation              — création de comptes
+├── AuthenticatedBrowsingSimulation     — navigation authentifiée (leaderboard, zones, profil…)
+├── UploadAndStatsSimulation            — upload GPX + vérification stats pages
+├── UploadAndStatsApiSimulation         — upload GPX + vérification cohérence API stats
+└── AllSimulation                       — enchaîne les 6 scénarios ci-dessus
 ```
 
 `BaseSimulation` centralise toute la logique partagée : configuration HTTP,
 feeders (`registrationFeeder`, `uploadFeeder`), chains réutilisables
 (`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`) et factory methods
 de scénarios (`publicBrowsingScenario()`, `statsApiScenario()`,
-`registrationScenario()`, `uploadScenario()`, `verifyStatsScenario()`,
-`verifyStatsApiScenario()`).
+`registrationScenario()`, `authenticatedBrowsingScenario()`,
+`uploadScenario()`, `verifyStatsScenario()`, `verifyStatsApiScenario()`).
 
 Les sous-classes ne contiennent que le `setUp()` avec injection et assertions.
 
@@ -52,10 +53,9 @@ séquentiellement tous les endpoints publics avec des pauses de 1 à 3 secondes.
 3. `GET /api/hexagons/?bbox=-2,46,4,49` — API hexagons avec bbox
 4. `GET /about/` — À propos
 5. `GET /legal/` — Mentions légales
-6. `GET /stats/` — Stats par utilisateur
-7. `GET /stats/monthly/` — Stats mensuelles
-8. `GET /stats/` — Répartition
-9. `GET /stats/badges/` — Badges
+6. `GET /stats/monthly/` — Stats mensuelles
+7. `GET /stats/traces/` — Stats traces
+8. `GET /stats/badges/` — Stats badges
 
 **Injection :** `atOnceUsers(1)`
 **Assertions :** p95 < 2s, succès > 95 %
@@ -66,7 +66,7 @@ séquentiellement tous les endpoints publics avec des pauses de 1 à 3 secondes.
 
 **Fichier :** `src/main/java/biketory/StatsApiSimulation.java`
 
-Test des 3 endpoints API JSON qui fournissent les données aux graphiques Chart.js.
+Test des endpoints API JSON qui fournissent les données aux graphiques Chart.js.
 Un seul utilisateur appelle séquentiellement chaque endpoint et vérifie que la réponse
 contient les clés `labels` et `datasets`.
 
@@ -74,7 +74,6 @@ contient les clés `labels` et `datasets`.
 
 1. `GET /api/stats/monthly/` — Hexagons acquis par mois
 2. `GET /api/stats/traces/` — Traces uploadées par mois
-3. `GET /api/stats/users/` — Hexagons gagnés par utilisateur par mois
 
 **Injection :** `atOnceUsers(1)`
 **Assertions :** p95 < 2s, succès > 95 %
@@ -99,12 +98,34 @@ CSRF, puis soumet le formulaire.
 
 ---
 
+### AuthenticatedBrowsingSimulation
+
+**Fichier :** `src/main/java/biketory/AuthenticatedBrowsingSimulation.java`
+
+Navigation sur les pages nécessitant une connexion. Un utilisateur est créé,
+connecté, puis parcourt les pages protégées.
+
+**Étapes :**
+
+1. `POST /register/` — Création du compte
+2. `POST /accounts/login/` — Connexion
+3. `GET /leaderboard/` — Leaderboard global
+4. `GET /leaderboard/zones/` — Leaders par zone
+5. `GET /profile/` — Profil utilisateur
+6. `GET /friends/` — Amis
+7. `GET /traces/` — Liste des traces
+
+**Injection :** `atOnceUsers(1)`
+**Assertions :** p95 < 2s, succès > 95 %
+
+---
+
 ### UploadAndStatsSimulation
 
 **Fichier :** `src/main/java/biketory/UploadAndStatsSimulation.java`
 
 Scénario complet en deux phases séquentielles (`andThen`) : upload de traces GPX
-par deux utilisateurs distincts, puis vérification des statistiques d'hexagons.
+par deux utilisateurs distincts, puis vérification des pages de statistiques.
 
 Les identifiants sont générés avec un préfixe unique par exécution (`perf_<uuid>_u1`,
 `perf_<uuid>_u2`) pour éviter les collisions.
@@ -128,9 +149,9 @@ Chaque utilisateur exécute :
 
 #### Phase 2 — Vérification des stats (1 utilisateur)
 
-1. `GET /stats/` — Récupération de la page de répartition
-2. Extraction du JSON `const ALL = {...}` depuis le body HTML
-3. Vérification que chaque utilisateur a le bon nombre d'hexagons
+1. `GET /stats/monthly/` — Stats mensuelles
+2. `GET /stats/traces/` — Stats traces
+3. `GET /stats/badges/` — Stats badges
 
 **Injection :** `atOnceUsers(2)` puis `atOnceUsers(1)`
 **Assertions :** p95 < 5s, succès > 95 %
@@ -142,7 +163,7 @@ Chaque utilisateur exécute :
 **Fichier :** `src/main/java/biketory/UploadAndStatsApiSimulation.java`
 
 Scénario end-to-end en deux phases : upload de traces GPX par deux utilisateurs
-distincts, puis vérification de la cohérence des 3 endpoints API stats JSON.
+distincts, puis vérification de la cohérence des endpoints API stats JSON.
 
 Les identifiants sont générés avec un préfixe unique par exécution (`perf_<uuid>_u1`,
 `perf_<uuid>_u2`) pour éviter les collisions.
@@ -153,14 +174,11 @@ Identique à UploadAndStatsSimulation (register, login, upload GPX, trace detail
 
 #### Phase 2 — Vérification des API stats (1 utilisateur)
 
-1. `GET /api/stats/monthly/` — Vérifie la présence de `labels`, `datasets` et au
+1. `GET /api/compute-stats/?granularity=month` — Déclenchement du calcul
+2. `GET /api/stats/monthly/` — Vérifie la présence de `labels`, `datasets` et au
    moins 1 dataset avec un tableau `data`
-2. `GET /api/stats/traces/` — Vérifie que le dataset a le label `"Traces"` et un
+3. `GET /api/stats/traces/` — Vérifie que le dataset a le label `"Traces"` et un
    tableau `data`
-3. `GET /api/stats/users/` — Vérifie que :
-   - au moins 2 datasets sont présents ;
-   - les labels des datasets contiennent les usernames des 2 utilisateurs ;
-   - chaque dataset a une `backgroundColor`.
 
 **Injection :** `atOnceUsers(2)` puis `atOnceUsers(1)`
 **Assertions :** p95 < 5s, succès > 95 %
@@ -171,7 +189,7 @@ Identique à UploadAndStatsSimulation (register, login, upload GPX, trace detail
 
 **Fichier :** `src/main/java/biketory/AllSimulation.java`
 
-Enchaîne séquentiellement les 5 scénarios ci-dessus via `andThen()`.
+Enchaîne séquentiellement les 6 scénarios ci-dessus via `andThen()`.
 C'est la simulation à utiliser en CI pour tout valider en une seule étape.
 
 **Ordre d'exécution :**
@@ -179,6 +197,7 @@ C'est la simulation à utiliser en CI pour tout valider en une seule étape.
 1. PublicBrowsing — `atOnceUsers(1)`
 2. API Stats — `atOnceUsers(1)`
 3. Registration — `atOnceUsers(2)`
-4. Upload — `atOnceUsers(2)` puis Verify stats (page) — `atOnceUsers(1)` puis Verify stats API — `atOnceUsers(1)`
+4. AuthenticatedBrowsing — `atOnceUsers(1)`
+5. Upload — `atOnceUsers(2)` puis Verify stats (pages) — `atOnceUsers(1)` puis Verify stats API — `atOnceUsers(1)`
 
 **Assertions :** p95 < 5s, succès > 95 %
