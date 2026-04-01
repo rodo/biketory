@@ -176,7 +176,7 @@ class LeaderboardAjaxTest(TestCase):
     def test_ajax_returns_json(self):
         resp = self.client.get(
             reverse("leaderboard"),
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            headers={"x-requested-with": "XMLHttpRequest"}
         )
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
@@ -188,7 +188,7 @@ class LeaderboardAjaxTest(TestCase):
     def test_ajax_with_offset(self):
         resp = self.client.get(
             reverse("leaderboard") + "?offset=1",
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            headers={"x-requested-with": "XMLHttpRequest"}
         )
         data = resp.json()
         self.assertEqual(len(data["entries"]), 0)
@@ -221,7 +221,7 @@ class LeaderboardPaginationTest(TestCase):
     def test_second_page(self):
         resp = self.client.get(
             reverse("leaderboard") + "?offset=20",
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            headers={"x-requested-with": "XMLHttpRequest"}
         )
         data = resp.json()
         self.assertEqual(len(data["entries"]), 5)
