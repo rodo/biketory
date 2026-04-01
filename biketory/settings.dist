@@ -245,7 +245,7 @@ LOGGING = {
         },
         "file": {
             "class": "logging.FileHandler",
-            "filename": "/var/log/biketory.log",
+            "filename": "/tmp/biketory.log",
             "formatter": "verbose",
         },
     },
