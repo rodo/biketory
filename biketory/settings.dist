@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "statistics",
     "notifs",
     "geozones",
+    "referrals",
 ]
 
 if STRAVA_AUTH_ENABLED:
@@ -181,6 +182,9 @@ TILE_SERVER_URL = "http://{s}.tiles.openstreetmap.org/{z}/{x}/{y}.png"
 
 # Minimum area in m² for a closed surface to be stored
 MIN_SURFACE_AREA_M2 = 900
+
+# Maximum number of referral invitations per user
+MAX_REFERRALS = 5
 
 # Email
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")

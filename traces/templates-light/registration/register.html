@@ -134,8 +134,9 @@ button[type="submit"]:hover { opacity: 0.88; }
   <h1>{% trans "Create an account" %}</h1>
   <p class="subtitle">{% trans "Join Biketory and start uploading your traces." %}</p>
 
-  <form method="post">
+  <form method="post" action="{% url 'register' %}">
     {% csrf_token %}
+    {% if ref_token %}<input type="hidden" name="ref" value="{{ ref_token }}">{% endif %}
     {% for field in form %}
       <div class="field">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>

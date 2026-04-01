@@ -28,6 +28,7 @@ urlpatterns = [
     path("", include("traces.urls")),
     path("", include("statistics.urls")),
     path("", include("geozones.urls")),
+    path("", include("referrals.urls")),
 ]
 
 if settings.DEBUG:

@@ -65,6 +65,15 @@ traces/            Main application
     generate_premium_user_tiles.py  Generate static tiles per premium user
     purge_surfaces.py            Delete all surfaces and reset extraction flags
     reset_data.py                Reset all data (traces, badges, hexagons). DEBUG only
+referrals/         Referral/invitation system
+  models.py        Referral
+  forms.py         ReferralForm
+  emails.py        send_referral_email
+  views.py         referral_list (login required)
+  urls.py
+  tests/
+    test_models.py
+    test_views.py
 geozones/          Geographic zones application
   models.py        GeoZone, ZoneLeaderboardEntry
   admin.py         GeoZone admin with Leaflet map
@@ -90,7 +99,8 @@ geozones/          Geographic zones application
 | `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5) |
 | `Friendship` | `from_user` (FK), `to_user` (FK), `status` (pending/accepted), `created_at` — unique (from_user, to_user) |
 | `UserSurfaceStats` | `user` (OneToOne), `total_area` (float, deg²), `union` (MultiPolygon), `secret_uuid`, `updated_at` |
-| `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed), `message`, `link`, `is_read`, `created_at` |
+| `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed/referral_signup), `message`, `link`, `is_read`, `created_at` |
+| `Referral` | `sponsor` (FK User), `email`, `token` (unique), `status` (pending/accepted), `referee` (FK User, null), `created_at`, `accepted_at`, `rewarded` — unique (sponsor, email) |
 | `GeoZone` | `code` (unique), `name`, `admin_level` (OSM admin_level, 2=country), `parent` (self FK), `geom` (MultiPolygon 4326), `loaded_at` |
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 
@@ -161,6 +171,7 @@ python manage.py reset_data [--yes]
 | `/s/<code>/` | `shared_profile` | public |
 | `/notifications/` | `notifications_list` | required |
 | `/notifications/mark-read/` | `notifications_mark_read` (POST, JSON) | required |
+| `/referrals/` | `referral_list` | required |
 
 ## Landing page map
 
