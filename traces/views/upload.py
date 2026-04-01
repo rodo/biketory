@@ -66,6 +66,7 @@ def upload_trace(request):
                         award_trace_badges,
                         extract_surfaces,
                         generate_tiles,
+                        generate_user_tiles,
                     )
                     try:
                         extract_surfaces.configure(
@@ -87,6 +88,16 @@ def upload_trace(request):
                                 ).defer(trace_id=trace.pk, zoom=zoom)
                             except AlreadyEnqueued:
                                 pass
+                        from traces.models import Subscription
+                        sub = Subscription.objects.filter(user=request.user).first()
+                        if sub and sub.is_active():
+                            for zoom in range(settings.TILES_STATIC_MIN_ZOOM, settings.TILES_STATIC_MAX_ZOOM + 1):
+                                try:
+                                    generate_user_tiles.configure(
+                                        queueing_lock=f"generate_user_tiles_{request.user.pk}_{trace.pk}_{zoom}",
+                                    ).defer(trace_id=trace.pk, user_id=request.user.pk, zoom=zoom)
+                                except AlreadyEnqueued:
+                                    pass
                     return redirect("trace_detail", trace_uuid=trace.uuid)
     else:
         form = TraceUploadForm()

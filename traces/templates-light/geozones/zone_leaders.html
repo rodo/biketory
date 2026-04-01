@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Zone leaders" %} — Biketory{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.main-content { flex: 1; min-width: 0; }
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.sidebar h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.sidebar li a {
+  display: block;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sidebar li a:hover { background: #f0ede6; }
+
+.sidebar li a.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.zone-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.zone-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.zone-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.zone-card-header h2 {
+  font-size: 1rem;
+  color: var(--bg);
+  margin: 0;
+}
+
+.zone-card-header h2 a {
+  text-decoration: none;
+  color: var(--bg);
+}
+
+.zone-card-header h2 a:hover {
+  color: var(--accent);
+}
+
+.badge-level {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #e0dcd5;
+  color: var(--bg);
+  margin-left: 0.5rem;
+  vertical-align: 2px;
+}
+
+.zone-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.zone-card th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0 0.5rem 0.4rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.zone-card td {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f0ece5;
+}
+
+.zone-card tr:last-child td { border-bottom: none; }
+
+.rank-col { width: 40px; }
+.count-col { width: 90px; text-align: right; }
+th.count-col { text-align: right; }
+
+tr.current-user td {
+  background: rgba(79, 104, 20, 0.08);
+  font-weight: 700;
+}
+
+.premium-badge {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 0.3rem;
+  vertical-align: -2px;
+  color: #2980b9;
+}
+
+.user-rank {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.user-rank strong {
+  color: var(--bg);
+}
+
+.empty-zone {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <div class="main-content">
+    <h1>{% trans "Zone leaders" %}</h1>
+
+    {% if zone_data %}
+    <div class="zone-cards">
+      {% for item in zone_data %}
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <h2>
+            <a href="{% url 'zone_leaderboard' zone_code=item.zone.code %}">{{ item.zone.name }}</a>
+            <span class="badge-level">{{ item.zone.admin_level }}</span>
+          </h2>
+        </div>
+        {% if item.leaders %}
+        <table>
+          <thead>
+            <tr>
+              <th class="rank-col">#</th>
+              <th>{% trans "User" %}</th>
+              <th class="count-col">{% trans "Hexagons" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in item.leaders %}
+            <tr{% if e.is_current_user %} class="current-user"{% endif %}>
+              <td class="rank-col">{{ e.rank }}</td>
+              <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
+              <td class="count-col">{{ e.count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if item.user_rank %}
+        <p class="user-rank">{% trans "Your rank:" %} <strong>#{{ item.user_rank.rank }}</strong> ({{ item.user_rank.count }} {% trans "hexagons" %})</p>
+        {% endif %}
+        {% else %}
+        <p class="empty-zone">{% trans "No data." %}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">{% trans "No active zones." %}</div>
+    {% endif %}
+  </div>
+
+  <aside class="sidebar">
+    <h2>{% trans "Leaderboard" %}</h2>
+    <ul>
+      <li><a href="{% url 'leaderboard' %}">{% trans "Global" %}</a></li>
+      <li><a href="{% url 'zone_leaders' %}" class="active">{% trans "By zone" %}</a></li>
+    </ul>
+
+    <h2>{% trans "Type" %}</h2>
+    <ul>
+      <li><a href="?type=conquered"{% if lb_type == "conquered" %} class="active"{% endif %}>{% trans "Conquered" %}</a></li>
+      <li><a href="?type=acquired"{% if lb_type == "acquired" %} class="active"{% endif %}>{% trans "Acquired" %}</a></li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}

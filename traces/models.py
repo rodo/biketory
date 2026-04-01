@@ -115,6 +115,7 @@ class UserProfile(models.Model):
         help_text="Maximum number of GPX uploads allowed per rolling 24-hour window.",
     )
     home_location = models.PointField(null=True, blank=True, srid=4326)
+    hexagram = models.CharField(max_length=6, unique=True, editable=False)
 
     def __str__(self):
         return f"{self.user.username} (limit: {self.daily_upload_limit}/day)"

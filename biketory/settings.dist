@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "traces",
     "statistics",
     "notifs",
+    "geozones",
 ]
 
 if STRAVA_AUTH_ENABLED:
@@ -242,10 +243,23 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "/var/log/biketory.log",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
+        "traces": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
         "statistics": {
-            "handlers": ["console"],
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
+        "geozones": {
+            "handlers": ["console", "file"],
             "level": "INFO",
         },
     },

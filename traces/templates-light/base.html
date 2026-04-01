@@ -210,8 +210,9 @@
     </a>
     <div class="nav-links">
       {% block topbar_extra %}{% endblock %}
-      <a href="{% url 'stats' %}">{% trans "Stats" %}</a>
+      <a href="{% url 'stats_monthly' %}">{% trans "Stats" %}</a>
       <a href="{% url 'badges' %}">{% trans "Badges" %}</a>
+      <a href="{% url 'leaderboard' %}">{% trans "Leaderboard" %}</a>
     </div>
     <div class="nav-auth">
       {% if user.is_authenticated %}

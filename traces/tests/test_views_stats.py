@@ -2,20 +2,13 @@ import json
 from datetime import date
 from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from statistics.models import MonthlyStats, UserMonthlyStats
-
-user_model = get_user_model()
+from statistics.models import MonthlyStats
 
 
 class StatsViewTest(TestCase):
-
-    def test_stats_returns_200(self):
-        resp = self.client.get(reverse("stats"))
-        self.assertEqual(resp.status_code, 200)
 
     def test_stats_monthly_returns_200(self):
         resp = self.client.get(reverse("stats_monthly"))
@@ -37,12 +30,6 @@ class StatsApiEmptyTest(TestCase):
 
     def test_api_stats_traces_empty(self):
         resp = self.client.get(reverse("api_stats_traces"))
-        self.assertEqual(resp.status_code, 200)
-        data = json.loads(resp.content)
-        self.assertEqual(data, {"labels": [], "datasets": []})
-
-    def test_api_stats_users_empty(self):
-        resp = self.client.get(reverse("api_stats"))
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.content)
         self.assertEqual(data, {"labels": [], "datasets": []})
@@ -169,82 +156,3 @@ class StatsApiTracesTest(TestCase):
         self.assertEqual(data["datasets"][0]["data"], [10, 0, 0, 20])
 
 
-class StatsApiPerUserTest(TestCase):
-    """Tests for /api/stats/users/ with UserMonthlyStats data."""
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.alice = user_model.objects.create_user(username="alice", password="test")
-        cls.alice.refresh_from_db()
-        cls.bob = user_model.objects.create_user(username="bob", password="test")
-        cls.bob.refresh_from_db()
-
-    def test_returns_per_user_datasets(self):
-        UserMonthlyStats.objects.create(
-            period=date(2025, 1, 1), user_id=self.alice.id, hexagons_acquired=1,
-        )
-        UserMonthlyStats.objects.create(
-            period=date(2025, 2, 1), user_id=self.alice.id, hexagons_acquired=1,
-        )
-        UserMonthlyStats.objects.create(
-            period=date(2025, 1, 1), user_id=self.bob.id, hexagons_acquired=1,
-        )
-
-        resp = self.client.get(reverse("api_stats"))
-        data = json.loads(resp.content)
-
-        self.assertEqual(data["labels"], ["2025-01", "2025-02"])
-        self.assertEqual(len(data["datasets"]), 2)
-
-        alice_ds = next(d for d in data["datasets"] if d["label"] == self.alice.username)
-        bob_ds = next(d for d in data["datasets"] if d["label"] == self.bob.username)
-
-        self.assertEqual(alice_ds["data"], [1, 1])
-        self.assertEqual(bob_ds["data"], [1, 0])
-
-    def test_each_user_gets_distinct_color(self):
-        UserMonthlyStats.objects.create(
-            period=date(2025, 1, 1), user_id=self.alice.id, hexagons_acquired=1,
-        )
-        UserMonthlyStats.objects.create(
-            period=date(2025, 1, 1), user_id=self.bob.id, hexagons_acquired=1,
-        )
-
-        resp = self.client.get(reverse("api_stats"))
-        data = json.loads(resp.content)
-
-        colors = [d["backgroundColor"] for d in data["datasets"]]
-        self.assertEqual(len(colors), 2)
-        self.assertNotEqual(colors[0], colors[1])
-
-    def test_deleted_user_falls_back_to_str_id(self):
-        orphan_id = 99999
-        UserMonthlyStats.objects.create(
-            period=date(2025, 1, 1), user_id=orphan_id, hexagons_acquired=3,
-        )
-
-        resp = self.client.get(reverse("api_stats"))
-        data = json.loads(resp.content)
-
-        self.assertEqual(len(data["datasets"]), 1)
-        self.assertEqual(data["datasets"][0]["label"], str(orphan_id))
-        self.assertEqual(data["datasets"][0]["data"], [3])
-
-    def test_colors_cycle_beyond_palette(self):
-        users = [
-            user_model.objects.create_user(username=f"user{i}", password="test")
-            for i in range(12)
-        ]
-        for u in users:
-            UserMonthlyStats.objects.create(
-                period=date(2025, 1, 1), user_id=u.id, hexagons_acquired=1,
-            )
-
-        resp = self.client.get(reverse("api_stats"))
-        data = json.loads(resp.content)
-
-        self.assertEqual(len(data["datasets"]), 12)
-        # Colors cycle: user 0 and user 10 share the same color
-        colors = [d["backgroundColor"] for d in data["datasets"]]
-        self.assertEqual(colors[0], colors[10])
-        self.assertEqual(colors[1], colors[11])

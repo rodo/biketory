@@ -9,12 +9,11 @@ import static io.gatling.javaapi.core.CoreDsl.*;
  * endpoints and verify the responses are coherent.
  *
  * Phase 1 — Two users register, log in and upload a GPX trace each.
- * Phase 2 — One user calls /api/stats/monthly/, /api/stats/traces/ and
- *           /api/stats/users/ and checks that:
+ * Phase 2 — One user calls /api/stats/monthly/ and /api/stats/traces/
+ *           and checks that:
  *           - every endpoint returns 200 with valid JSON;
  *           - labels and datasets arrays are present;
- *           - /api/stats/users/ contains at least 2 datasets (one per user);
- *           - dataset labels include both uploaders' usernames.
+ *           - datasets contain expected labels and data arrays.
  */
 public class UploadAndStatsApiSimulation extends BaseSimulation {
 

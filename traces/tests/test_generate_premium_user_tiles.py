@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
 
-from traces.models import Hexagon, HexagonScore, Subscription, Trace
+from traces.models import Hexagon, HexagonScore, Subscription, Trace, UserProfile
 
 from ._helpers import make_user, small_route
 
@@ -19,6 +19,11 @@ def _today():
 
 def _tiles_dir():
     return Path(settings.MEDIA_ROOT) / "tiles"
+
+
+def _user_tiles_dir(user):
+    hexagram = UserProfile.objects.values_list("hexagram", flat=True).get(user=user)
+    return _tiles_dir() / hexagram[0] / hexagram[1] / hexagram
 
 
 class _BaseTileTest(TestCase):
@@ -55,8 +60,7 @@ class _BaseTileTest(TestCase):
         )
 
     def tearDown(self):
-        # Clean up generated tiles
-        user_dir = _tiles_dir() / str(self.user.pk)
+        user_dir = _user_tiles_dir(self.user)
         if user_dir.exists():
             shutil.rmtree(user_dir)
 
@@ -65,7 +69,7 @@ class PremiumUserWithRecentTraceTest(_BaseTileTest):
 
     def test_generates_tiles(self):
         call_command("generate_premium_user_tiles", zoom_min=8, zoom_max=8)
-        user_dir = _tiles_dir() / str(self.user.pk)
+        user_dir = _user_tiles_dir(self.user)
         tiles = list(user_dir.rglob("*.png"))
         self.assertGreater(len(tiles), 0)
 
@@ -93,8 +97,7 @@ class NonPremiumUserIgnoredTest(TestCase):
             points=3,
             last_earned_at=timezone.now(),
         )
-        # Clean any leftover tiles from previous tests
-        self._user_dir = _tiles_dir() / str(self.user.pk)
+        self._user_dir = _user_tiles_dir(self.user)
         if self._user_dir.exists():
             shutil.rmtree(self._user_dir)
 
@@ -141,8 +144,7 @@ class PremiumUserWithoutRecentTraceTest(TestCase):
             points=3,
             last_earned_at=timezone.now(),
         )
-        # Clean any leftover tiles from previous tests
-        self._user_dir = _tiles_dir() / str(self.user.pk)
+        self._user_dir = _user_tiles_dir(self.user)
         if self._user_dir.exists():
             shutil.rmtree(self._user_dir)
 
@@ -161,7 +163,7 @@ class CleanOptionTest(_BaseTileTest):
     def test_clean_removes_existing_tiles(self):
         # Generate tiles first
         call_command("generate_premium_user_tiles", zoom_min=8, zoom_max=8)
-        user_dir = _tiles_dir() / str(self.user.pk)
+        user_dir = _user_tiles_dir(self.user)
         self.assertTrue(user_dir.exists())
 
         # Place a marker file to verify cleanup

@@ -127,11 +127,6 @@ public abstract class BaseSimulation extends Simulation {
                 .exec(http("API stats traces").get("/api/stats/traces/")
                         .check(status().is(200))
                         .check(jsonPath("$.labels").exists())
-                        .check(jsonPath("$.datasets").exists()))
-                .pause(1, 2)
-                .exec(http("API stats users").get("/api/stats/users/")
-                        .check(status().is(200))
-                        .check(jsonPath("$.labels").exists())
                         .check(jsonPath("$.datasets").exists()));
     }
 
@@ -147,11 +142,37 @@ public abstract class BaseSimulation extends Simulation {
                 .pause(1, 3)
                 .exec(http("Mentions légales").get("/legal/").check(status().is(200)))
                 .pause(1, 3)
-                .exec(http("Stats utilisateur").get("/stats/").check(status().is(200)))
-                .pause(1, 3)
                 .exec(http("Stats mensuelles").get("/stats/monthly/").check(status().is(200)))
                 .pause(1, 3)
-                .exec(http("Badges").get("/stats/badges/").check(status().is(200)));
+                .exec(http("Stats traces").get("/stats/traces/").check(status().is(200)))
+                .pause(1, 3)
+                .exec(http("Stats badges").get("/stats/badges/").check(status().is(200)));
+    }
+
+    protected ScenarioBuilder authenticatedBrowsingScenario(
+            String username, String password) {
+        return scenario("Navigation authentifiée")
+                .exec(session -> session
+                        .set("email", username + "@test.biketory.local")
+                        .set("password", password))
+                .exec(register())
+                .pause(1, 2)
+                .exec(login())
+                .pause(1, 3)
+                .exec(http("Leaderboard").get("/leaderboard/")
+                        .check(status().is(200)))
+                .pause(1, 3)
+                .exec(http("Zone leaders").get("/leaderboard/zones/")
+                        .check(status().is(200)))
+                .pause(1, 3)
+                .exec(http("Profile").get("/profile/")
+                        .check(status().is(200)))
+                .pause(1, 3)
+                .exec(http("Friends").get("/friends/")
+                        .check(status().is(200)))
+                .pause(1, 3)
+                .exec(http("Traces list").get("/traces/")
+                        .check(status().is(200)));
     }
 
     protected ScenarioBuilder registrationScenario() {
@@ -192,42 +213,22 @@ public abstract class BaseSimulation extends Simulation {
     protected ScenarioBuilder verifyStatsScenario() {
         return scenario("Verify stats")
                 .exec(
-                        http("GET /stats/")
-                                .get("/stats/")
+                        http("GET /stats/monthly/")
+                                .get("/stats/monthly/")
                                 .check(status().is(200))
-                                .check(bodyString().saveAs("pieBody"))
                 )
-                .exec(session -> {
-                    String body = session.getString("pieBody");
-
-                    int start = body.indexOf("const ALL = ");
-                    if (start == -1) {
-                        System.err.println("Chart data not found in /stats/");
-                        return session.markAsFailed();
-                    }
-                    start += "const ALL = ".length();
-                    int end = body.indexOf(";", start);
-                    String json = body.substring(start, end).trim();
-
-                    // Verify that the chart contains data arrays with expected totals
-                    boolean hasData = json.contains("\"data\"");
-                    boolean hasLabels = json.contains("\"labels\"");
-
-                    if (!hasData || !hasLabels) {
-                        System.err.println("Chart data missing labels or data: " + json);
-                        return session.markAsFailed();
-                    }
-
-                    // Verify total hexagon counts (12 + 10 = 22)
-                    int total = sumAllDataValues(json);
-                    if (total != 22) {
-                        System.err.println("Expected total 22 hexagons, got " + total + " in: " + json);
-                        return session.markAsFailed();
-                    }
-
-                    System.out.println("Chart hexagon total verified: " + total);
-                    return session;
-                });
+                .pause(1, 2)
+                .exec(
+                        http("GET /stats/traces/")
+                                .get("/stats/traces/")
+                                .check(status().is(200))
+                )
+                .pause(1, 2)
+                .exec(
+                        http("GET /stats/badges/")
+                                .get("/stats/badges/")
+                                .check(status().is(200))
+                );
     }
 
     protected ScenarioBuilder verifyStatsApiScenario() {
@@ -257,30 +258,7 @@ public abstract class BaseSimulation extends Simulation {
                                 .check(jsonPath("$.datasets").exists())
                                 .check(jsonPath("$.datasets[0].label").is("Traces"))
                                 .check(jsonPath("$.datasets[0].data").exists())
-                )
-                .pause(1, 2)
-                .exec(
-                        http("API stats users")
-                                .get("/api/stats/users/")
-                                .check(status().is(200))
-                                .check(jsonPath("$.labels").exists())
-                                .check(jsonPath("$.datasets").exists())
-                                .check(jsonPath("$.datasets[*].label").count().gte(2))
-                                .check(jsonPath("$.datasets[*].backgroundColor").count().gte(2))
-                                .check(bodyString().saveAs("usersBody"))
-                )
-                .exec(session -> {
-                    String body = session.getString("usersBody");
-                    // Verify total hexagons across all user datasets = 22 (12 + 10)
-                    int total = sumAllApiDataValues(body);
-                    if (total != 22) {
-                        System.err.println("Stats API: expected total 22 hexagons, got "
-                                + total + " in: " + body);
-                        return session.markAsFailed();
-                    }
-                    System.out.println("Stats API total hexagons verified: " + total);
-                    return session;
-                });
+                );
     }
 
     /**

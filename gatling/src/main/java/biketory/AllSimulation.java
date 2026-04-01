@@ -9,14 +9,16 @@ import static io.gatling.javaapi.core.CoreDsl.*;
  * 1. Public browsing
  * 2. Stats API (structure only)
  * 3. Registration
- * 4. Upload + stats page verification
- * 5. Upload + stats API verification
+ * 4. Authenticated browsing (leaderboard, zone leaders, profile, friends, traces)
+ * 5. Upload + stats page verification
+ * 6. Upload + stats API verification
  */
 public class AllSimulation extends BaseSimulation {
 
     private static final String RUN_ID = UUID.randomUUID().toString().substring(0, 8);
     private static final String USER1 = "perf_" + RUN_ID + "_u1";
     private static final String USER2 = "perf_" + RUN_ID + "_u2";
+    private static final String AUTH_USER = "perf_" + RUN_ID + "_auth";
     private static final String PASSWORD = "P@ss_" + RUN_ID + "!";
 
     {
@@ -30,6 +32,10 @@ public class AllSimulation extends BaseSimulation {
                         .andThen(
                                 registrationScenario()
                                         .injectOpen(atOnceUsers(2))
+                        )
+                        .andThen(
+                                authenticatedBrowsingScenario(AUTH_USER, PASSWORD)
+                                        .injectOpen(atOnceUsers(1))
                         )
                         .andThen(
                                 uploadScenario(USER1, USER2, PASSWORD)

@@ -194,12 +194,25 @@ html, body { overflow: hidden; padding-top: 0; }
     minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
   });
 
+  {% if is_premium %}
+  const userTileLayer = L.tileLayer('{{ media_url }}tiles/{{ user_tile_prefix }}/{z}/{x}/{y}.png', {
+    minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
+  });
+  {% endif %}
+
   function updateOverlayVisibility() {
     if (map.getZoom() < MIN_HEX_ZOOM && !hiddenLayers.has('others')) {
       if (!map.hasLayer(hexTileLayer)) hexTileLayer.addTo(map);
     } else {
       if (map.hasLayer(hexTileLayer)) map.removeLayer(hexTileLayer);
     }
+    {% if is_premium %}
+    if (map.getZoom() < MIN_HEX_ZOOM && !hiddenLayers.has('mine')) {
+      if (!map.hasLayer(userTileLayer)) userTileLayer.addTo(map);
+    } else {
+      if (map.hasLayer(userTileLayer)) map.removeLayer(userTileLayer);
+    }
+    {% endif %}
   }
 
   function clearHexagons() {
@@ -368,7 +381,7 @@ html, body { overflow: hidden; padding-top: 0; }
   function toggleLayer(which, visible) {
     visible ? hiddenLayers.delete(which) : hiddenLayers.add(which);
     applyVisibility();
-    if (which === 'others') updateOverlayVisibility();
+    if (which === 'others' || which === 'mine') updateOverlayVisibility();
   }
 
   function toggleFriendsLayer(visible) {
