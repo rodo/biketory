@@ -47,6 +47,7 @@ traces/            Main application
     profile.py       User profile with stats and hexagon map (login required)
     friends.py       Friend search, requests, accept/decline/remove (login required)
     leaderboard.py   Leaderboard — conquered & acquired hexagons (login required)
+    subscription_history.py  Subscription history (login required)
     legal.py         Legal notice page (public)
   templates/
     base.html                    Shared top bar layout ({% block topbar_extra %} slot)
@@ -96,11 +97,12 @@ geozones/          Geographic zones application
 | `ClosedSurface` | `trace` (FK), `owner` (FK User), `segment_index`, `polygon` (Polygon), `detected_at` |
 | `Hexagon` | `geom` (Polygon, unique), `created_at` |
 | `HexagonScore` | `hexagon` (FK), `user` (FK), `points`, `last_earned_at` — unique (hexagon, user) |
-| `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5) |
+| `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5), `is_premium` (bool, default False) |
 | `Friendship` | `from_user` (FK), `to_user` (FK), `status` (pending/accepted), `created_at` — unique (from_user, to_user) |
 | `UserSurfaceStats` | `user` (OneToOne), `total_area` (float, deg²), `union` (MultiPolygon), `secret_uuid`, `updated_at` |
 | `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed/referral_signup), `message`, `link`, `is_read`, `created_at` |
 | `Referral` | `sponsor` (FK User), `email`, `token` (unique), `status` (pending/accepted), `referee` (FK User, null), `created_at`, `accepted_at`, `rewarded` — unique (sponsor, email) |
+| `Subscription` | `user` (FK User), `start_date`, `end_date`, `created_at` — ordered by `-start_date` |
 | `GeoZone` | `code` (unique), `name`, `admin_level` (OSM admin_level, 2=country), `parent` (self FK), `geom` (MultiPolygon 4326), `loaded_at` |
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 
@@ -140,6 +142,9 @@ python manage.py analyze_traces
 # Start the procrastinate background worker (processes badges)
 python manage.py procrastinate worker --processes=1
 
+# Expire premium: set is_premium=False on profiles with no active subscription
+python manage.py expire_premium
+
 # Reset all data: traces, surfaces, hexagons, badges, stats (DEBUG only)
 python manage.py reset_data [--yes]
 
@@ -172,6 +177,7 @@ python manage.py reset_data [--yes]
 | `/notifications/` | `notifications_list` | required |
 | `/notifications/mark-read/` | `notifications_mark_read` (POST, JSON) | required |
 | `/referrals/` | `referral_list` | required |
+| `/subscriptions/` | `subscription_history` | required |
 
 ## Landing page map
 

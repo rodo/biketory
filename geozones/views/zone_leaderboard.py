@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
 from geozones.models import GeoZone, ZoneLeaderboardEntry
 
@@ -22,16 +21,7 @@ def _entry_dict(e, rank_field, count_field, current_user_id):
 
 @login_required
 def zone_leaderboard(request, zone_code):
-    # Premium check
-    from traces.models import Subscription
-
-    today = timezone.now().date()
-    is_premium = Subscription.objects.filter(
-        user=request.user,
-        start_date__lte=today,
-        end_date__gte=today,
-    ).exists()
-    if not is_premium:
+    if not request.user.profile.is_premium:
         return redirect("subscription_required")
 
     zone = get_object_or_404(GeoZone, code=zone_code, active=True)

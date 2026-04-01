@@ -10,7 +10,6 @@ from django.utils.translation import gettext as _
 from traces.base62 import uuid_to_base62
 from traces.models import (
     ApiToken,
-    Subscription,
     UserProfile,
     UserSurfaceStats,
 )
@@ -22,8 +21,7 @@ def settings(request):
         action = request.POST.get("action")
 
         if action == "generate_token":
-            sub = Subscription.objects.filter(user=request.user).first()
-            if sub and sub.is_active():
+            if request.user.profile.is_premium:
                 ApiToken.objects.filter(user=request.user).delete()
                 ApiToken.objects.create(
                     user=request.user,
@@ -80,8 +78,7 @@ def settings(request):
             request.email_error = email_error
 
     user = request.user
-    sub = Subscription.objects.filter(user=user).first()
-    is_premium = sub is not None and sub.is_active()
+    is_premium = user.profile.is_premium
     api_token = ApiToken.objects.filter(user=user).first() if is_premium else None
     username_error = getattr(request, "username_error", None)
     email_error = getattr(request, "email_error", None)

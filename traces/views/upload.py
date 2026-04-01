@@ -88,9 +88,7 @@ def upload_trace(request):
                                 ).defer(trace_id=trace.pk, zoom=zoom)
                             except AlreadyEnqueued:
                                 pass
-                        from traces.models import Subscription
-                        sub = Subscription.objects.filter(user=request.user).first()
-                        if sub and sub.is_active():
+                        if request.user.profile.is_premium:
                             for zoom in range(settings.TILES_STATIC_MIN_ZOOM, settings.TILES_STATIC_MAX_ZOOM + 1):
                                 try:
                                     generate_user_tiles.configure(
@@ -131,13 +129,18 @@ def _reward_referral_sponsor(user):
     from traces.models import Subscription
 
     today = datetime.date.today()
-    sub, created = Subscription.objects.get_or_create(
-        user=referral.sponsor,
-        defaults={"start_date": today, "end_date": today + relativedelta(months=1)},
-    )
-    if not created:
-        sub.end_date = max(sub.end_date, today) + relativedelta(months=1)
-        sub.save(update_fields=["end_date"])
+    active_sub = Subscription.objects.filter(
+        user=referral.sponsor, start_date__lte=today, end_date__gte=today
+    ).first()
+    if active_sub:
+        active_sub.end_date = active_sub.end_date + relativedelta(months=1)
+        active_sub.save(update_fields=["end_date"])
+    else:
+        Subscription.objects.create(
+            user=referral.sponsor,
+            start_date=today,
+            end_date=today + relativedelta(months=1),
+        )
 
     referral.rewarded = True
     referral.save(update_fields=["rewarded"])

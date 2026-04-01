@@ -43,5 +43,6 @@ urlpatterns = [
     path("api/upload/", views.api_upload_trace, name="api_upload_trace"),
     path("leaderboard/", views.leaderboard, name="leaderboard"),
     path("premium/", views.subscription_required, name="subscription_required"),
+    path("subscriptions/", views.subscription_history, name="subscription_history"),
     path("s/<str:code>/", views.shared_profile, name="shared_profile"),
 ]

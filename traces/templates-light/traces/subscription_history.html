@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+#page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+thead {
+  background: #f2f1ec;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+thead th {
+  color: var(--bg);
+  text-align: left;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #f9f8f4; }
+tbody tr.active-row { background: #edf7ed; }
+
+tbody td {
+  padding: 0.8rem 1.1rem;
+  color: var(--bg);
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-active  { background: #d4edda; color: #155724; }
+.badge-expired { background: #f8d7da; color: #721c24; }
+
+.empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  text-align: center;
+}
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "My subscriptions" %}</h1>
+
+{% if subscriptions %}
+<table>
+  <thead>
+    <tr>
+      <th>{% trans "Start date" %}</th>
+      <th>{% trans "End date" %}</th>
+      <th>{% trans "Status" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sub in subscriptions %}
+    <tr{% if sub.is_active %} class="active-row"{% endif %}>
+      <td>{{ sub.start_date|date:"Y-m-d" }}</td>
+      <td>{{ sub.end_date|date:"Y-m-d" }}</td>
+      <td>
+        {% if sub.is_active %}
+          <span class="badge badge-active">{% trans "Active" %}</span>
+        {% else %}
+          <span class="badge badge-expired">{% trans "Expired" %}</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">{% trans "No subscriptions yet." %}</p>
+{% endif %}
+
+{% endblock %}

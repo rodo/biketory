@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from traces.models import Friendship, HexagonScore, Subscription, UserProfile
+from traces.models import Friendship, HexagonScore, UserProfile
 
 
 def _friend_usernames(user):
@@ -35,8 +35,7 @@ def landing(request):
     is_premium = False
     user_tile_prefix = ""
     if request.user.is_authenticated:
-        sub = Subscription.objects.filter(user=request.user).first()
-        is_premium = sub is not None and sub.is_active()
+        is_premium = request.user.profile.is_premium
         if is_premium:
             hexagram = UserProfile.objects.values_list("hexagram", flat=True).get(user=request.user)
             user_tile_prefix = f"{hexagram[0]}/{hexagram[1]}/{hexagram}"

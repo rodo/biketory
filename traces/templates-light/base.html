@@ -230,12 +230,11 @@
           <button class="dropdown-toggle" onclick="toggleDropdown()">{{ user.username }} &#9662;</button>
           <div class="dropdown-menu">
             <a href="{% url 'profile' %}">{% trans "Profile" %}
-              {% with sub=user.subscription %}
-                {% if sub and sub.is_active %}
-                  <span style="margin-left:0.4rem;font-size:0.7rem;font-weight:700;background:var(--accent);color:#fff;padding:0.1rem 0.4rem;border-radius:4px;letter-spacing:0.06em;vertical-align:middle;">PREMIUM</span>
-                {% endif %}
-              {% endwith %}
+              {% if user.profile.is_premium %}
+                <span style="margin-left:0.4rem;font-size:0.7rem;font-weight:700;background:var(--accent);color:#fff;padding:0.1rem 0.4rem;border-radius:4px;letter-spacing:0.06em;vertical-align:middle;">PREMIUM</span>
+              {% endif %}
             </a>
+            <a href="{% url 'subscription_history' %}">{% trans "My subscriptions" %}</a>
             <a href="{% url 'settings' %}">{% trans "Settings" %}</a>
             <a href="{% url 'trace_list' %}">{% trans "My traces" %}</a>
             <a href="{% url 'friends' %}">{% trans "My friends" %}</a>

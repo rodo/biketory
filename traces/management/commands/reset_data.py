@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from notifs.models import Notification
+from referrals.models import Referral
 from traces.models import (
     ClosedSurface,
     Hexagon,
@@ -30,6 +32,8 @@ class Command(BaseCommand):
             "hexagons": Hexagon.objects.count(),
             "badges": UserBadge.objects.count(),
             "user_stats": UserSurfaceStats.objects.count(),
+            "referrals": Referral.objects.count(),
+            "notifs": Notification.objects.count(),
         }
 
         if not options["yes"]:
@@ -44,6 +48,8 @@ class Command(BaseCommand):
                 self.stdout.write("Aborted.")
                 return
 
+        Notification.objects.all().delete()
+        Referral.objects.all().delete()
         ClosedSurface.objects.all().delete()
         HexagonScore.objects.all().delete()
         UserBadge.objects.all().delete()
