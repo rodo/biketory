@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 
 from django.contrib.auth import get_user_model
@@ -9,7 +9,7 @@ from django.dispatch import receiver
 
 def generate_hexagram():
     """Return a random 6-letter lowercase string."""
-    return "".join(random.choices(string.ascii_lowercase, k=6))
+    return "".join(secrets.choice(string.ascii_lowercase) for _ in range(6))
 
 
 @receiver(post_save, sender=get_user_model())
