@@ -38,6 +38,12 @@ CREATE EXTENSION postgis;
 | `generate_premium_user_tiles` | Generate static PNG tiles per premium user who uploaded traces in the last 7 days (`--zoom-min`, `--zoom-max`, `--clean`). |
 | `purge_surfaces` | Delete all closed surfaces, reset `extracted` flags on traces, and clear user surface stats. Requires `--yes` to skip confirmation. |
 | `analyze_traces` | Defer analysis jobs for traces stuck in `not_analyzed` or `surface_extracted` status. |
+| `compute_leaderboard` | Compute the leaderboard (hexagons conquered & acquired). |
+| `load_geozones` | Load geographic zones from GeoJSON files in `media/src/`. |
+| `compute_zone_leaderboard` | Compute leaderboard per geographic zone (hexagons conquered & acquired). Accepts `--zone-code` for a single zone. |
+| `expire_premium` | Set `is_premium=False` on user profiles with no active subscription. Run daily via cron. |
+| `purge_jobs` | Delete all procrastinate jobs and events. Only works with `DEBUG=True`. |
+| `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
 
 ## Background workers
 
@@ -46,7 +52,4 @@ Surface extraction and badge analysis are processed asynchronously via [procrast
 ```bash
 python manage.py procrastinate worker -q surface_extraction,badges
 ```
-
-| `expire_premium` | Set `is_premium=False` on user profiles with no active subscription. Run daily via cron. |
-| `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
 
