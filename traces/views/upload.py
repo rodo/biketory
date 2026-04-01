@@ -98,6 +98,7 @@ def upload_trace(request):
                                     ).defer(trace_id=trace.pk, user_id=request.user.pk, zoom=zoom)
                                 except AlreadyEnqueued:
                                     pass
+                    _reward_referral_sponsor(request.user)
                     return redirect("trace_detail", trace_uuid=trace.uuid)
     else:
         form = TraceUploadForm()
@@ -109,3 +110,34 @@ def upload_trace(request):
         "limit_reached": limit_reached,
         "next_slot": next_slot,
     })
+
+
+def _reward_referral_sponsor(user):
+    if Trace.objects.filter(uploaded_by=user).count() != 1:
+        return
+
+    from referrals.models import Referral
+
+    referral = Referral.objects.filter(
+        referee=user, status=Referral.ACCEPTED, rewarded=False
+    ).first()
+    if not referral:
+        return
+
+    import datetime
+
+    from dateutil.relativedelta import relativedelta
+
+    from traces.models import Subscription
+
+    today = datetime.date.today()
+    sub, created = Subscription.objects.get_or_create(
+        user=referral.sponsor,
+        defaults={"start_date": today, "end_date": today + relativedelta(months=1)},
+    )
+    if not created:
+        sub.end_date = max(sub.end_date, today) + relativedelta(months=1)
+        sub.save(update_fields=["end_date"])
+
+    referral.rewarded = True
+    referral.save(update_fields=["rewarded"])

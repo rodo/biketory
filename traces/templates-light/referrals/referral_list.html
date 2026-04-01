@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Referrals" %} — Biketory{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.main-content { flex: 1; min-width: 0; }
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.sidebar h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+
+.invite-form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.invite-form input[type="email"] {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border: 2px solid #e0dcd5;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.invite-form input[type="email"]:focus { border-color: var(--accent); }
+
+.invite-form button {
+  padding: 0.65rem 1.25rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.invite-form button:hover { opacity: 0.88; }
+
+.form-errors {
+  color: #c0392b;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+
+.limit-msg {
+  background: #fef3cd;
+  color: #856404;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.badge-pending { background: #fef3cd; color: #856404; }
+.badge-accepted { background: #d4edda; color: #155724; }
+
+.empty-msg {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 1.5rem 0;
+}
+
+.btn-delete {
+  background: none;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  padding: 0.2rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-delete:hover { background: #c0392b; color: #fff; }
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <div class="sidebar">
+    <h2>{% trans "Navigation" %}</h2>
+  </div>
+  <div class="main-content">
+    <h1>{% trans "Referrals" %}</h1>
+
+    {% if limit_reached %}
+      <div class="limit-msg">
+        {% blocktrans with max=max_referrals %}You have reached the maximum number of invitations ({{ max }}).{% endblocktrans %}
+      </div>
+    {% else %}
+      {% if form.errors %}
+        <div class="form-errors">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <form method="post" class="invite-form">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="{% trans 'Email address' %}" value="{{ form.email.value|default:'' }}" required>
+        <button type="submit">{% trans "Invite" %}</button>
+      </form>
+    {% endif %}
+
+    {% if referrals %}
+      <table>
+        <thead>
+          <tr>
+            <th>{% trans "Email" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ref in referrals %}
+          <tr>
+            <td>{{ ref.email }}</td>
+            <td>
+              {% if ref.status == "accepted" %}
+                <span class="badge badge-accepted">{% trans "Accepted" %}</span>
+              {% else %}
+                <span class="badge badge-pending">{% trans "Pending" %}</span>
+              {% endif %}
+            </td>
+            <td>{{ ref.created_at|date:"d/m/Y" }}</td>
+            <td>
+              {% if ref.status == "pending" %}
+                <form method="post" action="{% url 'referral_delete' ref.pk %}" onsubmit="return confirm('{% trans "Delete this invitation?" %}');" style="margin:0;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-delete">{% trans "Delete" %}</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-msg">{% trans "You haven't sent any invitations yet." %}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
