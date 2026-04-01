@@ -47,5 +47,6 @@ Surface extraction and badge analysis are processed asynchronously via [procrast
 python manage.py procrastinate worker -q surface_extraction,badges
 ```
 
+| `expire_premium` | Set `is_premium=False` on user profiles with no active subscription. Run daily via cron. |
 | `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
 

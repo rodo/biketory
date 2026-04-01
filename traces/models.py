@@ -116,6 +116,7 @@ class UserProfile(models.Model):
     )
     home_location = models.PointField(null=True, blank=True, srid=4326)
     hexagram = models.CharField(max_length=6, unique=True, editable=False)
+    is_premium = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} (limit: {self.daily_upload_limit}/day)"
@@ -183,16 +184,24 @@ class ApiToken(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.OneToOneField(
-        get_user_model(), on_delete=models.CASCADE, related_name="subscription"
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="subscriptions"
     )
     start_date = models.DateField()
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-start_date"]
+
     def is_active(self):
         today = timezone.now().date()
         return self.start_date <= today <= self.end_date
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_active():
+            UserProfile.objects.filter(user=self.user).update(is_premium=True)
 
     def __str__(self):
         return f"{self.user.username} ({self.start_date} → {self.end_date})"
