@@ -100,7 +100,7 @@ def dashboard(request):
     with connection.cursor() as cursor:
         cursor.execute(_FRIEND_ACTIVITY_SQL, [uid, uid])
         columns = [col[0] for col in cursor.description]
-        friend_activity = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        friend_activity = [dict(zip(columns, row, strict=True)) for row in cursor.fetchall()]
 
     return render(request, "traces/dashboard.html", {
         "user_profile": user_profile,
