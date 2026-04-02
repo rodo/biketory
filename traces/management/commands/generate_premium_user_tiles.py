@@ -1,3 +1,4 @@
+import logging
 import shutil
 from datetime import timedelta
 from pathlib import Path
@@ -13,6 +14,7 @@ from traces.tile_generation import (
     generate_user_tiles_for_bbox,
 )
 
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = "Generate static PNG tiles per premium user with recent uploads"
@@ -56,10 +58,10 @@ class Command(BaseCommand):
         )
 
         if not premium_user_ids:
-            self.stdout.write("No premium users with recent uploads. Nothing to generate.")
+            logger.info("No premium users with recent uploads. Nothing to generate.")
             return
 
-        self.stdout.write(f"Found {len(premium_user_ids)} premium user(s) with recent uploads.")
+        logger.info("Found %d premium user(s) with recent uploads.", len(premium_user_ids))
 
         hexagrams = dict(
             UserProfile.objects.filter(user_id__in=premium_user_ids)
@@ -69,14 +71,14 @@ class Command(BaseCommand):
         for user_id in premium_user_ids:
             hexagram = hexagrams.get(user_id)
             if not hexagram:
-                self.stdout.write(f"  User {user_id}: no hexagram. Skipping.")
+                logger.info("  User %d: no hexagram. Skipping.", user_id)
                 continue
 
             user_tiles_dir = tiles_root / hexagram[0] / hexagram[1] / hexagram
 
             if options["clean"] and user_tiles_dir.exists():
                 shutil.rmtree(user_tiles_dir)
-                self.stdout.write(f"  Cleaned tiles for user {user_id}.")
+                logger.info("  Cleaned tiles for user %d.", user_id)
 
             self._generate_user_tiles(user_id, hexagram, zoom_min, zoom_max)
 
@@ -86,7 +88,7 @@ class Command(BaseCommand):
             row = cursor.fetchone()
 
         if row is None or row[0] is None:
-            self.stdout.write(f"  User {user_id}: no hexagons. Skipping.")
+            logger.info("  User %d: no hexagons. Skipping.", user_id)
             return
 
         xmin, ymin, xmax, ymax = row
@@ -96,4 +98,4 @@ class Command(BaseCommand):
             count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, xmin, ymin, xmax, ymax)
             total_tiles += count
 
-        self.stdout.write(f"  User {user_id}: {total_tiles} tiles generated.")
+        logger.info("  User %d: %d tiles generated.", user_id, total_tiles)

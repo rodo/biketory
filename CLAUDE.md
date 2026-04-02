@@ -95,7 +95,7 @@ geozones/          Geographic zones application
 |---|---|
 | `Trace` | `gpx_file`, `route` (MultiLineString), `uploaded_by` (FK User), `extracted` (bool), `status` (not_analyzed/analyzed), `first_point_date`, `uploaded_at` |
 | `ClosedSurface` | `trace` (FK), `owner` (FK User), `segment_index`, `polygon` (Polygon), `detected_at` |
-| `Hexagon` | `geom` (Polygon, unique), `created_at` |
+| `Hexagon` | `geom` (Polygon, unique), `owner` (FK User, nullable), `owner_points` (int, nullable), `owner_claimed_at` (datetime, nullable), `created_at` |
 | `HexagonScore` | `hexagon` (FK), `user` (FK), `points`, `last_earned_at` — unique (hexagon, user) |
 | `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5), `is_premium` (bool, default False) |
 | `Friendship` | `from_user` (FK), `to_user` (FK), `status` (pending/accepted), `created_at` — unique (from_user, to_user) |
@@ -145,6 +145,9 @@ python manage.py procrastinate worker --processes=1
 # Expire premium: set is_premium=False on profiles with no active subscription
 python manage.py expire_premium
 
+# Backfill Hexagon.owner from HexagonScore (highest points, latest earned_at)
+python manage.py backfill_hexagon_owners
+
 # Reset all data: traces, surfaces, hexagons, badges, stats (DEBUG only)
 python manage.py reset_data [--yes]
 
@@ -155,24 +158,25 @@ python manage.py reset_data [--yes]
 - Login required to upload (`@login_required`)
 - Django built-in auth at `/accounts/` (login, logout, password change)
 - Registration at `/register/`
-- After login → `/upload/`; after logout → `/`
+- After login → `/dashboard/`; after logout → `/`
 
 ## URL routes
 
 | URL | View | Auth |
 |---|---|---|
 | `/` | `landing` | public |
+| `/dashboard/` | `dashboard` | required |
 | `/upload/` | `upload_trace` | required |
 | `/register/` | `register` | public |
 | `/traces/` | `trace_list` | required |
 | `/traces/<pk>/` | `trace_detail` | required |
 | `/traces/<pk>/delete/` | `delete_trace` | required |
 | `/hexagons/<pk>/` | `hexagon_detail` (JSON API) | public |
-| `/profile/` | `profile` | required |
+| `/profile/` | `dashboard` (legacy alias) | required |
 | `/friends/` | `friends` | required |
 | `/leaderboard/` | `leaderboard` | required |
 | `/leaderboard/zone/<code>/` | `zone_leaderboard` | required + premium |
-| `/legal/` | `legal` | public |
+| `/pricing/` | `pricing` | public |
 | `/s/<code>/` | `shared_profile` | public |
 | `/notifications/` | `notifications_list` | required |
 | `/notifications/mark-read/` | `notifications_mark_read` (POST, JSON) | required |
@@ -214,7 +218,7 @@ cursor.execute(_MY_QUERY_SQL, [param1, param2])
 cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 ```
 
-**Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 counts them as parameter placeholders.
+**Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 and psycopg3 count them as parameter placeholders.
 
 ## API Stats constraints
 

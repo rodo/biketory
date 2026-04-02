@@ -16,17 +16,17 @@ class NotifyHelperTest(TestCase):
         )
 
     def test_notify_creates_notification(self):
-        n = notify(self.user, Notification.BADGE_AWARDED, "You earned X!", "/badges/")
+        n = notify(self.user, Notification.BADGE_AWARDED, "You earned X!", "/profile/badges/")
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(n.notification_type, Notification.BADGE_AWARDED)
-        self.assertEqual(n.link, "/badges/")
+        self.assertEqual(n.link, "/profile/badges/")
         self.assertFalse(n.is_read)
 
     def test_notify_bulk_creates_multiple(self):
         items = [
-            ("Badge A", "/badges/"),
-            ("Badge B", "/badges/"),
-            ("Badge C", "/badges/"),
+            ("Badge A", "/profile/badges/"),
+            ("Badge B", "/profile/badges/"),
+            ("Badge C", "/profile/badges/"),
         ]
         notify_bulk(self.user, Notification.BADGE_AWARDED, items)
         self.assertEqual(Notification.objects.count(), 3)

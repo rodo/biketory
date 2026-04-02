@@ -65,7 +65,18 @@ class ClosedSurface(models.Model):
 
 class Hexagon(models.Model):
     geom = models.PolygonField(unique=True)
+    owner = models.ForeignKey(
+        get_user_model(), null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="owned_hexagons",
+    )
+    owner_points = models.PositiveIntegerField(null=True, blank=True)
+    owner_claimed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["owner"], name="hexagon_owner"),
+        ]
 
     def __str__(self):
         return f"Hexagon #{self.pk}"

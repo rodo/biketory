@@ -74,9 +74,14 @@
       font-weight: 500;
       opacity: 0.7;
       transition: opacity 0.2s, color 0.2s;
+      height: var(--bar-h);
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid transparent;
     }
 
     .nav-links a:hover { opacity: 1; color: var(--bar-accent); }
+    .nav-links a.active { opacity: 1; color: var(--bar-accent); border-bottom-color: var(--bar-accent); }
 
     .btn-upload {
       background: var(--bar-accent);
@@ -210,9 +215,13 @@
     </a>
     <div class="nav-links">
       {% block topbar_extra %}{% endblock %}
-      <a href="{% url 'leaderboard' %}">{% trans "Leaderboard" %}</a>
-      <a href="{% url 'stats_monthly' %}">{% trans "Stats" %}</a>
-      <a href="{% url 'badges' %}">{% trans "Badges" %}</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'leaderboard' %}"{% if request.resolver_match.url_name == 'leaderboard' or request.resolver_match.url_name == 'zone_leaderboard' %} class="active"{% endif %}>{% trans "Leaderboard" %}</a>
+        <a href="{% url 'stats_monthly' %}"{% if request.resolver_match.url_name == 'stats_monthly' or request.resolver_match.url_name == 'stats_traces' or request.resolver_match.url_name == 'stats_badges' %} class="active"{% endif %}>{% trans "Stats" %}</a>
+      {% endif %}
+      <a href="{% url 'pricing' %}"{% if request.resolver_match.url_name == 'pricing' %} class="active"{% endif %}>{% trans "Pricing" %}</a>
+      <a href="{% url 'about' %}"{% if request.resolver_match.url_name == 'about' %} class="active"{% endif %}>{% trans "About" %}</a>
+
     </div>
     <div class="nav-auth">
       {% if user.is_authenticated %}
@@ -229,19 +238,18 @@
         <div class="dropdown" id="dropdown-user">
           <button class="dropdown-toggle" onclick="toggleDropdown()">{{ user.username }} &#9662;</button>
           <div class="dropdown-menu">
-            <a href="{% url 'profile' %}">{% trans "Profile" %}
+            <a href="{% url 'dashboard' %}">{% trans "Dashboard" %}
               {% if user.profile.is_premium %}
                 <span style="margin-left:0.4rem;font-size:0.7rem;font-weight:700;background:var(--accent);color:#fff;padding:0.1rem 0.4rem;border-radius:4px;letter-spacing:0.06em;vertical-align:middle;">PREMIUM</span>
               {% endif %}
             </a>
-            <a href="{% url 'subscription_history' %}">{% trans "My subscriptions" %}</a>
-            <a href="{% url 'settings' %}">{% trans "Settings" %}</a>
             <a href="{% url 'trace_list' %}">{% trans "My traces" %}</a>
+            <a href="{% url 'badges' %}">{% trans "Badges" %}</a>
+            <a href="{% url 'subscription_history' %}">{% trans "My subscriptions" %}</a>
             <a href="{% url 'friends' %}">{% trans "My friends" %}</a>
             <a href="{% url 'referral_list' %}">{% trans "Referrals" %}</a>
-            <a href="{% url 'legal' %}">{% trans "Legal notice" %}</a>
+            <a href="{% url 'settings' %}">{% trans "Settings" %}</a>
             <a href="https://github.com/rodo/biketory/tree/main/doc">{% trans "Documentation" %}</a>
-            <a href="{% url 'about' %}">{% trans "About" %}</a>
             <form method="post" action="{% url 'account_logout' %}" style="margin:0">
               {% csrf_token %}
               <button type="submit" style="display:block;width:100%;text-align:left;padding:0.65rem 1rem;font-size:0.85rem;color:var(--bg);background:none;border:none;border-top:1px solid #eee;cursor:pointer;font-family:inherit;">{% trans "Log out" %}</button>

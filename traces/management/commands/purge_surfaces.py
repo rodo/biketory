@@ -1,6 +1,10 @@
+import logging
+
 from django.core.management.base import BaseCommand
 
 from traces.models import ClosedSurface, Trace, UserSurfaceStats
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -33,8 +37,7 @@ class Command(BaseCommand):
         Trace.objects.filter(extracted=True).update(extracted=False)
         UserSurfaceStats.objects.all().delete()
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Purged {surfaces_count} surface(s), "
-            f"reset {traces_count} trace(s), "
-            f"deleted {stats_count} user stat(s)."
-        ))
+        logger.info(
+            "Purged %d surface(s), reset %d trace(s), deleted %d user stat(s).",
+            surfaces_count, traces_count, stats_count,
+        )

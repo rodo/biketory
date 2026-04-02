@@ -122,14 +122,17 @@ class LeaderboardEntry(models.Model):
     is_premium = models.BooleanField(default=False)
     hexagons_conquered = models.PositiveIntegerField(default=0)
     hexagons_acquired = models.PositiveIntegerField(default=0)
+    total_points = models.PositiveIntegerField(default=0)
     rank_conquered = models.PositiveIntegerField()
     rank_acquired = models.PositiveIntegerField()
+    rank_points = models.PositiveIntegerField(default=0)
     computed_at = models.DateTimeField()
 
     class Meta:
         indexes = [
             models.Index(fields=["rank_conquered"]),
             models.Index(fields=["rank_acquired"]),
+            models.Index(fields=["rank_points"]),
         ]
         constraints = [
             models.UniqueConstraint(fields=["user_id"], name="leaderboard_user_unique"),

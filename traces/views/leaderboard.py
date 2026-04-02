@@ -20,9 +20,9 @@ def _entry_dict(e, rank_field, count_field, current_user_id):
 
 @login_required
 def leaderboard(request):
-    lb_type = request.GET.get("type", "conquered")
-    if lb_type not in ("conquered", "acquired"):
-        lb_type = "conquered"
+    lb_type = request.GET.get("type", "points")
+    if lb_type not in ("conquered", "acquired", "points"):
+        lb_type = "points"
 
     offset = int(request.GET.get("offset", 0))
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -31,6 +31,10 @@ def leaderboard(request):
         order_field = "rank_conquered"
         count_field = "hexagons_conquered"
         rank_field = "rank_conquered"
+    elif lb_type == "points":
+        order_field = "rank_points"
+        count_field = "total_points"
+        rank_field = "rank_points"
     else:
         order_field = "rank_acquired"
         count_field = "hexagons_acquired"
@@ -89,7 +93,7 @@ def leaderboard(request):
 
     from geozones.models import GeoZone
     zone_countries = list(
-        GeoZone.objects.filter(admin_level=2, active=True).order_by("name")
+        GeoZone.objects.filter(admin_level__in=[2, 3], active=True).order_by("name")
     )
 
     return render(request, "traces/leaderboard.html", {

@@ -52,7 +52,3 @@ class Command(BaseCommand):
             "Deferred %d job(s): %d extraction+badges, %d badges only.",
             total, count_extract, count_badges,
         )
-        self.stdout.write(
-            f"Deferred {total} job(s): {count_extract} extraction+badges, "
-            f"{count_badges} badges only."
-        )

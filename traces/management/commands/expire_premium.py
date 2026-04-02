@@ -1,7 +1,11 @@
+import logging
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from traces.models import Subscription, UserProfile
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -17,4 +21,4 @@ class Command(BaseCommand):
         updated = UserProfile.objects.filter(is_premium=True).exclude(
             user_id__in=active_user_ids
         ).update(is_premium=False)
-        self.stdout.write(f"{updated} profile(s) set to non-premium.")
+        logger.info("%d profile(s) set to non-premium.", updated)

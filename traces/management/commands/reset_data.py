@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
@@ -12,6 +14,7 @@ from traces.models import (
     UserSurfaceStats,
 )
 
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = "Delete all traces, badges, hexagons, and related data. Only works with DEBUG=True."
@@ -57,10 +60,7 @@ class Command(BaseCommand):
         Trace.objects.all().delete()
         Hexagon.objects.all().delete()
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Purged: "
-                + ", ".join(f"{v} {k}" for k, v in counts.items())
-                + "."
-            )
+        logger.info(
+            "Purged: %s.",
+            ", ".join(f"{v} {k}" for k, v in counts.items()),
         )

@@ -8,15 +8,18 @@ from ._helpers import make_user
 
 
 def _make_entry(user_id, username, conquered, acquired,
-                rank_conquered, rank_acquired, is_premium=False):
+                rank_conquered, rank_acquired, is_premium=False,
+                total_points=0, rank_points=1):
     return LeaderboardEntry.objects.create(
         user_id=user_id,
         username=username,
         is_premium=is_premium,
         hexagons_conquered=conquered,
         hexagons_acquired=acquired,
+        total_points=total_points,
         rank_conquered=rank_conquered,
         rank_acquired=rank_acquired,
+        rank_points=rank_points,
         computed_at=timezone.now(),
     )
 
@@ -42,8 +45,12 @@ class LeaderboardTypeTest(TestCase):
     def setUp(self):
         self.client.force_login(self.user)
 
-    def test_defaults_to_conquered(self):
+    def test_defaults_to_points(self):
         resp = self.client.get(reverse("leaderboard"))
+        self.assertEqual(resp.context["lb_type"], "points")
+
+    def test_type_conquered(self):
+        resp = self.client.get(reverse("leaderboard") + "?type=conquered")
         self.assertEqual(resp.context["lb_type"], "conquered")
 
     def test_type_acquired(self):
@@ -52,7 +59,7 @@ class LeaderboardTypeTest(TestCase):
 
     def test_invalid_type_falls_back(self):
         resp = self.client.get(reverse("leaderboard") + "?type=invalid")
-        self.assertEqual(resp.context["lb_type"], "conquered")
+        self.assertEqual(resp.context["lb_type"], "points")
 
 
 class LeaderboardEntriesTest(TestCase):
@@ -60,8 +67,10 @@ class LeaderboardEntriesTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = make_user()
-        _make_entry(cls.user.pk, "alice", 50, 40, 1, 1)
-        _make_entry(999, "bob", 30, 20, 2, 2)
+        _make_entry(cls.user.pk, "alice", 50, 40, 1, 1,
+                    total_points=120, rank_points=1)
+        _make_entry(999, "bob", 30, 20, 2, 2,
+                    total_points=60, rank_points=2)
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -81,6 +90,10 @@ class LeaderboardEntriesTest(TestCase):
         resp = self.client.get(reverse("leaderboard"))
         self.assertIsNotNone(resp.context["user_entry"])
         self.assertEqual(resp.context["user_entry"]["rank"], 1)
+        self.assertEqual(resp.context["user_entry"]["count"], 120)
+
+    def test_conquered_uses_conquered_fields(self):
+        resp = self.client.get(reverse("leaderboard") + "?type=conquered")
         self.assertEqual(resp.context["user_entry"]["count"], 50)
 
     def test_acquired_uses_acquired_fields(self):
@@ -123,11 +136,14 @@ class LeaderboardUserNotInTopTest(TestCase):
                 acquired=80 - i,
                 rank_conquered=i + 1,
                 rank_acquired=i + 1,
+                total_points=200 - i,
+                rank_points=i + 1,
             )
         # Current user at rank 25 (not in first page)
         _make_entry(
             cls.user.pk, "alice", 10, 5,
             rank_conquered=25, rank_acquired=25,
+            total_points=20, rank_points=25,
         )
 
     def setUp(self):
@@ -153,7 +169,8 @@ class LeaderboardUserInTopTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = make_user()
-        _make_entry(cls.user.pk, "alice", 50, 40, 1, 1)
+        _make_entry(cls.user.pk, "alice", 50, 40, 1, 1,
+                    total_points=120, rank_points=1)
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -168,7 +185,8 @@ class LeaderboardAjaxTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = make_user()
-        _make_entry(cls.user.pk, "alice", 50, 40, 1, 1)
+        _make_entry(cls.user.pk, "alice", 50, 40, 1, 1,
+                    total_points=120, rank_points=1)
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -208,6 +226,8 @@ class LeaderboardPaginationTest(TestCase):
                 acquired=80 - i,
                 rank_conquered=i + 1,
                 rank_acquired=i + 1,
+                total_points=200 - i,
+                rank_points=i + 1,
             )
 
     def setUp(self):
