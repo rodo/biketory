@@ -139,7 +139,6 @@ def _reward_referral_sponsor(user):
         start_date=start,
         end_date=start + relativedelta(months=1),
     )
->>>>>>> e9ba027 (fix: stack referral subscriptions instead of extending current one)
 
     referral.rewarded = True
     referral.save(update_fields=["rewarded"])
