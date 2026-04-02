@@ -6,9 +6,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-logger = logging.getLogger(__name__)
-
 from traces.tile_generation import generate_tiles_for_bbox
+
+logger = logging.getLogger(__name__)
 
 _SQL_DIR = Path(__file__).resolve().parent.parent.parent / "sql"
 _HEXAGONS_EXTENT_SQL = (_SQL_DIR / "hexagons_extent.sql").read_text()

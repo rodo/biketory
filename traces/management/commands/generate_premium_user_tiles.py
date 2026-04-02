@@ -8,14 +8,13 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from django.utils import timezone
 
-logger = logging.getLogger(__name__)
-
 from traces.models import Subscription, Trace, UserProfile
 from traces.tile_generation import (
     _USER_HEXAGONS_EXTENT_SQL,
     generate_user_tiles_for_bbox,
 )
 
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = "Generate static PNG tiles per premium user with recent uploads"
