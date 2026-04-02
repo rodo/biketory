@@ -13,7 +13,8 @@ BaseSimulation (abstraite)
 ├── AuthenticatedBrowsingSimulation     — navigation authentifiée (leaderboard, zones, profil…)
 ├── UploadAndStatsSimulation            — upload GPX + vérification stats pages
 ├── UploadAndStatsApiSimulation         — upload GPX + vérification cohérence API stats
-└── AllSimulation                       — enchaîne les 6 scénarios ci-dessus
+├── AllSimulation                       — enchaîne les 6 scénarios ci-dessus
+└── MassUploadSimulation               — 100 utilisateurs upload GPX (indépendant)
 ```
 
 `BaseSimulation` centralise toute la logique partagée : configuration HTTP,
@@ -201,3 +202,35 @@ C'est la simulation à utiliser en CI pour tout valider en une seule étape.
 5. Upload — `atOnceUsers(2)` puis Verify stats (pages) — `atOnceUsers(1)` puis Verify stats API — `atOnceUsers(1)`
 
 **Assertions :** p95 < 5s, succès > 95 %
+
+---
+
+### MassUploadSimulation
+
+**Fichier :** `src/main/java/biketory/MassUploadSimulation.java`
+
+Scénario de charge indépendant : N utilisateurs s'inscrivent, se connectent et
+uploadent chacun une trace GPX unique depuis `gatling/traces/` (trace1.gpx à traceN.gpx).
+Ce scénario est totalement indépendant de AllSimulation.
+
+Le nombre d'utilisateurs est configurable via `-Dusers=N` (défaut : 100).
+
+**Étapes (par utilisateur) :**
+
+1. `GET /register/` + `POST /register/` — Création de compte
+2. `GET /accounts/login/` + `POST /accounts/login/` — Connexion
+3. `GET /upload/` + `POST /upload/` — Upload du fichier GPX (multipart)
+4. `GET /traces/<uuid>/` — Consultation du détail de la trace
+
+**Injection :** `rampUsers(N).during(30)` — montée progressive sur 30 secondes
+**Assertions :** p95 < 5s, succès > 95 %
+
+**Exemples :**
+
+```bash
+# 100 utilisateurs (défaut)
+mvn gatling:test -Dgatling.simulationClass=biketory.MassUploadSimulation -DbaseUrl=http://localhost:8000
+
+# 20 utilisateurs
+mvn gatling:test -Dgatling.simulationClass=biketory.MassUploadSimulation -DbaseUrl=http://localhost:8000 -Dusers=20
+```

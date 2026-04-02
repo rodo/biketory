@@ -34,6 +34,47 @@ p {
 a {
   color: var(--accent);
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-top: 0.75rem;
+}
+
+thead {
+  background: #f2f1ec;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+thead th {
+  color: var(--bg);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+tbody td {
+  padding: 0.75rem 1rem;
+  color: var(--bg);
+  font-size: 0.88rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+code {
+  background: rgba(79,104,20,0.08);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
 {% endblock %}
 
 {% block content %}
@@ -81,5 +122,48 @@ a {
 <p>
   {% blocktrans %}Biketory is an open source project. The code is available on
   <a href="https://github.com/rodo/biketory">GitHub</a>.{% endblocktrans %}
+</p>
+
+<h2>{% trans "Legal notice and cookies" %}</h2>
+
+<p>
+  {% blocktrans %}Biketory uses a limited number of cookies strictly necessary for the application to function.
+  No tracking, advertising, or third-party cookies are used.{% endblocktrans %}
+</p>
+
+<h2>{% trans "Cookies used" %}</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Purpose" %}</th>
+      <th>{% trans "Duration" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>sessionid</code></td>
+      <td>{% trans "Maintains your session across pages. Managed by the Django authentication system." %}</td>
+      <td>{% trans "Session (deleted when the browser is closed, or after 2 weeks)" %}</td>
+    </tr>
+    <tr>
+      <td><code>csrftoken</code></td>
+      <td>{% trans "Protects forms against CSRF attacks. Required by Django for any POST request (login, logout, upload, etc.)." %}</td>
+      <td>{% trans "1 year" %}</td>
+    </tr>
+    <tr>
+      <td><code>map_pos</code></td>
+      <td>{% blocktrans %}Remembers the last position and zoom level of the map on the home page. Contains three comma-separated numbers: <code>latitude,longitude,zoom</code>.{% endblocktrans %}</td>
+      <td>{% trans "1 year" %}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>{% trans "No personal data sold or shared" %}</h2>
+
+<p>
+  {% blocktrans %}None of the cookies listed above are shared with third parties. The <code>map_pos</code> cookie
+  is stored only in your browser and is never transmitted to an external service.{% endblocktrans %}
 </p>
 {% endblock %}

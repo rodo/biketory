@@ -20,7 +20,7 @@
 .surface-tooltip::before { display: none; }
 
 #page {
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -222,16 +222,16 @@ h1 {
   display: inline-block;
   padding: 0.55rem 1.2rem;
   border-radius: 6px;
-  background: var(--surface);
+  background: transparent;
   color: var(--bg);
   font-weight: 600;
   font-size: 0.85rem;
   text-decoration: none;
-  transition: opacity 0.15s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  border: 2px solid #e0dcd5;
+  transition: border-color 0.2s, color 0.2s;
 }
 
-.btn-nav:hover { opacity: 0.8; }
+.btn-nav:hover { border-color: var(--accent); color: var(--accent); }
 .btn-nav.disabled { opacity: 0.25; pointer-events: none; }
 {% endblock %}
 

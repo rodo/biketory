@@ -128,7 +128,3 @@ class Command(BaseCommand):
             "Zone leaderboard computed: %d entries across %d zones in %.1f s",
             total_entries, zones.count(), elapsed,
         )
-        self.stdout.write(
-            f"Zone leaderboard computed: {total_entries} entries "
-            f"across {zones.count()} zones in {elapsed:.1f} s"
-        )

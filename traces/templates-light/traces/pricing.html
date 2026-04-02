@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+#page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+thead {
+  background: #f2f1ec;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+thead th {
+  color: var(--bg);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+thead th:not(:first-child) {
+  text-align: center;
+}
+
+tbody td {
+  padding: 0.75rem 1rem;
+  color: var(--bg);
+  font-size: 0.88rem;
+  border-bottom: 1px solid #eee;
+}
+
+tbody td:not(:first-child) {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+.check { color: #27ae60; }
+.cross { color: #e74c3c; }
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Free vs Premium" %}</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>{% trans "Feature" %}</th>
+      <th>Free</th>
+      <th>Premium</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{% trans "GPX upload (5/day)" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Public hexagon map" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Global leaderboard" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Traces and surfaces tracking" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Badges and achievements" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Friends and profile sharing" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Referrals" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Public statistics" %}</td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Personal hexagon layer on map" %}</td>
+      <td><span class="cross">✗</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Upload via API" %}</td>
+      <td><span class="cross">✗</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Geographic zone leaderboard" %}</td>
+      <td><span class="cross">✗</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td>{% trans "Custom tile generation" %}</td>
+      <td><span class="cross">✗</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

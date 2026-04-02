@@ -62,3 +62,6 @@ assets/
 auth.sh
 gatling/target/
 notes/
+
+
+gatling/src/main/resources/trace*.gpx

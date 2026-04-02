@@ -1,125 +1,126 @@
-# Traductions françaises pour Biketory.
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-02 08:06+0000\n"
-"PO-Revision-Date: 2026-03-29 00:00+0000\n"
+"POT-Creation-Date: 2026-04-02 08:08+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: fr\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: referrals/forms.py:10 traces/forms.py:14
 #: traces/templates-light/account/login.html:151
 #: traces/templates-light/referrals/referral_list.html:168
 #: traces/templates/traces/settings.html:165
 msgid "Email"
-msgstr "E-mail"
+msgstr "Correo electrónico"
 
 #: referrals/forms.py:20
 msgid "You cannot invite yourself."
-msgstr "Vous ne pouvez pas vous inviter vous-même."
+msgstr "No puedes invitarte a ti mismo."
 
 #: referrals/forms.py:25
 msgid "This email belongs to an existing user."
-msgstr "Cette adresse e-mail appartient à un utilisateur existant."
+msgstr "Este correo electrónico pertenece a un usuario existente."
 
 #: referrals/forms.py:32
 msgid "You have already invited this email."
-msgstr "Vous avez déjà invité cette adresse e-mail."
+msgstr "Ya has invitado este correo electrónico."
 
 #: referrals/forms.py:39
 #, python-format
 msgid "You have reached the maximum number of invitations (%(max)d)."
-msgstr "Vous avez atteint le nombre maximum d'invitations (%(max)d)."
+msgstr "Has alcanzado el número máximo de invitaciones (%(max)d)."
 
 #: traces/badges.py:7
 msgid "Territory"
-msgstr "Territoire"
+msgstr "Territorio"
 
 #: traces/badges.py:9
 msgid "First step"
-msgstr "Premier pas"
+msgstr "Primer paso"
 
 #: traces/badges.py:9
 msgid "Conquer your 1st hexagon"
-msgstr "Conquérir votre 1er hexagone"
+msgstr "Conquista tu primer hexágono"
 
 #: traces/badges.py:10
 msgid "Explorer"
-msgstr "Explorateur"
+msgstr "Explorador"
 
 #: traces/badges.py:10
 msgid "100 hexagons conquered"
-msgstr "100 hexagones conquis"
+msgstr "100 hexágonos conquistados"
 
 #: traces/badges.py:11
 msgid "Conqueror"
-msgstr "Conquérant"
+msgstr "Conquistador"
 
 #: traces/badges.py:11
 msgid "500 hexagons conquered"
-msgstr "500 hexagones conquis"
+msgstr "500 hexágonos conquistados"
 
 #: traces/badges.py:12
 msgid "Lord"
-msgstr "Seigneur"
+msgstr "Señor"
 
 #: traces/badges.py:12
 msgid "2,000 hexagons conquered"
-msgstr "2 000 hexagones conquis"
+msgstr "2000 hexágonos conquistados"
 
 #: traces/badges.py:13
 msgid "Legend"
-msgstr "Légende"
+msgstr "Leyenda"
 
 #: traces/badges.py:13
 msgid "10,000 hexagons conquered"
-msgstr "10 000 hexagones conquis"
+msgstr "10 000 hexágonos conquistados"
 
 #: traces/badges.py:17
 msgid "Activity"
-msgstr "Activité"
+msgstr "Actividad"
 
 #: traces/badges.py:19 traces/templates/traces/profile.html:121
 msgid "First trace"
-msgstr "Première trace"
+msgstr "Primera traza"
 
 #: traces/badges.py:19
 msgid "Upload your 1st GPX trace"
-msgstr "Analyser votre 1re trace GPX"
+msgstr "Sube tu primera traza GPX"
 
 #: traces/badges.py:20 traces/badges.py:60
 msgid "Regular"
-msgstr "Régulier"
+msgstr "Regular"
 
 #: traces/badges.py:20
 msgid "7 consecutive days with a trace"
-msgstr "7 jours consécutifs avec une trace"
+msgstr "7 días consecutivos con una traza"
 
 #: traces/badges.py:21
 msgid "Centurion"
-msgstr "Centurion"
+msgstr "Centurión"
 
 #: traces/badges.py:21
 msgid "100 traces uploaded"
-msgstr "100 traces téléversées"
+msgstr "100 trazas subidas"
 
 #: traces/badges.py:22
 msgid "Hiker"
-msgstr "Randonneur"
+msgstr "Senderista"
 
 #: traces/badges.py:22
 msgid "Trace > 100 km"
-msgstr "Trace > 100 km"
+msgstr "Traza > 100 km"
 
 #: traces/badges.py:26
 msgid "Social"
@@ -127,52 +128,52 @@ msgstr "Social"
 
 #: traces/badges.py:28
 msgid "First friend"
-msgstr "Premier ami"
+msgstr "Primer amigo"
 
 #: traces/badges.py:28
 msgid "Add your 1st friend"
-msgstr "Ajouter votre 1er ami"
+msgstr "Añade tu primer amigo"
 
 #: traces/badges.py:29
 msgid "Community"
-msgstr "Communauté"
+msgstr "Comunidad"
 
 #: traces/badges.py:29
 msgid "10 friends added"
-msgstr "10 amis ajoutés"
+msgstr "10 amigos añadidos"
 
 #: traces/badges.py:33 traces/templates-light/traces/trace_detail.html:301
 #: traces/templates-light/traces/trace_list.html:147
 msgid "Surfaces"
-msgstr "Surfaces"
+msgstr "Superficies"
 
 #: traces/badges.py:35
 msgid "Surveyor"
-msgstr "Arpenteur"
+msgstr "Topógrafo"
 
 #: traces/badges.py:35
 msgid "1st closed surface detected"
-msgstr "1re surface fermée détectée"
+msgstr "Primera superficie cerrada detectada"
 
 #: traces/badges.py:36
 msgid "Architect"
-msgstr "Architecte"
+msgstr "Arquitecto"
 
 #: traces/badges.py:36
 msgid "50 closed surfaces detected"
-msgstr "50 surfaces fermées détectées"
+msgstr "50 superficies cerradas detectadas"
 
 #: traces/badges.py:40
 msgid "Special"
-msgstr "Spécial"
+msgstr "Especial"
 
 #: traces/badges.py:42
 msgid "Dark night"
-msgstr "Nuit noire"
+msgstr "Noche oscura"
 
 #: traces/badges.py:42
 msgid "Trace uploaded between 0am and 5am"
-msgstr "Trace téléversée entre 0h et 5h"
+msgstr "Traza subida entre las 0h y las 5h"
 
 #: traces/badges.py:43
 msgid "Indestructible"
@@ -180,7 +181,7 @@ msgstr "Indestructible"
 
 #: traces/badges.py:43
 msgid "Keep a hexagon for 30 days"
-msgstr "Conserver un hexagone pendant 30 jours"
+msgstr "Conservar un hexágono durante 30 días"
 
 #: traces/badges.py:44
 msgid "Sprint"
@@ -188,75 +189,75 @@ msgstr "Sprint"
 
 #: traces/badges.py:44
 msgid "Average speed > 35 km/h"
-msgstr "Vitesse moyenne > 35 km/h"
+msgstr "Velocidad media > 35 km/h"
 
 #: traces/badges.py:48
 msgid "Daily streaks"
-msgstr "Séries quotidiennes"
+msgstr "Rachas diarias"
 
 #: traces/badges.py:50
 msgid "Flame"
-msgstr "Flamme"
+msgstr "Llama"
 
 #: traces/badges.py:50
 msgid "3 consecutive days"
-msgstr "3 jours consécutifs"
+msgstr "3 días consecutivos"
 
 #: traces/badges.py:51
 msgid "7-day streak"
-msgstr "Série de 7 jours"
+msgstr "Racha de 7 días"
 
 #: traces/badges.py:51
 msgid "7 consecutive days"
-msgstr "7 jours consécutifs"
+msgstr "7 días consecutivos"
 
 #: traces/badges.py:52
 msgid "14-day streak"
-msgstr "Série de 14 jours"
+msgstr "Racha de 14 días"
 
 #: traces/badges.py:52
 msgid "14 consecutive days"
-msgstr "14 jours consécutifs"
+msgstr "14 días consecutivos"
 
 #: traces/badges.py:53
 msgid "Month of fire"
-msgstr "Mois de feu"
+msgstr "Mes de fuego"
 
 #: traces/badges.py:53
 msgid "30 consecutive days"
-msgstr "30 jours consécutifs"
+msgstr "30 días consecutivos"
 
 #: traces/badges.py:54
 msgid "Centenarian"
-msgstr "Centenaire"
+msgstr "Centenario"
 
 #: traces/badges.py:54
 msgid "100 consecutive days"
-msgstr "100 jours consécutifs"
+msgstr "100 días consecutivos"
 
 #: traces/badges.py:58
 msgid "Weekly streaks"
-msgstr "Séries hebdomadaires"
+msgstr "Rachas semanales"
 
 #: traces/badges.py:60
 msgid "1 trace/week for 2 weeks in a row"
-msgstr "1 trace/semaine pendant 2 semaines d'affilée"
+msgstr "1 traza/semana durante 2 semanas seguidas"
 
 #: traces/badges.py:61
 msgid "Rhythm"
-msgstr "Rythme"
+msgstr "Ritmo"
 
 #: traces/badges.py:61
 msgid "1 trace/week for 4 weeks in a row"
-msgstr "1 trace/semaine pendant 4 semaines d'affilée"
+msgstr "1 traza/semana durante 4 semanas seguidas"
 
 #: traces/badges.py:62
 msgid "Cadenced"
-msgstr "Cadencé"
+msgstr "Acompasado"
 
 #: traces/badges.py:62
 msgid "1 trace/week for 8 weeks in a row"
-msgstr "1 trace/semaine pendant 8 semaines d'affilée"
+msgstr "1 traza/semana durante 8 semanas seguidas"
 
 #: traces/badges.py:63 traces/badges.py:72
 msgid "Half-year"
@@ -264,148 +265,148 @@ msgstr "Semestre"
 
 #: traces/badges.py:63
 msgid "1 trace/week for 26 weeks in a row"
-msgstr "1 trace/semaine pendant 26 semaines d'affilée"
+msgstr "1 traza/semana durante 26 semanas seguidas"
 
 #: traces/badges.py:64
 msgid "All seasons"
-msgstr "Toutes saisons"
+msgstr "Todas las estaciones"
 
 #: traces/badges.py:64
 msgid "1 trace/week for 52 weeks in a row"
-msgstr "1 trace/semaine pendant 52 semaines d'affilée"
+msgstr "1 traza/semana durante 52 semanas seguidas"
 
 #: traces/badges.py:68
 msgid "Monthly streaks"
-msgstr "Séries mensuelles"
+msgstr "Rachas mensuales"
 
 #: traces/badges.py:70
 msgid "Dedicated"
-msgstr "Dévoué"
+msgstr "Dedicado"
 
 #: traces/badges.py:70
 msgid "1 trace/month for 2 months"
-msgstr "1 trace/mois pendant 2 mois"
+msgstr "1 traza/mes durante 2 meses"
 
 #: traces/badges.py:71
 msgid "Season"
-msgstr "Saison"
+msgstr "Estación"
 
 #: traces/badges.py:71
 msgid "1 trace/month for 3 months"
-msgstr "1 trace/mois pendant 3 mois"
+msgstr "1 traza/mes durante 3 meses"
 
 #: traces/badges.py:72
 msgid "1 trace/month for 6 months"
-msgstr "1 trace/mois pendant 6 mois"
+msgstr "1 traza/mes durante 6 meses"
 
 #: traces/badges.py:73
 msgid "One year"
-msgstr "Un an"
+msgstr "Un año"
 
 #: traces/badges.py:73
 msgid "1 trace/month for 12 months"
-msgstr "1 trace/mois pendant 12 mois"
+msgstr "1 traza/mes durante 12 meses"
 
 #: traces/badges.py:77
 msgid "Weekly volume"
-msgstr "Volume hebdomadaire"
+msgstr "Volumen semanal"
 
 #: traces/badges.py:79
 msgid "Duo"
-msgstr "Duo"
+msgstr "Dúo"
 
 #: traces/badges.py:79
 msgid "2 traces/week for 4 weeks"
-msgstr "2 traces/semaine pendant 4 semaines"
+msgstr "2 trazas/semana durante 4 semanas"
 
 #: traces/badges.py:80
 msgid "Trio"
-msgstr "Trio"
+msgstr "Trío"
 
 #: traces/badges.py:80
 msgid "3 traces/week for 4 weeks"
-msgstr "3 traces/semaine pendant 4 semaines"
+msgstr "3 trazas/semana durante 4 semanas"
 
 #: traces/badges.py:81
 msgid "Machine"
-msgstr "Machine"
+msgstr "Máquina"
 
 #: traces/badges.py:81
 msgid "5 traces/week for 4 weeks"
-msgstr "5 traces/semaine pendant 4 semaines"
+msgstr "5 trazas/semana durante 4 semanas"
 
 #: traces/badges.py:82
 msgid "Daily"
-msgstr "Quotidien"
+msgstr "Diario"
 
 #: traces/badges.py:82
 msgid "7 traces/week for 4 weeks"
-msgstr "7 traces/semaine pendant 4 semaines"
+msgstr "7 trazas/semana durante 4 semanas"
 
 #: traces/badges.py:86
 msgid "Seasonal"
-msgstr "Saisonnier"
+msgstr "Estacional"
 
 #: traces/badges.py:88
 msgid "Spring"
-msgstr "Printemps"
+msgstr "Primavera"
 
 #: traces/badges.py:88
 msgid "1 trace/week from March to May"
-msgstr "1 trace/semaine de mars à mai"
+msgstr "1 traza/semana de marzo a mayo"
 
 #: traces/badges.py:89
 msgid "Summer"
-msgstr "Été"
+msgstr "Verano"
 
 #: traces/badges.py:89
 msgid "1 trace/week from June to August"
-msgstr "1 trace/semaine de juin à août"
+msgstr "1 traza/semana de junio a agosto"
 
 #: traces/badges.py:90
 msgid "Autumn"
-msgstr "Automne"
+msgstr "Otoño"
 
 #: traces/badges.py:90
 msgid "1 trace/week from September to November"
-msgstr "1 trace/semaine de septembre à novembre"
+msgstr "1 traza/semana de septiembre a noviembre"
 
 #: traces/badges.py:91
 msgid "Winter"
-msgstr "Hiver"
+msgstr "Invierno"
 
 #: traces/badges.py:91
 msgid "1 trace/week from December to February"
-msgstr "1 trace/semaine de décembre à février"
+msgstr "1 traza/semana de diciembre a febrero"
 
 #: traces/badges.py:92
 msgid "4 seasons"
-msgstr "4 saisons"
+msgstr "4 estaciones"
 
 #: traces/badges.py:92
 msgid "Earn all 4 seasonal badges"
-msgstr "Obtenir les 4 badges saisonniers"
+msgstr "Obtener las 4 insignias estacionales"
 
 #: traces/badges.py:96 traces/templates-light/traces/trace_create.html:92
 #: traces/templates-light/traces/trace_list.html:118
 msgid "Distance"
-msgstr "Distance"
+msgstr "Distancia"
 
 #: traces/badges.py:98
 msgid "Centurion km"
-msgstr "Centurion km"
+msgstr "Centurión km"
 
 #: traces/badges.py:98
 msgid "100 km covered in 1 month"
-msgstr "100 km parcourus en 1 mois"
+msgstr "100 km recorridos en 1 mes"
 
 #: traces/badges.py:99
 msgid "Roller"
-msgstr "Rouleur"
+msgstr "Rodador"
 
 #: traces/badges.py:99
 msgid "500 km covered in 1 month"
-msgstr "500 km parcourus en 1 mois"
+msgstr "500 km recorridos en 1 mes"
 
 #: traces/badges.py:100
 msgid "Ironman"
@@ -413,74 +414,74 @@ msgstr "Ironman"
 
 #: traces/badges.py:100
 msgid "1,000 km covered in 1 month"
-msgstr "1 000 km parcourus en 1 mois"
+msgstr "1000 km recorridos en 1 mes"
 
 #: traces/badges.py:101
 msgid "Odyssey"
-msgstr "Odyssée"
+msgstr "Odisea"
 
 #: traces/badges.py:101
 msgid "10,000 km total on the odometer"
-msgstr "10 000 km au compteur total"
+msgstr "10 000 km totales en el cuentakilómetros"
 
 #: traces/forms.py:10
 msgid "GPX file"
-msgstr "Fichier GPX"
+msgstr "Archivo GPX"
 
 #: traces/forms.py:23 traces/views/settings.py:88
 msgid "This email address is already in use."
-msgstr "Cette adresse e-mail est déjà utilisée."
+msgstr "Esta dirección de correo electrónico ya está en uso."
 
 #: traces/templates-light/account/login.html:141
 msgid "Welcome back"
-msgstr "Bon retour"
+msgstr "Bienvenido de nuevo"
 
 #: traces/templates-light/account/login.html:142
 msgid "Log in to upload your traces."
-msgstr "Connectez-vous pour analyser vos traces et gagner des hexagones."
+msgstr "Inicia sesión para subir tus trazas."
 
 #: traces/templates-light/account/login.html:145
 msgid "Invalid email or password."
-msgstr "E-mail ou mot de passe invalide."
+msgstr "Correo electrónico o contraseña no válidos."
 
 #: traces/templates-light/account/login.html:155
 msgid "Password"
-msgstr "Mot de passe"
+msgstr "Contraseña"
 
 #: traces/templates-light/account/login.html:159
 #: traces/templates-light/base.html:263
 #: traces/templates-light/registration/register.html:167
 msgid "Log in"
-msgstr "Se connecter"
+msgstr "Iniciar sesión"
 
 #: traces/templates-light/account/login.html:162
 #: traces/templates-light/registration/register.html:155
 #: venv/lib/python3.12/site-packages/django/utils/text.py:282
 msgid "or"
-msgstr "ou"
+msgstr "o"
 
 #: traces/templates-light/account/login.html:165
 #: traces/templates-light/registration/register.html:158
 msgid "Continue with Google"
-msgstr "Continuer avec Google"
+msgstr "Continuar con Google"
 
 #: traces/templates-light/account/login.html:170
 msgid "Continue with Strava"
-msgstr "Continuer avec Strava"
+msgstr "Continuar con Strava"
 
 #: traces/templates-light/account/login.html:174
 msgid "Forgot password?"
-msgstr "Mot de passe oublié ?"
+msgstr "¿Olvidaste tu contraseña?"
 
 #: traces/templates-light/account/login.html:175
 msgid "Don't have an account?"
-msgstr "Vous n'avez pas de compte ?"
+msgstr "¿No tienes una cuenta?"
 
 #: traces/templates-light/account/login.html:175
 #: traces/templates-light/registration/register.html:134
 #: traces/templates-light/registration/register.html:152
 msgid "Create an account"
-msgstr "Créer un compte"
+msgstr "Crear una cuenta"
 
 #: traces/templates-light/base.html:213
 #: traces/templates-light/geozones/zone_leaderboard.html:4
@@ -491,11 +492,11 @@ msgstr "Créer un compte"
 #: traces/templates-light/traces/leaderboard.html:155
 #: traces/templates-light/traces/leaderboard.html:200
 msgid "Leaderboard"
-msgstr "Classement"
+msgstr "Clasificación"
 
 #: traces/templates-light/base.html:214
 msgid "Stats"
-msgstr "Stats"
+msgstr "Estadísticas"
 
 #: traces/templates-light/base.html:215
 #: traces/templates-light/traces/badges.html:5
@@ -508,17 +509,17 @@ msgstr "Stats"
 #: traces/templates-light/traces/stats_traces.html:114
 #: traces/templates/traces/profile.html:129
 msgid "Badges"
-msgstr "Badges"
+msgstr "Insignias"
 
 #: traces/templates-light/base.html:219
 msgid "Upload"
-msgstr "Téléverser"
+msgstr "Subir"
 
 #: traces/templates-light/base.html:220
 #: traces/templates-light/notifs/notifications.html:4
 #: traces/templates-light/notifs/notifications.html:27
 msgid "Notifications"
-msgstr "Notifications"
+msgstr "Notificaciones"
 
 #: traces/templates-light/base.html:226
 #: traces/templates-light/traces/admin_dashboard.html:129
@@ -532,57 +533,57 @@ msgstr "Admin"
 
 #: traces/templates-light/base.html:232
 msgid "Profile"
-msgstr "Profil"
+msgstr "Perfil"
 
 #: traces/templates-light/base.html:237
 #: traces/templates-light/traces/subscription_history.html:75
 msgid "My subscriptions"
-msgstr "Mes abonnements"
+msgstr "Mis suscripciones"
 
 #: traces/templates-light/base.html:238
 #: traces/templates/traces/settings.html:124
 msgid "Settings"
-msgstr "Paramètres"
+msgstr "Ajustes"
 
 #: traces/templates-light/base.html:239
 #: traces/templates-light/traces/trace_list.html:109
 msgid "My traces"
-msgstr "Mes traces"
+msgstr "Mis trazas"
 
 #: traces/templates-light/base.html:240
 msgid "My friends"
-msgstr "Mes amis"
+msgstr "Mis amigos"
 
 #: traces/templates-light/base.html:241
 #: traces/templates-light/referrals/referral_list.html:4
 #: traces/templates-light/referrals/referral_list.html:141
 msgid "Referrals"
-msgstr "Invitations"
+msgstr "Invitaciones"
 
 #: traces/templates-light/base.html:242
 msgid "Legal notice"
-msgstr "Mentions légales"
+msgstr "Aviso legal"
 
 #: traces/templates-light/base.html:243
 msgid "Documentation"
-msgstr "Documentation"
+msgstr "Documentación"
 
 #: traces/templates-light/base.html:244
 msgid "About"
-msgstr "À propos"
+msgstr "Acerca de"
 
 #: traces/templates-light/base.html:247
 msgid "Log out"
-msgstr "Se déconneter"
+msgstr "Cerrar sesión"
 
 #: traces/templates-light/base.html:264
 msgid "Sign up"
-msgstr "S'inscrire"
+msgstr "Registrarse"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:157
 #: traces/templates-light/traces/leaderboard.html:157
 msgid "Last updated:"
-msgstr "Dernière mise à jour :"
+msgstr "Última actualización:"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:166
 #: traces/templates-light/geozones/zone_leaders.html:194
@@ -591,7 +592,7 @@ msgstr "Dernière mise à jour :"
 #: traces/templates-light/traces/leaderboard.html:166
 #: traces/templates-light/traces/stats_badges.html:261
 msgid "User"
-msgstr "Utilisateur"
+msgstr "Usuario"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:167
 #: traces/templates-light/geozones/zone_leaders.html:195
@@ -602,7 +603,7 @@ msgstr "Utilisateur"
 #: traces/templates-light/traces/trace_detail.html:302
 #: traces/templates/traces/profile.html:113
 msgid "Hexagons"
-msgstr "Hexagones"
+msgstr "Hexágonos"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:191
 #: traces/templates-light/geozones/zone_leaders.html:212
@@ -613,26 +614,26 @@ msgstr "Hexagones"
 #: traces/templates-light/traces/stats_monthly.html:104
 #: traces/templates-light/traces/stats_traces.html:104
 msgid "No data."
-msgstr "Aucune donnée."
+msgstr "Sin datos."
 
 #: traces/templates-light/geozones/zone_leaderboard.html:195
 #: traces/templates-light/geozones/zone_leaderboard.html:290
 #: traces/templates-light/traces/leaderboard.html:195
 #: traces/templates-light/traces/leaderboard.html:280
 msgid "Load more"
-msgstr "Charger plus"
+msgstr "Cargar más"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:202
 #: traces/templates-light/geozones/zone_leaders.html:231
 #: traces/templates-light/traces/leaderboard.html:202
 msgid "Conquered"
-msgstr "Conquis"
+msgstr "Conquistados"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:203
 #: traces/templates-light/geozones/zone_leaders.html:232
 #: traces/templates-light/traces/leaderboard.html:203
 msgid "Acquired"
-msgstr "Acquis"
+msgstr "Adquiridos"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:206
 #: traces/templates-light/geozones/zone_leaders.html:225
@@ -641,59 +642,59 @@ msgstr "Global"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:208
 msgid "Global leaderboard"
-msgstr "Classement global"
+msgstr "Clasificación global"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:211
 #: traces/templates-light/traces/leaderboard.html:207
 msgid "Zones"
-msgstr "Zones"
+msgstr "Zonas"
 
 #: traces/templates-light/geozones/zone_leaders.html:4
 #: traces/templates-light/geozones/zone_leaders.html:177
 msgid "Zone leaders"
-msgstr "Leaders par zone"
+msgstr "Líderes de zona"
 
 #: traces/templates-light/geozones/zone_leaders.html:209
 msgid "Your rank:"
-msgstr "Votre classement :"
+msgstr "Tu posición:"
 
 #: traces/templates-light/geozones/zone_leaders.html:209
 msgid "hexagons"
-msgstr "hexagones"
+msgstr "hexágonos"
 
 #: traces/templates-light/geozones/zone_leaders.html:218
 msgid "No active zones."
-msgstr "Aucune zone active."
+msgstr "No hay zonas activas."
 
 #: traces/templates-light/geozones/zone_leaders.html:226
 msgid "By zone"
-msgstr "Par zone"
+msgstr "Por zona"
 
 #: traces/templates-light/geozones/zone_leaders.html:229
 msgid "Type"
-msgstr "Type"
+msgstr "Tipo"
 
 #: traces/templates-light/notifs/notifications.html:45
 msgid "No notifications yet."
-msgstr "Aucune notification pour le moment."
+msgstr "Aún no hay notificaciones."
 
 #: traces/templates-light/referrals/referral_list.html:138
 msgid "Navigation"
-msgstr "Navigation"
+msgstr "Navegación"
 
 #: traces/templates-light/referrals/referral_list.html:145
 #, python-format
 msgid "You have reached the maximum number of invitations (%(max)s)."
-msgstr "Vous avez atteint le nombre maximum d'invitations (%(max)s)."
+msgstr "Has alcanzado el número máximo de invitaciones (%(max)s)."
 
 #: traces/templates-light/referrals/referral_list.html:159
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1920
 msgid "Email address"
-msgstr "Adresse e-mail"
+msgstr "Dirección de correo electrónico"
 
 #: traces/templates-light/referrals/referral_list.html:160
 msgid "Invite"
-msgstr "Inviter"
+msgstr "Invitar"
 
 #: traces/templates-light/referrals/referral_list.html:169
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:200
@@ -703,66 +704,63 @@ msgstr "Inviter"
 #: traces/templates-light/traces/admin_dashboard_workers.html:231
 #: traces/templates-light/traces/subscription_history.html:83
 msgid "Status"
-msgstr "Statut"
+msgstr "Estado"
 
 #: traces/templates-light/referrals/referral_list.html:170
 msgid "Date"
-msgstr "Date"
+msgstr "Fecha"
 
 #: traces/templates-light/referrals/referral_list.html:180
 msgid "Accepted"
-msgstr "Accepté"
+msgstr "Aceptada"
 
 #: traces/templates-light/referrals/referral_list.html:182
 #: traces/templates/traces/friends.html:206
 msgid "Pending"
-msgstr "En attente"
+msgstr "Pendiente"
 
 #: traces/templates-light/referrals/referral_list.html:188
 msgid "Delete this invitation?"
-msgstr "Supprimer cette invitation ?"
+msgstr "¿Eliminar esta invitación?"
 
 #: traces/templates-light/referrals/referral_list.html:190
 #: traces/templates-light/traces/trace_detail.html:315
 #: traces/templates-light/traces/trace_detail.html:332
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
-msgstr "Supprimer"
+msgstr "Eliminar"
 
 #: traces/templates-light/referrals/referral_list.html:199
 msgid "You haven't sent any invitations yet."
-msgstr "Vous n'avez encore envoyé aucune invitation."
+msgstr "Aún no has enviado ninguna invitación."
 
 #: traces/templates-light/registration/register.html:135
 msgid "Join Biketory and start uploading your traces."
-msgstr "Rejoignez Biketory et commencez à téléverser vos traces."
+msgstr "Únete a Biketory y empieza a subir tus trazas."
 
 #: traces/templates-light/registration/register.html:163
 msgid "Sign up with Strava"
-msgstr "S'inscrire avec Strava"
+msgstr "Registrarse con Strava"
 
 #: traces/templates-light/registration/register.html:167
 msgid "Already have an account?"
-msgstr "Vous avez déjà un compte ?"
+msgstr "¿Ya tienes una cuenta?"
 
 #: traces/templates-light/traces/about.html:40
 msgid "About Biketory"
-msgstr "À propos de Biketory"
+msgstr "Acerca de Biketory"
 
 #: traces/templates-light/traces/about.html:43
 msgid ""
-"Biketory is a web application that allows cyclists to import their GPX "
-"traces\n"
+"Biketory is a web application that allows cyclists to import their GPX traces\n"
 "  and visualise the closed geographic surfaces covered on an interactive map."
 msgstr ""
-"Biketory est une application web qui permet aux cyclistes d'importer leurs "
-"traces GPX\n"
-"  et de visualiser les surfaces géographiques fermées parcourues sur une "
-"carte interactive."
+"Biketory es una aplicación web que permite a los ciclistas importar sus trazas GPX\n"
+"  y visualizar las superficies geográficas cerradas recorridas en un mapa interactivo."
 
 #: traces/templates-light/traces/about.html:47
 msgid "How it works"
-msgstr "Comment ça marche"
+msgstr "Cómo funciona"
 
 #: traces/templates-light/traces/about.html:50
 msgid ""
@@ -770,69 +768,58 @@ msgid ""
 "  in your routes. These surfaces are then displayed on a map and divided\n"
 "  into hexagons to track your progress."
 msgstr ""
-"Téléversez vos fichiers GPX, et Biketory détecte automatiquement les boucles "
-"fermées\n"
-"  dans vos parcours. Ces surfaces sont ensuite affichées sur une carte et "
-"divisées\n"
-"  en hexagones pour suivre votre progression."
+"Sube tus archivos GPX, y Biketory detecta automáticamente los bucles cerrados\n"
+"  en tus rutas. Estas superficies se muestran en un mapa y se dividen\n"
+"  en hexágonos para seguir tu progreso."
 
 #: traces/templates-light/traces/about.html:58
 msgid ""
 "The map is divided into hexagons. Each time one of your rides crosses\n"
-"  a hexagon, it becomes <strong>acquired</strong> and your score on that "
-"hexagon increases."
+"  a hexagon, it becomes <strong>acquired</strong> and your score on that hexagon increases."
 msgstr ""
-"La carte est divisée en hexagones. Chaque fois qu'un de vos parcours traverse\n"
-"  un hexagone, il devient <strong>acquis</strong> et votre score sur cet "
-"hexagone augmente."
+"El mapa está dividido en hexágonos. Cada vez que uno de tus recorridos cruza\n"
+"  un hexágono, se convierte en <strong>adquirido</strong> y tu puntuación en ese hexágono aumenta."
 
 #: traces/templates-light/traces/about.html:63
 msgid ""
 "When your score on a hexagon is the highest among all users,\n"
-"  that hexagon becomes <strong>conquered</strong>. Other riders can take it "
-"back\n"
+"  that hexagon becomes <strong>conquered</strong>. Other riders can take it back\n"
 "  by riding through it more times than you — so keep pedalling!"
 msgstr ""
-"Lorsque votre score sur un hexagone est le plus élevé parmi tous les utilisateurs,\n"
-"  cet hexagone devient <strong>conquis</strong>. D'autres cyclistes peuvent le reprendre\n"
-"  en y passant plus de fois que vous — alors continuez à pédaler !"
+"Cuando tu puntuación en un hexágono es la más alta entre todos los usuarios,\n"
+"  ese hexágono se convierte en <strong>conquistado</strong>. Otros ciclistas pueden recuperarlo\n"
+"  pasando por él más veces que tú. ¡Así que sigue pedaleando!"
 
 #: traces/templates-light/traces/about.html:68
 msgid "The story"
-msgstr "L'histoire"
+msgstr "La historia"
 
 #: traces/templates-light/traces/about.html:71
 msgid ""
 "Biketory was born from the passion of a cycling enthusiast who never tires\n"
-"  of exploring new gravel paths. Setting off on an adventure, discovering "
-"an\n"
-"  unknown trail, riding for the sheer joy of riding — that is the spirit of "
-"the project.\n"
+"  of exploring new gravel paths. Setting off on an adventure, discovering an\n"
+"  unknown trail, riding for the sheer joy of riding — that is the spirit of the project.\n"
 "  The idea was simple: have a fun way to visualise all the ground\n"
 "  covered over your rides, and turn each loop into a small victory\n"
 "  on the map."
 msgstr ""
-"Biketory est né de la passion d'un cycliste qui ne se lasse jamais\n"
-"  d'explorer de nouveaux chemins de gravel. Partir à l'aventure, découvrir "
-"un\n"
-"  sentier inconnu, rouler pour le simple plaisir de rouler — voilà l'esprit "
-"du projet.\n"
-"  L'idée était simple : avoir un moyen ludique de visualiser tout le "
-"terrain\n"
-"  parcouru au fil de ses sorties, et transformer chaque boucle en une petite "
-"victoire\n"
-"  sur la carte."
+"Biketory nació de la pasión de un entusiasta del ciclismo que nunca se cansa\n"
+"  de explorar nuevos caminos de gravel. Salir a la aventura, descubrir un\n"
+"  sendero desconocido, rodar por el puro placer de rodar: ese es el espíritu del proyecto.\n"
+"  La idea era sencilla: tener una forma divertida de visualizar todo el terreno\n"
+"  recorrido en tus salidas y convertir cada bucle en una pequeña victoria\n"
+"  en el mapa."
 
 #: traces/templates-light/traces/about.html:79
 msgid "Source code"
-msgstr "Code source"
+msgstr "Código fuente"
 
 #: traces/templates-light/traces/about.html:82
 msgid ""
 "Biketory is an open source project. The code is available on\n"
 "  <a href=\"https://github.com/rodo/biketory\">GitHub</a>."
 msgstr ""
-"Biketory est un projet open source. Le code est disponible sur\n"
+"Biketory es un proyecto de código abierto. El código está disponible en\n"
 "  <a href=\"https://github.com/rodo/biketory\">GitHub</a>."
 
 #: traces/templates-light/traces/admin_dashboard.html:4
@@ -842,31 +829,31 @@ msgstr ""
 #: traces/templates-light/traces/admin_dashboard_traces.html:4
 #: traces/templates-light/traces/admin_dashboard_workers.html:4
 msgid "Admin Dashboard"
-msgstr "Tableau de bord admin"
+msgstr "Panel de administración"
 
 #: traces/templates-light/traces/admin_dashboard.html:111
 msgid "Registrations"
-msgstr "Inscriptions"
+msgstr "Registros"
 
 #: traces/templates-light/traces/admin_dashboard.html:115
 #: traces/templates-light/traces/admin_dashboard_premium.html:115
 msgid "Day"
-msgstr "Jour"
+msgstr "Día"
 
 #: traces/templates-light/traces/admin_dashboard.html:116
 #: traces/templates-light/traces/admin_dashboard_premium.html:116
 msgid "Week"
-msgstr "Semaine"
+msgstr "Semana"
 
 #: traces/templates-light/traces/admin_dashboard.html:117
 #: traces/templates-light/traces/admin_dashboard_premium.html:117
 msgid "Month"
-msgstr "Mois"
+msgstr "Mes"
 
 #: traces/templates-light/traces/admin_dashboard.html:118
 #: traces/templates-light/traces/admin_dashboard_premium.html:118
 msgid "Year"
-msgstr "Année"
+msgstr "Año"
 
 #: traces/templates-light/traces/admin_dashboard.html:131
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:251
@@ -875,7 +862,7 @@ msgstr "Année"
 #: traces/templates-light/traces/admin_dashboard_traces.html:143
 #: traces/templates-light/traces/admin_dashboard_workers.html:255
 msgid "Users"
-msgstr "Utilisateurs"
+msgstr "Usuarios"
 
 #: traces/templates-light/traces/admin_dashboard.html:132
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:252
@@ -896,7 +883,7 @@ msgstr "Premium"
 #: traces/templates-light/traces/admin_dashboard_traces.html:145
 #: traces/templates-light/traces/admin_dashboard_workers.html:257
 msgid "Pending traces"
-msgstr "Traces en attente"
+msgstr "Trazas pendientes"
 
 #: traces/templates-light/traces/admin_dashboard.html:134
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:254
@@ -919,7 +906,7 @@ msgstr "Workers"
 #: traces/templates-light/traces/admin_dashboard_traces.html:147
 #: traces/templates-light/traces/admin_dashboard_workers.html:259
 msgid "Geozones"
-msgstr "Géozones"
+msgstr "Geozonas"
 
 #: traces/templates-light/traces/admin_dashboard.html:136
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:256
@@ -928,36 +915,36 @@ msgstr "Géozones"
 #: traces/templates-light/traces/admin_dashboard_traces.html:148
 #: traces/templates-light/traces/admin_dashboard_workers.html:260
 msgid "Create"
-msgstr "Créer"
+msgstr "Crear"
 
 #: traces/templates-light/traces/admin_dashboard.html:158
 #: traces/templates-light/traces/admin_dashboard.html:202
 msgid "New registrations"
-msgstr "Nouvelles inscriptions"
+msgstr "Nuevos registros"
 
 #: traces/templates-light/traces/admin_dashboard.html:165
 #: traces/templates-light/traces/admin_dashboard.html:209
 #: traces/templates-light/traces/admin_dashboard_premium.html:165
 #: traces/templates-light/traces/admin_dashboard_premium.html:209
 msgid "Cumulative"
-msgstr "Cumulé"
+msgstr "Acumulado"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:194
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:228
 #: traces/templates-light/traces/admin_dashboard_geozones.html:163
 msgid "Code"
-msgstr "Code"
+msgstr "Código"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:196
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:229
 #: traces/templates-light/traces/admin_dashboard_geozones.html:164
 msgid "Level"
-msgstr "Niveau"
+msgstr "Nivel"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:198
 #: traces/templates-light/traces/admin_dashboard_geozones.html:165
 msgid "Parent"
-msgstr "Parent"
+msgstr "Superior"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:201
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:239
@@ -965,254 +952,235 @@ msgstr "Parent"
 #: traces/templates-light/traces/admin_dashboard_geozones.html:232
 #: traces/templates-light/traces/subscription_history.html:93
 msgid "Active"
-msgstr "Actif"
+msgstr "Activo"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:201
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:239
 #: traces/templates-light/traces/admin_dashboard_geozones.html:179
 #: traces/templates-light/traces/admin_dashboard_geozones.html:236
 msgid "Inactive"
-msgstr "Inactif"
+msgstr "Inactivo"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:202
 msgid "Loaded"
-msgstr "Chargé"
+msgstr "Cargado"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:227
 #: traces/templates-light/traces/admin_dashboard_geozones.html:162
 #: traces/templates-light/traces/legal.html:89
 msgid "Name"
-msgstr "Nom"
+msgstr "Nombre"
 
 #: traces/templates-light/traces/admin_dashboard_geozones.html:184
 #: traces/templates-light/traces/admin_dashboard_geozones.html:233
 msgid "Deactivate"
-msgstr "Désactiver"
+msgstr "Desactivar"
 
 #: traces/templates-light/traces/admin_dashboard_geozones.html:184
 #: traces/templates-light/traces/admin_dashboard_geozones.html:237
 msgid "Activate"
-msgstr "Activer"
+msgstr "Activar"
 
 #: traces/templates-light/traces/admin_dashboard_geozones.html:192
 msgid "No geozones loaded."
-msgstr "Aucune géozone chargée."
+msgstr "No hay geozonas cargadas."
 
 #: traces/templates-light/traces/admin_dashboard_premium.html:111
 msgid "Premium subscriptions"
-msgstr "Abonnements Premium"
+msgstr "Suscripciones Premium"
 
 #: traces/templates-light/traces/admin_dashboard_premium.html:158
 #: traces/templates-light/traces/admin_dashboard_premium.html:202
 msgid "New subscriptions"
-msgstr "Nouveaux abonnements"
+msgstr "Nuevas suscripciones"
 
 #: traces/templates-light/traces/admin_dashboard_traces.html:119
 #: traces/templates-light/traces/trace_list.html:116
 #: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
 msgid "File"
-msgstr "Fichier"
+msgstr "Archivo"
 
 #: traces/templates-light/traces/admin_dashboard_traces.html:121
 msgid "Uploaded"
-msgstr "Téléversé"
+msgstr "Subido"
 
 #: traces/templates-light/traces/admin_dashboard_traces.html:135
 msgid "No pending traces."
-msgstr "Aucune trace en attente."
+msgstr "No hay trazas pendientes."
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:181
 msgid "active workers"
-msgstr "workers actifs"
+msgstr "workers activos"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:185
 msgid "queued"
-msgstr "en attente"
+msgstr "en cola"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:186
 msgid "running"
-msgstr "en cours"
+msgstr "en ejecución"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:187
 msgid "succeeded"
-msgstr "réussi"
+msgstr "completado"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:188
 msgid "failed"
-msgstr "échoué"
+msgstr "fallido"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:198
 msgid "Last heartbeat"
-msgstr "Dernier signal"
+msgstr "Último latido"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:209
 msgid "active"
-msgstr "actif"
+msgstr "activo"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:211
 msgid "inactive"
-msgstr "inactif"
+msgstr "inactivo"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:219
 msgid "No workers registered."
-msgstr "Aucun worker enregistré."
+msgstr "No hay workers registrados."
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:224
 msgid "Recent jobs"
-msgstr "Tâches récentes"
+msgstr "Tareas recientes"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:230
 msgid "Task"
-msgstr "Tâche"
+msgstr "Tarea"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:232
 msgid "Attempts"
-msgstr "Tentatives"
+msgstr "Intentos"
 
 #: traces/templates-light/traces/admin_dashboard_workers.html:247
 msgid "No jobs."
-msgstr "Aucune tâche."
+msgstr "No hay tareas."
 
 #: traces/templates-light/traces/badges.html:94
 msgid "Complete rewards catalogue"
-msgstr "Catalogue complet des récompenses"
+msgstr "Catálogo completo de recompensas"
 
 #: traces/templates-light/traces/badges.html:98
 msgid "badges"
-msgstr "badges"
+msgstr "insignias"
 
 #: traces/templates-light/traces/badges.html:113
 msgid "Unlocked"
-msgstr "Débloqué"
+msgstr "Desbloqueada"
 
 #: traces/templates-light/traces/landing.html:110
 msgid "Layers"
-msgstr "Calques"
+msgstr "Capas"
 
 #: traces/templates-light/traces/landing.html:116
 msgid "My hexagons"
-msgstr "Mes hexagones"
+msgstr "Mis hexágonos"
 
 #: traces/templates-light/traces/landing.html:122
 msgid "Other users"
-msgstr "Autres utilisateurs"
+msgstr "Otros usuarios"
 
 #: traces/templates-light/traces/landing.html:126
 #: traces/templates/traces/friends.html:105
 #: traces/templates/traces/profile.html:125
 msgid "Friends"
-msgstr "Amis"
+msgstr "Amigos"
 
 #: traces/templates-light/traces/landing.html:130
 msgid "All friends"
-msgstr "Tous les amis"
+msgstr "Todos los amigos"
 
 #: traces/templates-light/traces/landing.html:302
 #: traces/templates-light/traces/trace_create.html:96
 msgid "Points"
-msgstr "Points"
+msgstr "Puntos"
 
 #: traces/templates-light/traces/landing.html:302
 msgid "Last activity"
-msgstr "Dernière activité"
+msgstr "Última actividad"
 
 #: traces/templates-light/traces/legal.html:77
 msgid "Legal notice and cookies"
-msgstr "Mentions légales et cookies"
+msgstr "Aviso legal y cookies"
 
 #: traces/templates-light/traces/legal.html:80
 msgid ""
-"Biketory uses a limited number of cookies strictly necessary for the "
-"application to function.\n"
+"Biketory uses a limited number of cookies strictly necessary for the application to function.\n"
 "  No tracking, advertising, or third-party cookies are used."
 msgstr ""
-"Biketory utilise un nombre limité de cookies strictement nécessaires au "
-"fonctionnement de l'application.\n"
-"  Aucun cookie de suivi, de publicité ou tiers n'est utilisé."
+"Biketory utiliza un número limitado de cookies estrictamente necesarias para el funcionamiento de la aplicación.\n"
+"  No se utilizan cookies de seguimiento, publicidad ni de terceros."
 
 #: traces/templates-light/traces/legal.html:84
 msgid "Cookies used"
-msgstr "Cookies utilisés"
+msgstr "Cookies utilizadas"
 
 #: traces/templates-light/traces/legal.html:90
 msgid "Purpose"
-msgstr "Fonction"
+msgstr "Finalidad"
 
 #: traces/templates-light/traces/legal.html:91
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1868
 msgid "Duration"
-msgstr "Durée"
+msgstr "Duración"
 
 #: traces/templates-light/traces/legal.html:97
-msgid ""
-"Maintains your session across pages. Managed by the Django authentication "
-"system."
-msgstr ""
-"Maintient votre session entre les pages. Géré par le système "
-"d'authentification Django."
+msgid "Maintains your session across pages. Managed by the Django authentication system."
+msgstr "Mantiene tu sesión entre páginas. Gestionado por el sistema de autenticación de Django."
 
 #: traces/templates-light/traces/legal.html:98
 msgid "Session (deleted when the browser is closed, or after 2 weeks)"
-msgstr "Session (supprimé à la fermeture du navigateur, ou après 2 semaines)"
+msgstr "Sesión (se elimina al cerrar el navegador o después de 2 semanas)"
 
 #: traces/templates-light/traces/legal.html:102
-msgid ""
-"Protects forms against CSRF attacks. Required by Django for any POST request "
-"(login, logout, upload, etc.)."
-msgstr ""
-"Protège les formulaires contre les attaques CSRF. Requis par Django pour "
-"toute requête POST (connexion, déconnexion, téléversement, etc.)."
+msgid "Protects forms against CSRF attacks. Required by Django for any POST request (login, logout, upload, etc.)."
+msgstr "Protege los formularios contra ataques CSRF. Requerido por Django para cualquier solicitud POST (inicio de sesión, cierre de sesión, subida, etc.)."
 
 #: traces/templates-light/traces/legal.html:103
 #: traces/templates-light/traces/legal.html:108
 msgid "1 year"
-msgstr "1 an"
+msgstr "1 año"
 
 #: traces/templates-light/traces/legal.html:107
-msgid ""
-"Remembers the last position and zoom level of the map on the home page. "
-"Contains three comma-separated numbers: <code>latitude,longitude,zoom</code>."
-msgstr ""
-"Mémorise la dernière position et le niveau de zoom de la carte sur la page "
-"d'accueil. Contient trois nombres séparés par des virgules : <code>latitude,"
-"longitude,zoom</code>."
+msgid "Remembers the last position and zoom level of the map on the home page. Contains three comma-separated numbers: <code>latitude,longitude,zoom</code>."
+msgstr "Recuerda la última posición y el nivel de zoom del mapa en la página de inicio. Contiene tres números separados por comas: <code>latitud,longitud,zoom</code>."
 
 #: traces/templates-light/traces/legal.html:113
 msgid "No personal data sold or shared"
-msgstr "Aucune donnée personnelle vendue ou partagée"
+msgstr "Ningún dato personal vendido ni compartido"
 
 #: traces/templates-light/traces/legal.html:116
 msgid ""
-"None of the cookies listed above are shared with third parties. The "
-"<code>map_pos</code> cookie\n"
-"  is stored only in your browser and is never transmitted to an external "
-"service."
+"None of the cookies listed above are shared with third parties. The <code>map_pos</code> cookie\n"
+"  is stored only in your browser and is never transmitted to an external service."
 msgstr ""
-"Aucun des cookies listés ci-dessus n'est partagé avec des tiers. Le cookie "
-"<code>map_pos</code>\n"
-"  est stocké uniquement dans votre navigateur et n'est jamais transmis à un "
-"service externe."
+"Ninguna de las cookies mencionadas se comparte con terceros. La cookie <code>map_pos</code>\n"
+"  se almacena únicamente en tu navegador y nunca se transmite a un servicio externo."
 
 #: traces/templates-light/traces/share.html:83
 #: traces/templates/traces/profile.html:109
 msgid "Uploaded traces"
-msgstr "Traces téléversées"
+msgstr "Trazas subidas"
 
 #: traces/templates-light/traces/share.html:91
 #: traces/templates/traces/profile.html:117
 msgid "Total points"
-msgstr "Points totaux"
+msgstr "Puntos totales"
 
 #: traces/templates-light/traces/stats.html:158
 #: traces/templates-light/traces/stats_badges.html:296
 #: traces/templates-light/traces/stats_monthly.html:112
 #: traces/templates-light/traces/stats_traces.html:112
 msgid "By month"
-msgstr "Par mois"
+msgstr "Por mes"
 
 #: traces/templates-light/traces/stats.html:159
 msgid "By user"
-msgstr "Par utilisateur"
+msgstr "Por usuario"
 
 #: traces/templates-light/traces/stats.html:160
 #: traces/templates-light/traces/stats_badges.html:297
@@ -1220,277 +1188,273 @@ msgstr "Par utilisateur"
 #: traces/templates-light/traces/stats_traces.html:113
 #: traces/views/api_stats.py:67
 msgid "Traces"
-msgstr "Traces"
+msgstr "Trazas"
 
 #: traces/templates-light/traces/stats.html:163
 msgid "Hexagons earned per month"
-msgstr "Hexagones acquis par mois"
+msgstr "Hexágonos adquiridos por mes"
 
 #: traces/templates-light/traces/stats.html:170
 #: traces/templates-light/traces/stats_monthly.html:102
 #: traces/templates-light/traces/stats_traces.html:102
 msgid "Loading..."
-msgstr "Chargement..."
+msgstr "Cargando..."
 
 #: traces/templates-light/traces/stats_badges.html:225
 msgid "badges unlocked"
-msgstr "badges débloqués"
+msgstr "insignias desbloqueadas"
 
 #: traces/templates-light/traces/stats_badges.html:229
 msgid "average / user"
-msgstr "moyenne / utilisateur"
+msgstr "media / usuario"
 
 #: traces/templates-light/traces/stats_badges.html:233
 msgid "Rarest badges"
-msgstr "Badges les plus rares"
+msgstr "Insignias más raras"
 
 #: traces/templates-light/traces/stats_badges.html:244
 msgid "Most common badges"
-msgstr "Badges les plus courants"
+msgstr "Insignias más comunes"
 
 #: traces/templates-light/traces/stats_badges.html:256
 msgid "Top 10 collectors"
-msgstr "Top 10 des collectionneurs"
+msgstr "Top 10 coleccionistas"
 
 #: traces/templates-light/traces/stats_badges.html:260
 msgid "Rank"
-msgstr "Rang"
+msgstr "Posición"
 
 #: traces/templates-light/traces/stats_badges.html:278
 msgid "Recent activity"
-msgstr "Activité récente"
+msgstr "Actividad reciente"
 
 #: traces/templates-light/traces/stats_badges.html:284
 #, python-format
 msgid "<strong>%(username)s</strong> unlocked <strong>%(name)s</strong>"
-msgstr "<strong>%(username)s</strong> a débloqué <strong>%(name)s</strong>"
+msgstr "<strong>%(username)s</strong> desbloqueó <strong>%(name)s</strong>"
 
 #: traces/templates-light/traces/stats_badges.html:294
 #: traces/templates-light/traces/stats_monthly.html:110
 #: traces/templates-light/traces/stats_traces.html:110
 msgid "Statistics"
-msgstr "Statistiques"
+msgstr "Estadísticas"
 
 #: traces/templates-light/traces/stats_monthly.html:95
 msgid "Hexagons acquired per month"
-msgstr "Hexagones acquis par mois"
+msgstr "Hexágonos adquiridos por mes"
 
 #: traces/templates-light/traces/stats_traces.html:95
 msgid "Traces uploaded per month"
-msgstr "Traces téléversées par mois"
+msgstr "Trazas subidas por mes"
 
 #: traces/templates-light/traces/subscription_history.html:81
 msgid "Start date"
-msgstr "Date de début"
+msgstr "Fecha de inicio"
 
 #: traces/templates-light/traces/subscription_history.html:82
 msgid "End date"
-msgstr "Date de fin"
+msgstr "Fecha de fin"
 
 #: traces/templates-light/traces/subscription_history.html:95
 msgid "Expired"
-msgstr "Expiré"
+msgstr "Expirada"
 
 #: traces/templates-light/traces/subscription_history.html:103
 msgid "No subscriptions yet."
-msgstr "Aucun abonnement pour le moment."
+msgstr "Aún no hay suscripciones."
 
 #: traces/templates-light/traces/trace_create.html:4
 msgid "Create a trace"
-msgstr "Créer une trace"
+msgstr "Crear una traza"
 
 #: traces/templates-light/traces/trace_create.html:100
 msgid "Undo"
-msgstr "Annuler"
+msgstr "Deshacer"
 
 #: traces/templates-light/traces/trace_create.html:101
 #: venv/lib/python3.12/site-packages/django/forms/widgets.py:528
 msgid "Clear"
-msgstr "Effacer"
+msgstr "Borrar"
 
 #: traces/templates-light/traces/trace_create.html:103
 msgid "Download GPX"
-msgstr "Télécharger le GPX"
+msgstr "Descargar GPX"
 
 #: traces/templates-light/traces/trace_detail.html:239
 msgid "Back to traces"
-msgstr "Retour aux traces"
+msgstr "Volver a las trazas"
 
 #: traces/templates-light/traces/trace_detail.html:244
 #: traces/templates-light/traces/trace_list.html:117
 msgid "First point date"
-msgstr "Date du premier point"
+msgstr "Fecha del primer punto"
 
 #: traces/templates-light/traces/trace_detail.html:248
 #: traces/templates-light/traces/trace_list.html:119
 msgid "Uploaded on"
-msgstr "Téléversé le"
+msgstr "Subida el"
 
 #: traces/templates-light/traces/trace_detail.html:252
 msgid "Extracted surfaces"
-msgstr "Surfaces extraites"
+msgstr "Superficies extraídas"
 
 #: traces/templates-light/traces/trace_detail.html:264
 #: traces/templates-light/traces/trace_list.html:129
 msgid "Analysis in progress..."
-msgstr "Analyse en cours…"
+msgstr "Análisis en curso..."
 
 #: traces/templates-light/traces/trace_detail.html:267
 #, python-format
 msgid "%(counter)s trace ahead in the queue"
 msgid_plural "%(counter)s traces ahead in the queue"
-msgstr[0] "%(counter)s trace en attente dans la file"
-msgstr[1] "%(counter)s traces en attente dans la file"
+msgstr[0] "%(counter)s traza por delante en la cola"
+msgstr[1] "%(counter)s trazas por delante en la cola"
 
 #: traces/templates-light/traces/trace_detail.html:274
 msgid "Surfaces extracted, computing badges..."
-msgstr "Surfaces extraites, calcul des badges…"
+msgstr "Superficies extraídas, calculando insignias..."
 
 #: traces/templates-light/traces/trace_detail.html:280
 msgid "Unlocked badges"
-msgstr "Badges débloqués"
+msgstr "Insignias desbloqueadas"
 
 #: traces/templates-light/traces/trace_detail.html:295
-msgid ""
-"This trace does not contain any closed surface. Make sure your route forms a "
-"loop."
-msgstr ""
-"Cette trace ne contient aucune surface fermée. Assurez-vous que votre "
-"parcours forme une boucle."
+msgid "This trace does not contain any closed surface. Make sure your route forms a loop."
+msgstr "Esta traza no contiene ninguna superficie cerrada. Asegúrate de que tu ruta forme un bucle."
 
 #: traces/templates-light/traces/trace_detail.html:300
 msgid "Trace"
-msgstr "Trace"
+msgstr "Traza"
 
 #: traces/templates-light/traces/trace_detail.html:312
 msgid "Previous"
-msgstr "Précédent"
+msgstr "Anterior"
 
 #: traces/templates-light/traces/trace_detail.html:320
 msgid "Next"
-msgstr "Suivant"
+msgstr "Siguiente"
 
 #: traces/templates-light/traces/trace_detail.html:326
 msgid "Delete trace"
-msgstr "Supprimer la trace"
+msgstr "Eliminar traza"
 
 #: traces/templates-light/traces/trace_detail.html:327
 msgid "Are you sure you want to delete this trace?"
-msgstr "Êtes-vous sûr de vouloir supprimer cette trace ?"
+msgstr "¿Estás seguro de que quieres eliminar esta traza?"
 
 #: traces/templates-light/traces/trace_detail.html:329
 #: traces/templates/traces/friends.html:139
 #: traces/templates/traces/friends.html:210
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "Cancelar"
 
 #: traces/templates-light/traces/trace_list.html:147
 msgid "View closed surfaces"
-msgstr "Voir les surfaces fermées"
+msgstr "Ver superficies cerradas"
 
 #: traces/templates-light/traces/trace_list.html:157
 msgid "No traces uploaded yet."
-msgstr "Aucune trace téléversée pour le moment."
+msgstr "Aún no se ha subido ninguna traza."
 
 #: traces/templates/traces/friends.html:112
 msgid "Username or secret UUID..."
-msgstr "Nom d'utilisateur ou UUID secret..."
+msgstr "Nombre de usuario o UUID secreto..."
 
 #: traces/templates/traces/friends.html:113
 msgid "Search"
-msgstr "Rechercher"
+msgstr "Buscar"
 
 #: traces/templates/traces/friends.html:118
 msgid "Results"
-msgstr "Résultats"
+msgstr "Resultados"
 
 #: traces/templates/traces/friends.html:128
 msgid "Friend"
-msgstr "Ami"
+msgstr "Amigo"
 
 #: traces/templates/traces/friends.html:132
 #: traces/templates/traces/friends.html:234
 msgid "Remove"
-msgstr "Retirer"
+msgstr "Eliminar"
 
 #: traces/templates/traces/friends.html:135
 msgid "Request sent"
-msgstr "Demande envoyée"
+msgstr "Solicitud enviada"
 
 #: traces/templates/traces/friends.html:145
 #: traces/templates/traces/friends.html:182
 msgid "Accept"
-msgstr "Accepter"
+msgstr "Aceptar"
 
 #: traces/templates/traces/friends.html:150
 #: traces/templates/traces/friends.html:187
 msgid "Decline"
-msgstr "Refuser"
+msgstr "Rechazar"
 
 #: traces/templates/traces/friends.html:156
 msgid "Add"
-msgstr "Ajouter"
+msgstr "Añadir"
 
 #: traces/templates/traces/friends.html:164
 #, python-format
 msgid "No user found for \"%(query)s\"."
-msgstr "Aucun utilisateur trouvé pour « %(query)s »."
+msgstr "Ningún usuario encontrado para \"%(query)s\"."
 
 #: traces/templates/traces/friends.html:170
 #: traces/templates/traces/profile.html:144
 msgid "Received requests"
-msgstr "Demandes reçues"
+msgstr "Solicitudes recibidas"
 
 #: traces/templates/traces/friends.html:176
 msgid "received on"
-msgstr "reçue le"
+msgstr "recibida el"
 
 #: traces/templates/traces/friends.html:197
 msgid "Sent requests"
-msgstr "Demandes envoyées"
+msgstr "Solicitudes enviadas"
 
 #: traces/templates/traces/friends.html:203
 msgid "sent on"
-msgstr "envoyée le"
+msgstr "enviada el"
 
 #: traces/templates/traces/friends.html:219
 #, python-format
 msgid "My friends (%(count)s)"
-msgstr "Mes amis (%(count)s)"
+msgstr "Mis amigos (%(count)s)"
 
 #: traces/templates/traces/friends.html:241
 msgid "You don't have any friends yet. Search for a user above!"
-msgstr "Vous n'avez pas encore d'amis. Recherchez un utilisateur ci-dessus !"
+msgstr "¡Aún no tienes amigos! ¡Busca un usuario arriba!"
 
 #: traces/templates/traces/profile.html:126
 msgid "manage"
-msgstr "gérer"
+msgstr "gestionar"
 
 #: traces/templates/traces/profile.html:130
 msgid "view all"
-msgstr "voir tout"
+msgstr "ver todo"
 
 #: traces/templates/traces/profile.html:133
 msgid "Subscription"
-msgstr "Abonnement"
+msgstr "Suscripción"
 
 #: traces/templates/traces/profile.html:139
 msgid "Free"
-msgstr "Gratuit"
+msgstr "Gratuito"
 
 #: traces/templates/traces/settings.html:127
 msgid "Account"
-msgstr "Compte"
+msgstr "Cuenta"
 
 #: traces/templates/traces/settings.html:130
 #: traces/templates/traces/settings.html:135
 msgid "First name"
-msgstr "Prénom"
+msgstr "Nombre"
 
 #: traces/templates/traces/settings.html:130
 #: traces/templates/traces/settings.html:136
 msgid "Last name"
-msgstr "Nom"
+msgstr "Apellido"
 
 #: traces/templates/traces/settings.html:137
 #: traces/templates/traces/settings.html:154
@@ -1498,56 +1462,56 @@ msgstr "Nom"
 #: traces/templates/traces/settings.html:200
 #: traces/templates/traces/settings.html:221
 msgid "Save"
-msgstr "Enregistrer"
+msgstr "Guardar"
 
 #: traces/templates/traces/settings.html:142
 #: traces/templates/traces/settings.html:159
 #: traces/templates/traces/settings.html:176
 #: traces/templates/traces/settings.html:203
 msgid "Saved."
-msgstr "Enregistré."
+msgstr "Guardado."
 
 #: traces/templates/traces/settings.html:148
 msgid "Username"
-msgstr "Nom d'utilisateur"
+msgstr "Nombre de usuario"
 
 #: traces/templates/traces/settings.html:182
 msgid "Home location"
-msgstr "Lieu de résidence"
+msgstr "Ubicación de residencia"
 
 #: traces/templates/traces/settings.html:188
 msgid "Not set"
-msgstr "Non défini"
+msgstr "No definido"
 
 #: traces/templates/traces/settings.html:194
 msgid "Latitude"
-msgstr "Latitude"
+msgstr "Latitud"
 
 #: traces/templates/traces/settings.html:197
 msgid "Longitude"
-msgstr "Longitude"
+msgstr "Longitud"
 
 #: traces/templates/traces/settings.html:209
 msgid "Language"
-msgstr "Langue"
+msgstr "Idioma"
 
 #: traces/templates/traces/settings.html:227
 msgid "Sharing"
-msgstr "Partage"
+msgstr "Compartir"
 
 #: traces/templates/traces/settings.html:230
 msgid "Share my profile"
-msgstr "Partager mon profil"
+msgstr "Compartir mi perfil"
 
 #: traces/templates/traces/settings.html:233
 #: traces/templates/traces/settings.html:241
 #: traces/templates/traces/settings.html:255
 msgid "Copy"
-msgstr "Copier"
+msgstr "Copiar"
 
 #: traces/templates/traces/settings.html:238
 msgid "Secret UUID"
-msgstr "UUID secret"
+msgstr "UUID secreto"
 
 #: traces/templates/traces/settings.html:246
 msgid "API"
@@ -1555,110 +1519,102 @@ msgstr "API"
 
 #: traces/templates/traces/settings.html:249
 msgid "API Token"
-msgstr "Jeton API"
+msgstr "Token API"
 
 #: traces/templates/traces/settings.html:257
 msgid "Expires on"
-msgstr "Expire le"
+msgstr "Expira el"
 
 #: traces/templates/traces/settings.html:259
 msgid "Token expired"
-msgstr "Jeton expiré"
+msgstr "Token expirado"
 
 #: traces/templates/traces/settings.html:262
 msgid "No active token."
-msgstr "Aucun jeton actif."
+msgstr "Ningún token activo."
 
 #: traces/templates/traces/settings.html:268
 msgid "Regenerate"
-msgstr "Régénérer"
+msgstr "Regenerar"
 
 #: traces/templates/traces/settings.html:268
 msgid "Generate"
-msgstr "Générer"
+msgstr "Generar"
 
 #: traces/templates/traces/settings.html:272
 #, python-format
-msgid ""
-"Available with a <a href=\"%(premium_url)s\" style=\"color:var(--accent);"
-"font-weight:600;text-decoration:none;\">Premium</a> subscription."
-msgstr ""
-"Disponible avec un abonnement <a href=\"%(premium_url)s\" style=\"color:"
-"var(--accent);font-weight:600;text-decoration:none;\">Premium</a>."
+msgid "Available with a <a href=\"%(premium_url)s\" style=\"color:var(--accent);font-weight:600;text-decoration:none;\">Premium</a> subscription."
+msgstr "Disponible con una suscripción <a href=\"%(premium_url)s\" style=\"color:var(--accent);font-weight:600;text-decoration:none;\">Premium</a>."
 
 #: traces/views/api_stats.py:38
 msgid "Hexagons acquired"
-msgstr "Hexagones acquis"
+msgstr "Hexágonos adquiridos"
 
 #: traces/views/api_stats.py:43
 msgid "New hexagons"
-msgstr "Nouveaux hexagones"
+msgstr "Nuevos hexágonos"
 
 #: traces/views/api_upload.py:36
 msgid "Invalid or expired token."
-msgstr "Jeton invalide ou expiré."
+msgstr "Token no válido o expirado."
 
 #: traces/views/api_upload.py:39
 msgid "API access requires an active Premium subscription."
-msgstr "L'accès API nécessite un abonnement Premium actif."
+msgstr "El acceso a la API requiere una suscripción Premium activa."
 
 #: traces/views/api_upload.py:43
 msgid "Missing gpx_file field."
-msgstr "Champ gpx_file manquant."
+msgstr "Falta el campo gpx_file."
 
 #: traces/views/api_upload.py:49
 msgid "Daily upload limit reached."
-msgstr "Limite quotidienne de téléversement atteinte."
+msgstr "Límite diario de subidas alcanzado."
 
 #: traces/views/api_upload.py:61
 #, python-format
 msgid "Trace too long (%(length).0f km). Maximum is %(max)d km."
-msgstr "Trace trop longue (%(length).0f km). Le maximum est de %(max)d km."
+msgstr "Traza demasiado larga (%(length).0f km). El máximo es %(max)d km."
 
 #: traces/views/settings.py:49
 msgid "First name must be 150 characters or fewer."
-msgstr "Le prénom ne doit pas dépasser 150 caractères."
+msgstr "El nombre no debe superar los 150 caracteres."
 
 #: traces/views/settings.py:51
 msgid "Last name must be 150 characters or fewer."
-msgstr "Le nom ne doit pas dépasser 150 caractères."
+msgstr "El apellido no debe superar los 150 caracteres."
 
 #: traces/views/settings.py:63
 msgid "The username cannot be empty."
-msgstr "Le nom d'utilisateur ne peut pas être vide."
+msgstr "El nombre de usuario no puede estar vacío."
 
 #: traces/views/settings.py:65
 msgid "The username must be 150 characters or fewer."
-msgstr "Le nom d'utilisateur ne doit pas dépasser 150 caractères."
+msgstr "El nombre de usuario no debe superar los 150 caracteres."
 
 #: traces/views/settings.py:67
-msgid ""
-"The username may only contain letters, digits, and @/./+/-/_ characters."
-msgstr ""
-"Le nom d'utilisateur ne peut contenir que des lettres, chiffres et les "
-"caractères @/./+/-/_."
+msgid "The username may only contain letters, digits, and @/./+/-/_ characters."
+msgstr "El nombre de usuario solo puede contener letras, dígitos y los caracteres @/./+/-/_."
 
 #: traces/views/settings.py:71
 msgid "This username is already taken."
-msgstr "Ce nom d'utilisateur est déjà pris."
+msgstr "Este nombre de usuario ya está en uso."
 
 #: traces/views/settings.py:82
 msgid "The email address cannot be empty."
-msgstr "L'adresse e-mail ne peut pas être vide."
+msgstr "La dirección de correo electrónico no puede estar vacía."
 
 #: traces/views/settings.py:84
 msgid "Invalid email address."
-msgstr "Adresse e-mail invalide."
+msgstr "Dirección de correo electrónico no válida."
 
 #: traces/views/upload.py:35
 #, python-format
 msgid "Trace too long (%(length).0f km). Maximum allowed is %(max)d km."
-msgstr ""
-"Trace trop longue (%(length).0f km). Le maximum autorisé est de %(max)d km."
+msgstr "Traza demasiado larga (%(length).0f km). El máximo permitido es %(max)d km."
 
 #: traces/views/upload.py:44
 msgid "This trace has already been uploaded (same start date detected)."
-msgstr "Cette trace a déjà été téléversée (même date de départ détectée)."
+msgstr "Esta traza ya ha sido subida (misma fecha de inicio detectada)."
 
 #: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
 msgid "Messages"
@@ -1713,18 +1669,15 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:211
 msgid "Enter a valid email address."
-msgstr "Saisissez une adresse e-mail valide."
+msgstr ""
 
 #. Translators: "letters" means latin letters: a-z and A-Z.
 #: venv/lib/python3.12/site-packages/django/core/validators.py:289
-msgid ""
-"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgid "Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:297
-msgid ""
-"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
-"hyphens."
+msgid "Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or hyphens."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:309
@@ -1774,30 +1727,20 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:441
 #, python-format
-msgid ""
-"Ensure this value is a multiple of step size %(limit_value)s, starting from "
-"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgid "Ensure this value is a multiple of step size %(limit_value)s, starting from %(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:473
 #, python-format
-msgid ""
-"Ensure this value has at least %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at least %(limit_value)d characters (it has "
-"%(show_value)d)."
+msgid "Ensure this value has at least %(limit_value)d character (it has %(show_value)d)."
+msgid_plural "Ensure this value has at least %(limit_value)d characters (it has %(show_value)d)."
 msgstr[0] ""
 msgstr[1] ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:491
 #, python-format
-msgid ""
-"Ensure this value has at most %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at most %(limit_value)d characters (it has "
-"%(show_value)d)."
+msgid "Ensure this value has at most %(limit_value)d character (it has %(show_value)d)."
+msgid_plural "Ensure this value has at most %(limit_value)d characters (it has %(show_value)d)."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -1823,18 +1766,14 @@ msgstr[1] ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:526
 #, python-format
-msgid ""
-"Ensure that there are no more than %(max)s digit before the decimal point."
-msgid_plural ""
-"Ensure that there are no more than %(max)s digits before the decimal point."
+msgid "Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural "Ensure that there are no more than %(max)s digits before the decimal point."
 msgstr[0] ""
 msgstr[1] ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:597
 #, python-format
-msgid ""
-"File extension “%(extension)s” is not allowed. Allowed extensions are: "
-"%(allowed_extensions)s."
+msgid "File extension “%(extension)s” is not allowed. Allowed extensions are: %(allowed_extensions)s."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/core/validators.py:659
@@ -1863,7 +1802,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
 msgid "This field cannot be null."
-msgstr "Ce champ ne peut pas être nul."
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:136
 msgid "This field cannot be blank."
@@ -1878,8 +1817,7 @@ msgstr ""
 #. 'month'. Eg: "Title must be unique for pub_date year"
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:141
 #, python-format
-msgid ""
-"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgid "%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:180
@@ -1916,17 +1854,13 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1426
 #, python-format
-msgid ""
-"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
-"format."
+msgid "“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD format."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1430
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1565
 #, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
-"date."
+msgid "“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid date."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1434
@@ -1935,16 +1869,12 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1561
 #, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
-"uuuuuu]][TZ] format."
+msgid "“%(value)s” value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1569
 #, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
-"[TZ]) but it is an invalid date/time."
+msgid "“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) but it is an invalid date/time."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1574
@@ -1962,14 +1892,12 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1864
 #, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in [DD] [[HH:]MM:]ss[."
-"uuuuuu] format."
+msgid "“%(value)s” value has an invalid format. It must be in [DD] [[HH:]MM:]ss[.uuuuuu] format."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1945
 msgid "File path"
-msgstr "Chemin du fichier"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2023
 #, python-format
@@ -2038,16 +1966,12 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2526
 #, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
-"format."
+msgid "“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] format."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2530
 #, python-format
-msgid ""
-"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
-"invalid time."
+msgid "“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an invalid time."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2534
@@ -2163,8 +2087,7 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/forms/fields.py:642
 #, python-format
 msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
-msgid_plural ""
-"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgid_plural "Ensure this filename has at most %(max)d characters (it has %(length)d)."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -2173,9 +2096,7 @@ msgid "Please either submit a file or check the clear checkbox, not both."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/fields.py:715
-msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
+msgid "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/fields.py:862
@@ -2215,9 +2136,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:61
 #, python-format
-msgid ""
-"ManagementForm data is missing or has been tampered with. Missing fields: "
-"%(field_names)s. You may need to file a bug report if the issue persists."
+msgid "ManagementForm data is missing or has been tampered with. Missing fields: %(field_names)s. You may need to file a bug report if the issue persists."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:65
@@ -2251,9 +2170,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/models.py:937
 #, python-format
-msgid ""
-"Please correct the duplicate data for %(field_name)s which must be unique "
-"for the %(lookup)s in %(date_field)s."
+msgid "Please correct the duplicate data for %(field_name)s which must be unique for the %(lookup)s in %(date_field)s."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/models.py:946
@@ -2275,9 +2192,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/utils.py:229
 #, python-format
-msgid ""
-"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
-"may be ambiguous or it may not exist."
+msgid "%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it may be ambiguous or it may not exist."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/widgets.py:529
@@ -2412,7 +2327,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:16
 msgid "Mon"
-msgstr "Lun"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:17
 msgid "Tue"
@@ -2428,11 +2343,11 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:20
 msgid "Fri"
-msgstr "Ven"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:21
 msgid "Sat"
-msgstr "Sam"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:22
 msgid "Sun"
@@ -2448,7 +2363,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:27
 msgid "March"
-msgstr "Mars"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:28
 msgid "April"
@@ -2456,7 +2371,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:29
 msgid "May"
-msgstr "Mai"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:30
 msgid "June"
@@ -2504,7 +2419,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:43
 msgid "may"
-msgstr "mai"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:44
 msgid "jun"
@@ -2547,7 +2462,7 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:55
 msgctxt "abbrev. month"
 msgid "March"
-msgstr "Mars"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:56
 msgctxt "abbrev. month"
@@ -2557,7 +2472,7 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:57
 msgctxt "abbrev. month"
 msgid "May"
-msgstr "Mai"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:58
 msgctxt "abbrev. month"
@@ -2607,7 +2522,7 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:69
 msgctxt "alt. month"
 msgid "March"
-msgstr "Mars"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:70
 msgctxt "alt. month"
@@ -2617,7 +2532,7 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:71
 msgctxt "alt. month"
 msgid "May"
-msgstr "Mai"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:72
 msgctxt "alt. month"
@@ -2674,8 +2589,8 @@ msgstr ""
 #, python-format
 msgid "%(num)d year"
 msgid_plural "%(num)d years"
-msgstr[0] "%(num)d an"
-msgstr[1] "%(num)d ans"
+msgstr[0] ""
+msgstr[1] ""
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
 #, python-format
@@ -2721,40 +2636,23 @@ msgid "CSRF verification failed. Request aborted."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/csrf.py:34
-msgid ""
-"You are seeing this message because this HTTPS site requires a “Referer "
-"header” to be sent by your web browser, but none was sent. This header is "
-"required for security reasons, to ensure that your browser is not being "
-"hijacked by third parties."
+msgid "You are seeing this message because this HTTPS site requires a “Referer header” to be sent by your web browser, but none was sent. This header is required for security reasons, to ensure that your browser is not being hijacked by third parties."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/csrf.py:40
-msgid ""
-"If you have configured your browser to disable “Referer” headers, please re-"
-"enable them, at least for this site, or for HTTPS connections, or for “same-"
-"origin” requests."
+msgid "If you have configured your browser to disable “Referer” headers, please re-enable them, at least for this site, or for HTTPS connections, or for “same-origin” requests."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/csrf.py:45
-msgid ""
-"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
-"including the “Referrer-Policy: no-referrer” header, please remove them. The "
-"CSRF protection requires the “Referer” header to do strict referer checking. "
-"If you’re concerned about privacy, use alternatives like <a "
-"rel=\"noreferrer\" …> for links to third-party sites."
+msgid "If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or including the “Referrer-Policy: no-referrer” header, please remove them. The CSRF protection requires the “Referer” header to do strict referer checking. If you’re concerned about privacy, use alternatives like <a rel=\"noreferrer\" …> for links to third-party sites."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/csrf.py:54
-msgid ""
-"You are seeing this message because this site requires a CSRF cookie when "
-"submitting forms. This cookie is required for security reasons, to ensure "
-"that your browser is not being hijacked by third parties."
+msgid "You are seeing this message because this site requires a CSRF cookie when submitting forms. This cookie is required for security reasons, to ensure that your browser is not being hijacked by third parties."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/csrf.py:60
-msgid ""
-"If you have configured your browser to disable cookies, please re-enable "
-"them, at least for this site, or for “same-origin” requests."
+msgid "If you have configured your browser to disable cookies, please re-enable them, at least for this site, or for “same-origin” requests."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/csrf.py:66
@@ -2791,9 +2689,7 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/generic/dates.py:680
 #, python-format
-msgid ""
-"Future %(verbose_name_plural)s not available because %(class_name)s."
-"allow_future is False."
+msgid "Future %(verbose_name_plural)s not available because %(class_name)s.allow_future is False."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/generic/dates.py:720
@@ -2843,23 +2739,17 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
 #, python-format
-msgid ""
-"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
-"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgid "View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:208
 #, python-format
-msgid ""
-"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
-"%(version)s/ref/settings/#debug\" target=\"_blank\" "
-"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
-"configured any URLs."
+msgid "You are seeing this page because <a href=\"https://docs.djangoproject.com/en/%(version)s/ref/settings/#debug\" target=\"_blank\" rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not configured any URLs."
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:217
 msgid "Django Documentation"
-msgstr "Documentation Django"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:218
 msgid "Topics, references, &amp; how-to’s"
@@ -2875,14 +2765,8 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:235
 msgid "Django Community"
-msgstr "Communauté Django"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
-
-#~ msgid "until"
-#~ msgstr "jusqu'au"
-
-#~ msgid "Use map center"
-#~ msgstr "Utiliser le centre de la carte"
