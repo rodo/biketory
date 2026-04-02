@@ -127,6 +127,24 @@ h2 {
 <h2>{% trans "Account" %}</h2>
 
 <div class="stat-card">
+  <div class="label">{% trans "First name" %} / {% trans "Last name" %}</div>
+  <form method="post" style="margin-top:0.3rem;">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_name">
+    <div class="form-row">
+      <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="{% trans 'First name' %}" class="form-input">
+      <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="{% trans 'Last name' %}" class="form-input">
+      <button type="submit" class="btn-accent" {% if success_field == "name" %}disabled{% endif %}>{% trans "Save" %}</button>
+    </div>
+    {% if name_error %}
+      <div class="error">{{ name_error }}</div>
+    {% elif success_field == "name" %}
+      <div class="success">{% trans "Saved." %}</div>
+    {% endif %}
+  </form>
+</div>
+
+<div class="stat-card">
   <div class="label">{% trans "Username" %}</div>
   <form method="post" style="margin-top:0.3rem;">
     {% csrf_token %}
