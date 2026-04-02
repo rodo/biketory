@@ -228,9 +228,9 @@ class FirstTraceRewardTest(TestCase):
         self.referral.refresh_from_db()
         self.assertFalse(self.referral.rewarded)
 
-    def test_existing_subscription_extended(self):
+    def test_existing_subscription_creates_new_one_after(self):
         today = datetime.date.today()
-        Subscription.objects.create(
+        existing = Subscription.objects.create(
             user=self.sponsor,
             start_date=today - datetime.timedelta(days=10),
             end_date=today + datetime.timedelta(days=20),
@@ -240,6 +240,6 @@ class FirstTraceRewardTest(TestCase):
         from traces.views.upload import _reward_referral_sponsor
         _reward_referral_sponsor(self.referee)
 
-        sub = Subscription.objects.get(user=self.sponsor)
-        expected_end = today + datetime.timedelta(days=20)
-        self.assertGreater(sub.end_date, expected_end)
+        self.assertEqual(Subscription.objects.filter(user=self.sponsor).count(), 2)
+        new_sub = Subscription.objects.filter(user=self.sponsor).exclude(pk=existing.pk).get()
+        self.assertEqual(new_sub.start_date, existing.end_date + datetime.timedelta(days=1))
