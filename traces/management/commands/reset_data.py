@@ -1,5 +1,9 @@
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+
+logger = logging.getLogger(__name__)
 
 from notifs.models import Notification
 from referrals.models import Referral
@@ -57,10 +61,7 @@ class Command(BaseCommand):
         Trace.objects.all().delete()
         Hexagon.objects.all().delete()
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Purged: "
-                + ", ".join(f"{v} {k}" for k, v in counts.items())
-                + "."
-            )
+        logger.info(
+            "Purged: %s.",
+            ", ".join(f"{v} {k}" for k, v in counts.items()),
         )

@@ -1,9 +1,12 @@
+import logging
 import shutil
 from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
+
+logger = logging.getLogger(__name__)
 
 from traces.tile_generation import generate_tiles_for_bbox
 
@@ -35,7 +38,7 @@ class Command(BaseCommand):
 
         if options["clean"] and tiles_dir.exists():
             shutil.rmtree(tiles_dir)
-            self.stdout.write("Cleaned existing tiles.")
+            logger.info("Cleaned existing tiles.")
 
         # Get global extent
         with connection.cursor() as cursor:
@@ -43,17 +46,17 @@ class Command(BaseCommand):
             row = cursor.fetchone()
 
         if row is None or row[0] is None:
-            self.stdout.write("No hexagons with scores found. Nothing to generate.")
+            logger.info("No hexagons with scores found. Nothing to generate.")
             return
 
         xmin, ymin, xmax, ymax = row
-        self.stdout.write(f"Extent: ({xmin:.4f}, {ymin:.4f}) — ({xmax:.4f}, {ymax:.4f})")
+        logger.info("Extent: (%.4f, %.4f) — (%.4f, %.4f)", xmin, ymin, xmax, ymax)
 
         total_tiles = 0
 
         for zoom in range(zoom_min, zoom_max + 1):
             count = generate_tiles_for_bbox(zoom, xmin, ymin, xmax, ymax)
             total_tiles += count
-            self.stdout.write(f"Zoom {zoom}: {count} tiles generated")
+            logger.info("Zoom %d: %d tiles generated", zoom, count)
 
-        self.stdout.write(self.style.SUCCESS(f"Done. {total_tiles} tiles generated."))
+        logger.info("Done. %d tiles generated.", total_tiles)

@@ -85,10 +85,10 @@ BADGE_CATALOGUE = [
     {
         "category": _("Seasonal"),
         "badges": [
-            {"id": "saison_printemps", "name": _("Spring"), "desc": _("1 trace/week from March to May")},
-            {"id": "saison_ete", "name": _("Summer"), "desc": _("1 trace/week from June to August")},
-            {"id": "saison_automne", "name": _("Autumn"), "desc": _("1 trace/week from September to November")},
-            {"id": "saison_hiver", "name": _("Winter"), "desc": _("1 trace/week from December to February")},
+            {"id": "saison_printemps", "name": _("Spring"), "desc": _("1 trace from March to May")},
+            {"id": "saison_ete", "name": _("Summer"), "desc": _("1 trace from June to August")},
+            {"id": "saison_automne", "name": _("Autumn"), "desc": _("1 trace from September to November")},
+            {"id": "saison_hiver", "name": _("Winter"), "desc": _("1 trace from December to February")},
             {"id": "saison_4saisons", "name": _("4 seasons"), "desc": _("Earn all 4 seasonal badges")},
         ],
     },

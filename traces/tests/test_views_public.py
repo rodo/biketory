@@ -53,10 +53,10 @@ class LandingViewTest(TestCase):
         self.assertIn("geojson", data)
 
 
-class LegalViewTest(TestCase):
+class AboutViewTest(TestCase):
 
     def test_anonymous_returns_200(self):
-        resp = self.client.get(reverse("legal"))
+        resp = self.client.get(reverse("about"))
         self.assertEqual(resp.status_code, 200)
 
 

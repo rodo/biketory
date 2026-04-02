@@ -151,6 +151,29 @@ def _check_volume_weekly(user_id, owned):
             yield badge_id
 
 
+def _check_seasonal(trace, owned):
+    """Seasonal badges: one trace in the season is enough."""
+    if not trace.first_point_date:
+        return
+    month = trace.first_point_date.month
+    season_map = {
+        3: "saison_printemps", 4: "saison_printemps", 5: "saison_printemps",
+        6: "saison_ete", 7: "saison_ete", 8: "saison_ete",
+        9: "saison_automne", 10: "saison_automne", 11: "saison_automne",
+        12: "saison_hiver", 1: "saison_hiver", 2: "saison_hiver",
+    }
+    badge_id = season_map.get(month)
+    if badge_id and badge_id not in owned:
+        yield badge_id
+    # 4 seasons: check if user now has all 4 seasonal badges
+    if "saison_4saisons" not in owned:
+        all_seasons = {"saison_printemps", "saison_ete", "saison_automne", "saison_hiver"}
+        # Include the badge we're about to award
+        effective_owned = owned | {badge_id} if badge_id else owned
+        if all_seasons.issubset(effective_owned):
+            yield "saison_4saisons"
+
+
 def _check_distance(user_id, owned):
     """Distance badges: monthly and all-time totals."""
     monthly_thresholds = [
@@ -204,6 +227,9 @@ def award_badges(user, trace):
         new_badge_ids.append(badge_id)
 
     for badge_id in _check_volume_weekly(user.pk, owned):
+        new_badge_ids.append(badge_id)
+
+    for badge_id in _check_seasonal(trace, owned):
         new_badge_ids.append(badge_id)
 
     for badge_id in _check_distance(user.pk, owned):

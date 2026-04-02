@@ -31,6 +31,9 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(","
 # Strava OAuth2 toggle (disabled by default)
 STRAVA_AUTH_ENABLED = os.environ.get("STRAVA_AUTH_ENABLED", "").lower() in ("1", "true", "yes")
 
+# OpenStreetMap OAuth toggle (disabled by default)
+OSM_AUTH_ENABLED = os.environ.get("OSM_AUTH_ENABLED", "").lower() in ("1", "true", "yes")
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,6 +58,9 @@ INSTALLED_APPS = [
 
 if STRAVA_AUTH_ENABLED:
     INSTALLED_APPS.insert(-1, "allauth.socialaccount.providers.strava")
+
+if OSM_AUTH_ENABLED:
+    INSTALLED_APPS.insert(-1, "allauth.socialaccount.providers.openstreetmap")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -142,6 +148,8 @@ LANGUAGES = [
     ("en", "English"),
     ("fr", "Français"),
     ("it", "Italiano"),
+    ("es", "Español"),
+    ("de", "Deutsch"),
 ]
 
 LOCALE_PATHS = [BASE_DIR / "locale"]
@@ -199,6 +207,10 @@ DEFAULT_FROM_EMAIL  = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@biketory.fr"
 STRAVA_CLIENT_ID     = os.environ.get("STRAVA_CLIENT_ID", "")
 STRAVA_CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET", "")
 
+# OpenStreetMap OAuth 1.0
+OSM_CLIENT_KEY    = os.environ.get("OSM_CLIENT_KEY", "")
+OSM_CLIENT_SECRET = os.environ.get("OSM_CLIENT_SECRET", "")
+
 # --- Authentication backends ---
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -230,6 +242,14 @@ if STRAVA_AUTH_ENABLED:
         "APP": {
             "client_id": os.environ.get("STRAVA_CLIENT_ID", ""),
             "secret": os.environ.get("STRAVA_CLIENT_SECRET", ""),
+        },
+    }
+
+if OSM_AUTH_ENABLED:
+    SOCIALACCOUNT_PROVIDERS["openstreetmap"] = {
+        "APP": {
+            "client_id": os.environ.get("OSM_CLIENT_KEY", ""),
+            "secret": os.environ.get("OSM_CLIENT_SECRET", ""),
         },
     }
 

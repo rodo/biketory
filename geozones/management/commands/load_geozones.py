@@ -94,7 +94,7 @@ class Command(BaseCommand):
 
         for filepath in geojson_files:
             features = _load_features(filepath)
-            self.stdout.write(f"  {filepath.relative_to(SRC_DIR)}: {len(features)} features")
+            logger.info("  %s: %d features", filepath.relative_to(SRC_DIR), len(features))
 
             for feature in features:
                 if _is_osmb(feature):
@@ -135,9 +135,9 @@ class Command(BaseCommand):
         self._link_parents()
 
         elapsed = time.monotonic() - t0
-        self.stdout.write(
-            f"Done: {created} created, {updated} updated, {skipped} skipped "
-            f"in {elapsed:.1f} s"
+        logger.info(
+            "Done: %d created, %d updated, %d skipped in %.1f s",
+            created, updated, skipped, elapsed,
         )
 
     def _link_parents(self):

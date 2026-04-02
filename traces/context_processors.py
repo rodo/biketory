@@ -6,6 +6,7 @@ def tile_server(request):
         "tile_server_url": settings.TILE_SERVER_URL,
         "media_url": settings.MEDIA_URL,
         "strava_auth_enabled": getattr(settings, "STRAVA_AUTH_ENABLED", False),
+        "osm_auth_enabled": getattr(settings, "OSM_AUTH_ENABLED", False),
         "map_zoom_min": settings.MAP_ZOOM_MIN,
         "map_zoom_max": settings.MAP_ZOOM_MAX,
         "tiles_static_min_zoom": settings.TILES_STATIC_MIN_ZOOM,

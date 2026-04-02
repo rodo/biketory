@@ -1,6 +1,10 @@
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -38,8 +42,4 @@ class Command(BaseCommand):
             cursor.execute("DELETE FROM procrastinate_events")
             cursor.execute("DELETE FROM procrastinate_jobs")
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Purged {events_count} events, {jobs_count} jobs."
-            )
-        )
+        logger.info("Purged %d events, %d jobs.", events_count, jobs_count)

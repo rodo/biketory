@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 _SQL_DIR = Path(__file__).resolve().parent.parent.parent / "sql"
 _CONQUERED_SQL = (_SQL_DIR / "leaderboard_conquered.sql").read_text()
 _ACQUIRED_SQL = (_SQL_DIR / "leaderboard_acquired.sql").read_text()
+_POINTS_SQL = (_SQL_DIR / "leaderboard_points.sql").read_text()
 
 
 class Command(BaseCommand):
@@ -29,13 +30,19 @@ class Command(BaseCommand):
             cursor.execute(_ACQUIRED_SQL)
             acquired_rows = cursor.fetchall()
 
+            cursor.execute(_POINTS_SQL)
+            points_rows = cursor.fetchall()
+
         # Merge results by user_id
         data = {}
         for user_id, conquered in conquered_rows:
-            data[user_id] = {"conquered": conquered, "acquired": 0}
+            data[user_id] = {"conquered": conquered, "acquired": 0, "points": 0}
         for user_id, acquired in acquired_rows:
-            data.setdefault(user_id, {"conquered": 0, "acquired": 0})
+            data.setdefault(user_id, {"conquered": 0, "acquired": 0, "points": 0})
             data[user_id]["acquired"] = acquired
+        for user_id, points in points_rows:
+            data.setdefault(user_id, {"conquered": 0, "acquired": 0, "points": 0})
+            data[user_id]["points"] = points
 
         # Fetch usernames and premium status in batch
         user_model = get_user_model()
@@ -74,6 +81,16 @@ class Command(BaseCommand):
                 prev_val = vals["acquired"]
             rank_acquired[user_id] = current_rank
 
+        by_points = sorted(data.items(), key=lambda x: x[1]["points"], reverse=True)
+        rank_points = {}
+        current_rank = 0
+        prev_val = None
+        for user_id, vals in by_points:
+            if vals["points"] != prev_val:
+                current_rank += 1
+                prev_val = vals["points"]
+            rank_points[user_id] = current_rank
+
         # Build entries
         now = timezone.now()
         entries = [
@@ -83,8 +100,10 @@ class Command(BaseCommand):
                 is_premium=user_id in premium_user_ids,
                 hexagons_conquered=vals["conquered"],
                 hexagons_acquired=vals["acquired"],
+                total_points=vals["points"],
                 rank_conquered=rank_conquered[user_id],
                 rank_acquired=rank_acquired[user_id],
+                rank_points=rank_points[user_id],
                 computed_at=now,
             )
             for user_id, vals in data.items()
@@ -96,4 +115,3 @@ class Command(BaseCommand):
 
         elapsed = time.monotonic() - t0
         logger.info("Leaderboard computed: %d entries in %.1f s", len(entries), elapsed)
-        self.stdout.write(f"Leaderboard computed: {len(entries)} entries in {elapsed:.1f} s")

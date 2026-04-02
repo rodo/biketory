@@ -27,7 +27,8 @@ urlpatterns = [
         views.admin_dashboard_geozone_toggle,
         name="admin_dashboard_geozone_toggle",
     ),
-    path("legal/", views.legal, name="legal"),
+
+    path("pricing/", views.pricing, name="pricing"),
     path("stats/monthly/", views.stats_monthly, name="stats_monthly"),
     path("stats/traces/", views.stats_traces, name="stats_traces"),
     path("stats/badges/", views.stats_badges, name="stats_badges"),
