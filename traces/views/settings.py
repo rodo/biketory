@@ -41,6 +41,21 @@ def settings(request):
             except (ValueError, TypeError):
                 pass
 
+        if action == "update_name":
+            first_name = request.POST.get("first_name", "").strip()
+            last_name = request.POST.get("last_name", "").strip()
+            name_error = None
+            if len(first_name) > 150:
+                name_error = _("First name must be 150 characters or fewer.")
+            elif len(last_name) > 150:
+                name_error = _("Last name must be 150 characters or fewer.")
+            else:
+                request.user.first_name = first_name
+                request.user.last_name = last_name
+                request.user.save(update_fields=["first_name", "last_name"])
+                request.success_field = "name"
+            request.name_error = name_error
+
         if action == "update_username":
             new_username = request.POST.get("username", "").strip()
             username_error = None
@@ -80,6 +95,7 @@ def settings(request):
     user = request.user
     is_premium = user.profile.is_premium
     api_token = ApiToken.objects.filter(user=user).first() if is_premium else None
+    name_error = getattr(request, "name_error", None)
     username_error = getattr(request, "username_error", None)
     email_error = getattr(request, "email_error", None)
     success_field = getattr(request, "success_field", None)
@@ -95,6 +111,7 @@ def settings(request):
         "secret_uuid": stats.secret_uuid,
         "api_token": api_token,
         "is_premium": is_premium,
+        "name_error": name_error,
         "username_error": username_error,
         "email_error": email_error,
         "home_location": home_location,
