@@ -173,7 +173,7 @@ th {
         </thead>
         <tbody>
           {% for ref in referrals %}
-          <tr>
+          <tr data-token="{{ ref.token }}">
             <td>{{ ref.email }}</td>
             <td>
               {% if ref.status == "accepted" %}
