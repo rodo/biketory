@@ -1,7 +1,11 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Admin Dashboard" %} — {% trans "Geozones" %} — Biketory{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/admin_geozones.css' %}">
+{% endblock %}
 
 {% block extra_css %}
 #page-inner {
@@ -104,41 +108,6 @@ h1 {
   font-weight: 700;
   background: #e0dcd5;
   color: var(--bg);
-}
-
-.badge-active, .badge-inactive {
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.badge-active {
-  background: rgba(79, 104, 20, 0.15);
-  color: #4f6814;
-}
-
-.badge-inactive {
-  background: rgba(180, 60, 60, 0.1);
-  color: #b43c3c;
-}
-
-.toggle-btn {
-  background: none;
-  border: 1px solid #e0dcd5;
-  border-radius: 4px;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--bg);
-  transition: border-color 0.2s;
-}
-
-.toggle-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 .empty {

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Admin Dashboard" %} — {{ zone.name }} — Biketory{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{% static 'css/admin_geozones.css' %}">
 {% endblock %}
 
 {% block extra_css %}
@@ -100,24 +101,6 @@ h1 {
   color: var(--bg);
 }
 
-.badge-active, .badge-inactive {
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.badge-active {
-  background: rgba(79, 104, 20, 0.15);
-  color: #4f6814;
-}
-
-.badge-inactive {
-  background: rgba(180, 60, 60, 0.1);
-  color: #b43c3c;
-}
-
 #map {
   width: 100%;
   height: 420px;
@@ -198,7 +181,12 @@ h1 {
         <dt>{% trans "Parent" %}</dt>
         <dd>{% if zone.parent %}<a href="{% url 'admin_dashboard_geozone_detail' pk=zone.parent.pk %}">{{ zone.parent.name }}</a>{% else %}—{% endif %}</dd>
         <dt>{% trans "Status" %}</dt>
-        <dd><span class="{% if zone.active %}badge-active{% else %}badge-inactive{% endif %}">{% if zone.active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</span></dd>
+        <dd>
+          <span id="status-badge" class="{% if zone.active %}badge-active{% else %}badge-inactive{% endif %}">{% if zone.active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</span>
+          <button class="toggle-btn" id="toggle-btn" data-pk="{{ zone.pk }}">
+            {% if zone.active %}{% trans "Deactivate" %}{% else %}{% trans "Activate" %}{% endif %}
+          </button>
+        </dd>
         <dt>{% trans "Loaded" %}</dt>
         <dd>{{ zone.loaded_at|date:"Y-m-d H:i" }}</dd>
       </dl>
@@ -281,6 +269,31 @@ h1 {
   }).addTo(map);
 
   map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+
+  const btn = document.getElementById('toggle-btn');
+  const badge = document.getElementById('status-badge');
+  btn.addEventListener('click', function() {
+    const pk = this.dataset.pk;
+    fetch('{% url "admin_dashboard_geozone_toggle" pk=zone.pk %}', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.active) {
+        badge.className = 'badge-active';
+        badge.textContent = '{% trans "Active" %}';
+        btn.textContent = '{% trans "Deactivate" %}';
+      } else {
+        badge.className = 'badge-inactive';
+        badge.textContent = '{% trans "Inactive" %}';
+        btn.textContent = '{% trans "Activate" %}';
+      }
+    });
+  });
 })();
 </script>
 {% endblock %}
