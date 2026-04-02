@@ -63,7 +63,7 @@ public abstract class BaseSimulation extends Simulation {
                                 .formParam("login", "#{email}")
                                 .formParam("password", "#{password}")
                                 .check(status().find().in(200,302))
-                                .check(header("Location").is("/profile/"))
+                                .check(header("Location").is("/dashboard/"))
                 );
     }
 
@@ -165,7 +165,7 @@ public abstract class BaseSimulation extends Simulation {
                 .exec(http("Zone leaders").get("/leaderboard/zones/")
                         .check(status().is(200)))
                 .pause(1, 3)
-                .exec(http("Profile").get("/profile/")
+                .exec(http("Dashboard").get("/dashboard/")
                         .check(status().is(200)))
                 .pause(1, 3)
                 .exec(http("Friends").get("/friends/")

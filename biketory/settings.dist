@@ -183,7 +183,7 @@ TILES_DYNAMIC_MIN_ZOOM = 11
 TILES_DYNAMIC_MAX_ZOOM = 14
 
 LOGIN_URL = "account_login"
-LOGIN_REDIRECT_URL = "profile"
+LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "landing"
 
 TILE_SERVER_URL = "http://{s}.tiles.openstreetmap.org/{z}/{x}/{y}.png"

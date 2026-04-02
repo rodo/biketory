@@ -112,7 +112,7 @@ connecté, puis parcourt les pages protégées.
 2. `POST /accounts/login/` — Connexion
 3. `GET /leaderboard/` — Leaderboard global
 4. `GET /leaderboard/zones/` — Leaders par zone
-5. `GET /profile/` — Profil utilisateur
+5. `GET /dashboard/` — Dashboard utilisateur
 6. `GET /friends/` — Amis
 7. `GET /traces/` — Liste des traces
 

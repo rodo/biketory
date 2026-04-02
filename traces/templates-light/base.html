@@ -238,7 +238,7 @@
         <div class="dropdown" id="dropdown-user">
           <button class="dropdown-toggle" onclick="toggleDropdown()">{{ user.username }} &#9662;</button>
           <div class="dropdown-menu">
-            <a href="{% url 'profile' %}">{% trans "Profile" %}
+            <a href="{% url 'dashboard' %}">{% trans "Dashboard" %}
               {% if user.profile.is_premium %}
                 <span style="margin-left:0.4rem;font-size:0.7rem;font-weight:700;background:var(--accent);color:#fff;padding:0.1rem 0.4rem;border-radius:4px;letter-spacing:0.06em;vertical-align:middle;">PREMIUM</span>
               {% endif %}

@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_css %}
+#page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Hero row ── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-info {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-info .user-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--bg);
+  margin-bottom: 0.3rem;
+}
+
+.hero-info .user-username {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.hero-info .user-email {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.premium-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+.premium-badge.premium { background: var(--accent); color: #fff; }
+.premium-badge.free { background: #e0dcd5; color: var(--bg); }
+
+.hero-map-wrap {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+#mini-map {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.no-trace-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.no-trace-msg a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.no-trace-msg a:hover { text-decoration: underline; }
+
+/* ── Stat cards row ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.stat-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+/* ── Progression row ── */
+.progression {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-block {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card-block h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0ede6;
+}
+.progress-item:last-child { border-bottom: none; }
+
+.progress-item .p-label {
+  font-size: 0.88rem;
+  color: var(--bg);
+}
+
+.progress-item .p-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+/* Badges section */
+.badges-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 80px;
+}
+
+.badge-item img {
+  width: 56px;
+  height: 56px;
+}
+
+.badge-item .badge-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--bg);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.badge-item .badge-date {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.see-all {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.see-all:hover { text-decoration: underline; }
+
+.empty-msg {
+  font-size: 0.88rem;
+  color: var(--muted);
+  padding: 0.5rem 0;
+}
+
+/* ── Friends activity row ── */
+.friend-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f0ede6;
+}
+.friend-row:last-child { border-bottom: none; }
+
+.friend-row .friend-name {
+  font-weight: 600;
+  color: var(--bg);
+  font-size: 0.9rem;
+}
+
+.friend-row .friend-date {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.friend-row a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.friend-row a:hover { text-decoration: underline; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero,
+  .progression {
+    grid-template-columns: 1fr;
+  }
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Dashboard" %}</h1>
+
+{# ── Hero row ── #}
+<div class="hero">
+  <div class="hero-info">
+    <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+    <div class="user-username">@{{ user.username }}</div>
+    <div class="user-email">{{ user.email }}</div>
+    {% if user_profile.is_premium %}
+      <span class="premium-badge premium">PREMIUM</span>
+    {% else %}
+      <span class="premium-badge free">FREE</span>
+    {% endif %}
+  </div>
+
+  <div class="hero-map-wrap">
+    {% if last_trace %}
+      <div id="mini-map"></div>
+    {% else %}
+      <div class="no-trace-msg">
+        {% blocktrans %}No trace yet. <a href="/upload/">Upload your first GPX trace</a> to get started!{% endblocktrans %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Stat cards ── #}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="label">{% trans "Uploaded traces" %}</div>
+    <div class="value">{{ traces_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">{% trans "Hexagons acquired" %}</div>
+    <div class="value">{{ hexagons_acquired }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">{% trans "Total points" %}</div>
+    <div class="value">{{ total_points }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">{% trans "Rank" %}</div>
+    <div class="value">{% if rank_points %}#{{ rank_points }}{% else %}—{% endif %}</div>
+  </div>
+</div>
+
+{# ── Progression row ── #}
+<div class="progression">
+  <div class="card-block">
+    <h2>{% trans "Streak & distance" %}</h2>
+    <div class="progress-item">
+      <span class="p-label">{% trans "Daily streak" %}</span>
+      <span class="p-value">{{ streak_daily }} {% trans "days" %}</span>
+    </div>
+    <div class="progress-item">
+      <span class="p-label">{% trans "Total distance" %}</span>
+      <span class="p-value">{{ distance_total }} km</span>
+    </div>
+    <div class="progress-item">
+      <span class="p-label">{% trans "This month" %}</span>
+      <span class="p-value">{{ distance_monthly }} km</span>
+    </div>
+  </div>
+
+  <div class="card-block">
+    <h2>{% trans "Latest badges" %}</h2>
+    {% if recent_badges %}
+      <div class="badges-list">
+        {% for badge in recent_badges %}
+        <div class="badge-item">
+          <img src="{% static 'badges/svg/' %}{{ badge.id }}.svg" alt="{{ badge.name }}">
+          <div class="badge-name">{{ badge.name }}</div>
+          <div class="badge-date">{{ badge.earned_at|date:"Y-m-d" }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <a class="see-all" href="{% url 'badges' %}">{% trans "View all" %} &rarr;</a>
+    {% else %}
+      <p class="empty-msg">{% trans "Upload traces to unlock your first badges!" %}</p>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Friend activity ── #}
+<div class="card-block">
+  <h2>{% trans "Friend activity" %}</h2>
+  {% if friend_activity %}
+    {% for friend in friend_activity %}
+    <div class="friend-row">
+      <span class="friend-name">{{ friend.first_name|default:friend.username }}</span>
+      <span class="friend-date">{{ friend.uploaded_at|date:"Y-m-d H:i" }}</span>
+      <a href="{% url 'trace_detail' friend.trace_uuid %}">{% trans "View trace" %} &rarr;</a>
+    </div>
+    {% endfor %}
+    <a class="see-all" href="{% url 'friends' %}">{% trans "View all friends" %} &rarr;</a>
+  {% else %}
+    <p class="empty-msg">{% trans "Add friends to follow their progress!" %}</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if last_trace %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('mini-map', {
+    minZoom: {{ map_zoom_min }},
+    maxZoom: {{ map_zoom_max }},
+    zoomControl: false,
+    attributionControl: false,
+  });
+  L.tileLayer('{{ tile_server_url }}', {}).addTo(map);
+
+  const boundsLayers = [];
+
+  const route = {{ route_geojson|safe }};
+  if (route) {
+    const l = L.geoJSON(route, { style: { color: '#e74c3c', weight: 3, opacity: 0.9 } });
+    l.addTo(map);
+    boundsLayers.push(l);
+  }
+
+  const surfaces = {{ surfaces_geojson|safe }};
+  if (surfaces && surfaces.features.length > 0) {
+    const l = L.geoJSON(surfaces, {
+      style: { color: '#2980b9', weight: 2, opacity: 0.9, fillColor: '#2980b9', fillOpacity: 0.3 }
+    });
+    l.addTo(map);
+    boundsLayers.push(l);
+  }
+
+  if (boundsLayers.length > 0) {
+    map.fitBounds(L.featureGroup(boundsLayers).getBounds(), { padding: [20, 20] });
+  } else {
+    map.setView([47.75, -3.37], 10);
+  }
+</script>
+{% endif %}
+{% endblock %}

@@ -1,4 +1,5 @@
 from .about import about  # noqa: F401
+from .dashboard import dashboard  # noqa: F401
 from .admin_dashboard import admin_dashboard  # noqa: F401
 from .admin_dashboard_geozones import (  # noqa: F401
     admin_dashboard_geozone_detail,
@@ -17,7 +18,6 @@ from .hexagon_detail import hexagon_detail  # noqa: F401
 from .landing import landing, landing_hexagons  # noqa: F401
 from .leaderboard import leaderboard  # noqa: F401
 from .pricing import pricing  # noqa: F401
-from .profile import profile  # noqa: F401
 from .register import register  # noqa: F401
 from .settings import settings  # noqa: F401
 from .share import shared_profile  # noqa: F401

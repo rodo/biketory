@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("", views.landing, name="landing"),
+    path("dashboard/", views.dashboard, name="dashboard"),
     path("upload/", views.upload_trace, name="upload_trace"),
     path("register/", views.register, name="register"),
     path("create/", views.trace_create, name="trace_create"),
@@ -33,7 +34,7 @@ urlpatterns = [
     path("stats/traces/", views.stats_traces, name="stats_traces"),
     path("stats/badges/", views.stats_badges, name="stats_badges"),
     path("hexagons/<int:pk>/", views.hexagon_detail, name="hexagon_detail"),
-    path("profile/", views.profile, name="profile"),
+    path("profile/", views.dashboard, name="profile"),
     path("settings/", views.settings, name="settings"),
     path("profile/badges/", views.badges, name="badges"),
     path("friends/", views.friends, name="friends"),

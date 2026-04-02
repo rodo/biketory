@@ -158,20 +158,21 @@ python manage.py reset_data [--yes]
 - Login required to upload (`@login_required`)
 - Django built-in auth at `/accounts/` (login, logout, password change)
 - Registration at `/register/`
-- After login → `/upload/`; after logout → `/`
+- After login → `/dashboard/`; after logout → `/`
 
 ## URL routes
 
 | URL | View | Auth |
 |---|---|---|
 | `/` | `landing` | public |
+| `/dashboard/` | `dashboard` | required |
 | `/upload/` | `upload_trace` | required |
 | `/register/` | `register` | public |
 | `/traces/` | `trace_list` | required |
 | `/traces/<pk>/` | `trace_detail` | required |
 | `/traces/<pk>/delete/` | `delete_trace` | required |
 | `/hexagons/<pk>/` | `hexagon_detail` (JSON API) | public |
-| `/profile/` | `profile` | required |
+| `/profile/` | `dashboard` (legacy alias) | required |
 | `/friends/` | `friends` | required |
 | `/leaderboard/` | `leaderboard` | required |
 | `/leaderboard/zone/<code>/` | `zone_leaderboard` | required + premium |
@@ -217,7 +218,7 @@ cursor.execute(_MY_QUERY_SQL, [param1, param2])
 cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 ```
 
-**Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 counts them as parameter placeholders.
+**Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 and psycopg3 count them as parameter placeholders.
 
 ## API Stats constraints
 
