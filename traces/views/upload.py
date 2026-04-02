@@ -129,18 +129,16 @@ def _reward_referral_sponsor(user):
     from traces.models import Subscription
 
     today = datetime.date.today()
-    active_sub = Subscription.objects.filter(
-        user=referral.sponsor, start_date__lte=today, end_date__gte=today
-    ).first()
-    if active_sub:
-        active_sub.end_date = active_sub.end_date + relativedelta(months=1)
-        active_sub.save(update_fields=["end_date"])
+    latest_sub = Subscription.objects.filter(user=referral.sponsor).order_by("-end_date").first()
+    if latest_sub:
+        start = max(latest_sub.end_date + datetime.timedelta(days=1), today)
     else:
-        Subscription.objects.create(
-            user=referral.sponsor,
-            start_date=today,
-            end_date=today + relativedelta(months=1),
-        )
+        start = today
+    Subscription.objects.create(
+        user=referral.sponsor,
+        start_date=start,
+        end_date=start + relativedelta(months=1),
+    )
 
     referral.rewarded = True
     referral.save(update_fields=["rewarded"])
