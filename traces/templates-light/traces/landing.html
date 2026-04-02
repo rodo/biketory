@@ -145,8 +145,8 @@ html, body { overflow: hidden; padding-top: 0; }
   const _saved = document.cookie.split('; ').find(r => r.startsWith('map_pos='));
   const _pos = _saved ? _saved.split('=')[1].split(',').map(Number) : null;
   const _lastCenter = {{ last_center|safe }};
-  const _defaultPos = _lastCenter || [0, 0];
-  const _defaultZoom = _lastCenter ? 14 : 2;
+  const _defaultPos = _lastCenter || [47.75, -3.37];
+  const _defaultZoom = _lastCenter ? 14 : 12;
   const map = L.map('map', { minZoom: {{ map_zoom_min }}, maxZoom: {{ map_zoom_max }} }).setView(_pos ? [_pos[0], _pos[1]] : _defaultPos, _pos ? _pos[2] : _defaultZoom);
 
   map.on('moveend', () => {
