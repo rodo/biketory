@@ -34,6 +34,47 @@ class SettingsGenerateTokenTest(TestCase):
         self.assertEqual(ApiToken.objects.filter(user=self.user).count(), 1)
 
 
+class SettingsUpdateNameTest(TestCase):
+
+    def setUp(self):
+        self.user = make_user()
+        self.client.force_login(self.user)
+
+    def test_update_first_and_last_name(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_name",
+            "first_name": "Jean",
+            "last_name": "Dupont",
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Jean")
+        self.assertEqual(self.user.last_name, "Dupont")
+        self.assertEqual(resp.context["success_field"], "name")
+
+    def test_first_name_too_long_shows_error(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_name",
+            "first_name": "a" * 151,
+            "last_name": "Dupont",
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsNotNone(resp.context["name_error"])
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "")
+
+    def test_last_name_too_long_shows_error(self):
+        resp = self.client.post(reverse("settings"), {
+            "action": "update_name",
+            "first_name": "Jean",
+            "last_name": "b" * 151,
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsNotNone(resp.context["name_error"])
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.last_name, "")
+
+
 class SettingsUpdateUsernameTest(TestCase):
 
     def setUp(self):
