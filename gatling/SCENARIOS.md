@@ -14,15 +14,17 @@ BaseSimulation (abstraite)
 ├── UploadAndStatsSimulation            — upload GPX + vérification stats pages
 ├── UploadAndStatsApiSimulation         — upload GPX + vérification cohérence API stats
 ├── AllSimulation                       — enchaîne les 6 scénarios ci-dessus
-└── MassUploadSimulation               — 100 utilisateurs upload GPX (indépendant)
+├── MassUploadSimulation               — 100 utilisateurs upload GPX (indépendant)
+└── ReferralSimulation                 — flow complet de parrainage (indépendant)
 ```
 
 `BaseSimulation` centralise toute la logique partagée : configuration HTTP,
-feeders (`registrationFeeder`, `uploadFeeder`), chains réutilisables
-(`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`) et factory methods
-de scénarios (`publicBrowsingScenario()`, `statsApiScenario()`,
+feeders (`registrationFeeder`, `uploadFeeder`, `referralFeeder`, `refereeFeeder`),
+chains réutilisables (`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`) et
+factory methods de scénarios (`publicBrowsingScenario()`, `statsApiScenario()`,
 `registrationScenario()`, `authenticatedBrowsingScenario()`,
-`uploadScenario()`, `verifyStatsScenario()`, `verifyStatsApiScenario()`).
+`uploadScenario()`, `verifyStatsScenario()`, `verifyStatsApiScenario()`,
+`referralSponsorPhase()`, `referralRefereePhase()`, `referralVerifyPhase()`).
 
 Les sous-classes ne contiennent que le `setUp()` avec injection et assertions.
 
@@ -233,4 +235,43 @@ mvn gatling:test -Dgatling.simulationClass=biketory.MassUploadSimulation -DbaseU
 
 # 20 utilisateurs
 mvn gatling:test -Dgatling.simulationClass=biketory.MassUploadSimulation -DbaseUrl=http://localhost:8000 -Dusers=20
+```
+
+---
+
+### ReferralSimulation
+
+**Fichier :** `src/main/java/biketory/ReferralSimulation.java`
+
+Scénario end-to-end de parrainage en trois phases séquentielles (`andThen`) :
+4 parrains s'inscrivent et envoient chacun une invitation, puis 4 filleuls
+s'inscrivent via le lien de parrainage, et enfin les parrains vérifient que le
+statut est passé à « Accepted ».
+
+Les tokens de parrainage sont partagés entre les phases via une
+`ConcurrentHashMap` statique dans `BaseSimulation`.
+
+#### Phase 1 — Inscription parrains + envoi parrainage (4 utilisateurs)
+
+1. `POST /register/` — Création du compte parrain
+2. `POST /accounts/login/` — Connexion
+3. `GET /referrals/` — Récupération CSRF
+4. `POST /referrals/` — Envoi de l'invitation (email du filleul)
+5. `GET /referrals/` — Extraction du token via `data-token` sur `<tr>`
+
+#### Phase 2 — Inscription filleuls (4 utilisateurs)
+
+1. `GET /register/?ref=<token>` — Page d'inscription avec token
+2. `POST /register/` — Création du compte filleul avec `ref=<token>`
+
+#### Phase 3 — Vérification (4 parrains)
+
+1. `POST /accounts/login/` — Reconnexion parrain
+2. `GET /referrals/` — Vérification que `span.badge-accepted` est présent
+
+**Injection :** `atOnceUsers(4)` → `atOnceUsers(4)` → `atOnceUsers(4)`
+**Assertions :** p95 < 2s, succès > 95 %
+
+```bash
+mvn gatling:test -Dgatling.simulationClass=biketory.ReferralSimulation -DbaseUrl=http://localhost:8000
 ```

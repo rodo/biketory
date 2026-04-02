@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -14,6 +15,9 @@ import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.*;
 
 public abstract class BaseSimulation extends Simulation {
+
+    /** Shared map for passing referral tokens between sponsor and referee phases. */
+    protected static final ConcurrentHashMap<String, String> referralTokens = new ConcurrentHashMap<>();
 
     protected final String baseUrl = System.getProperty("baseUrl", "http://localhost:8000");
 
@@ -293,5 +297,103 @@ public abstract class BaseSimulation extends Simulation {
      */
     protected static int sumAllApiDataValues(String json) {
         return sumAllDataValues(json);
+    }
+
+    // -- Referral feeders & scenario ----------------------------------------------
+
+    private static final String REF_PWD = "P@ss_ref_test!";
+
+    protected static Iterator<Map<String, Object>> referralFeeder() {
+        return List.<Map<String, Object>>of(
+                Map.of("email", "test1@test.biketory.local", "password", REF_PWD, "refereeEmail", "test5@test.biketory.local"),
+                Map.of("email", "test2@test.biketory.local", "password", REF_PWD, "refereeEmail", "test6@test.biketory.local"),
+                Map.of("email", "test3@test.biketory.local", "password", REF_PWD, "refereeEmail", "test7@test.biketory.local"),
+                Map.of("email", "test4@test.biketory.local", "password", REF_PWD, "refereeEmail", "test8@test.biketory.local")
+        ).iterator();
+    }
+
+    protected static Iterator<Map<String, Object>> refereeFeeder() {
+        return List.<Map<String, Object>>of(
+                Map.of("email", "test5@test.biketory.local", "password", REF_PWD),
+                Map.of("email", "test6@test.biketory.local", "password", REF_PWD),
+                Map.of("email", "test7@test.biketory.local", "password", REF_PWD),
+                Map.of("email", "test8@test.biketory.local", "password", REF_PWD)
+        ).iterator();
+    }
+
+    protected ScenarioBuilder referralSponsorPhase() {
+        return scenario("Referral — sponsors")
+                .feed(referralFeeder())
+                .exec(register())
+                .pause(1, 2)
+                .exec(login())
+                .pause(1, 2)
+                .exec(fetchCsrf("GET /referrals/", "/referrals/"))
+                .exec(
+                        http("POST /referrals/")
+                                .post("/referrals/")
+                                .disableFollowRedirect()
+                                .header("Referer", baseUrl + "/referrals/")
+                                .formParam("csrfmiddlewaretoken", "#{csrfToken}")
+                                .formParam("email", "#{refereeEmail}")
+                                .check(status().is(302))
+                )
+                .pause(1, 2)
+                .exec(
+                        http("GET /referrals/ (extract token)")
+                                .get("/referrals/")
+                                .check(status().is(200))
+                                .check(css("tr[data-token]", "data-token").saveAs("refToken"))
+                )
+                .exec(session -> {
+                    String refereeEmail = session.getString("refereeEmail");
+                    String refToken = session.getString("refToken");
+                    referralTokens.put(refereeEmail, refToken);
+                    return session;
+                });
+    }
+
+    protected ScenarioBuilder referralRefereePhase() {
+        return scenario("Referral — referees")
+                .feed(refereeFeeder())
+                .exec(session -> {
+                    String email = session.getString("email");
+                    String token = referralTokens.get(email);
+                    return session.set("refToken", token);
+                })
+                .exec(
+                        http("GET /register/?ref=token")
+                                .get("/register/")
+                                .queryParam("ref", "#{refToken}")
+                                .check(status().is(200))
+                                .check(css("input[name='csrfmiddlewaretoken']", "value")
+                                        .saveAs("csrfToken"))
+                )
+                .pause(1, 2)
+                .exec(
+                        http("POST /register/ (referee)")
+                                .post("/register/")
+                                .disableFollowRedirect()
+                                .header("Referer", baseUrl + "/register/")
+                                .formParam("csrfmiddlewaretoken", "#{csrfToken}")
+                                .formParam("email", "#{email}")
+                                .formParam("password1", "#{password}")
+                                .formParam("password2", "#{password}")
+                                .formParam("ref", "#{refToken}")
+                                .check(status().find().in(200, 302))
+                );
+    }
+
+    protected ScenarioBuilder referralVerifyPhase() {
+        return scenario("Referral — verify")
+                .feed(referralFeeder())
+                .exec(login())
+                .pause(1, 2)
+                .exec(
+                        http("GET /referrals/ (verify accepted)")
+                                .get("/referrals/")
+                                .check(status().is(200))
+                                .check(css("span.badge-accepted").exists())
+                );
     }
 }

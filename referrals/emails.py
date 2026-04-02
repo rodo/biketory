@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.urls import reverse
 
 
 def send_referral_email(referral):
     site_url = getattr(settings, "SITE_URL", "http://localhost:8000")
-    link = f"{site_url}/register/?ref={referral.token}"
+    path = reverse("register")
+    link = f"{site_url}{path}?ref={referral.token}"
     sponsor_name = referral.sponsor.username
 
     subject = f"{sponsor_name} vous invite sur Biketory"
@@ -32,6 +34,7 @@ def send_referral_email(referral):
         body=text_body,
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[referral.email],
+        reply_to=[referral.sponsor.email],
     )
     msg.attach_alternative(html_body, "text/html")
     msg.send()
