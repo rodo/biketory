@@ -151,12 +151,18 @@ class Command(BaseCommand):
         for i, level in enumerate(all_levels[1:], start=1):
             parent_level = all_levels[i - 1]
             parents = list(GeoZone.objects.filter(admin_level=parent_level))
-            children = GeoZone.objects.filter(admin_level=level, parent__isnull=True)
+            children = list(
+                GeoZone.objects.filter(admin_level=level, parent__isnull=True)
+                .select_related("parent")
+            )
 
+            to_update = []
             for child in children:
                 centroid = child.geom.centroid
                 for parent in parents:
                     if parent.geom.contains(centroid):
                         child.parent = parent
-                        child.save(update_fields=["parent"])
+                        to_update.append(child)
                         break
+            if to_update:
+                GeoZone.objects.bulk_update(to_update, ["parent"])
