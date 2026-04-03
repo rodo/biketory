@@ -96,6 +96,7 @@
 
     .btn-upload:hover { opacity: 0.88; color: #ffffff; }
 
+
     .nav-auth {
       display: flex;
       align-items: center;
@@ -216,6 +217,7 @@
     <div class="nav-links">
       {% block topbar_extra %}{% endblock %}
       {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} class="active"{% endif %}>{% trans "Dashboard" %}</a>
         <a href="{% url 'leaderboard' %}"{% if request.resolver_match.url_name == 'leaderboard' or request.resolver_match.url_name == 'zone_leaderboard' %} class="active"{% endif %}>{% trans "Leaderboard" %}</a>
         <a href="{% url 'stats_monthly' %}"{% if request.resolver_match.url_name == 'stats_monthly' or request.resolver_match.url_name == 'stats_traces' or request.resolver_match.url_name == 'stats_badges' %} class="active"{% endif %}>{% trans "Stats" %}</a>
       {% endif %}

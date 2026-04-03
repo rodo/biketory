@@ -3,14 +3,8 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from traces.models import ApiToken, Trace
-from traces.trace_processing import (
-    MAX_TRACE_LENGTH_KM,
-    _create_trace_hexagons,
-    _extract_surfaces,
-    _parse_route,
-    _upload_quota,
-)
+from traces.models import ApiToken
+from traces.trace_processing import _upload_quota, create_trace
 
 
 def _authenticate(request):
@@ -53,25 +47,8 @@ def api_upload_trace(request):
             status=429,
         )
 
-    route, first_point_date, length_km = _parse_route(gpx_file)
-    if length_km > MAX_TRACE_LENGTH_KM:
-        return JsonResponse(
-            {
-                "error": _(
-                    "Trace too long (%(length).0f km). Maximum is %(max)d km."
-                ) % {"length": length_km, "max": MAX_TRACE_LENGTH_KM},
-            },
-            status=400,
-        )
+    trace, error = create_trace(gpx_file, user)
+    if error:
+        return JsonResponse({"error": error}, status=400)
 
-    trace = Trace.objects.create(
-        gpx_file=gpx_file,
-        route=route,
-        first_point_date=first_point_date,
-        uploaded_by=user,
-    )
-    if route:
-        _create_trace_hexagons(route)
-        _extract_surfaces(trace)
-
-    return JsonResponse({"id": trace.pk, "extracted": trace.extracted}, status=201)
+    return JsonResponse({"id": trace.pk, "uuid": str(trace.uuid)}, status=201)
