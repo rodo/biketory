@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.contrib.gis.geos import Polygon
 from django.db.models import Q
 from django.http import JsonResponse
@@ -48,6 +49,9 @@ def landing(request):
 
 
 def landing_hexagons(request):
+    show_own_dynamic = getattr(settings, "LANDING_SHOW_OWN_DYNAMIC_HEXAGONS", True)
+    show_others_dynamic = getattr(settings, "LANDING_SHOW_OTHER_DYNAMIC_HEXAGONS", True)
+
     current_user = request.user.username if request.user.is_authenticated else None
     friends = _friend_usernames(request.user)
 
@@ -58,6 +62,16 @@ def landing_hexagons(request):
         west, south, east, north = map(float, bbox_param.split(","))
         bbox_poly = Polygon.from_bbox((west, south, east, north))
         scores = scores.filter(hexagon__geom__bboverlaps=bbox_poly)
+
+    if not request.user.is_authenticated:
+        if not show_others_dynamic:
+            scores = scores.none()
+    elif not show_own_dynamic and not show_others_dynamic:
+        scores = scores.none()
+    elif not show_own_dynamic:
+        scores = scores.exclude(user=request.user)
+    elif not show_others_dynamic:
+        scores = scores.filter(user=request.user)
 
     features = [
         {

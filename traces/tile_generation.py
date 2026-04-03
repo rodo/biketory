@@ -24,20 +24,34 @@ _HEXAGONS_FOR_TILE_SQL = (_SQL_DIR / "hexagons_for_tile.sql").read_text()
 _USER_HEXAGONS_EXTENT_SQL = (_SQL_DIR / "user_hexagons_extent.sql").read_text()
 _USER_HEXAGONS_FOR_TILE_SQL = (_SQL_DIR / "user_hexagons_for_tile.sql").read_text()
 
-# Color gradient by max_points (R, G, B, A)
-COLORS = [
-    (10, (180, 90, 0, 160)),    # >= 10 : #b45a00
-    (5, (210, 120, 20, 160)),   # >= 5  : #d27814
-    (2, (230, 155, 50, 160)),   # >= 2  : #e69b32
-    (0, (245, 190, 90, 160)),   # < 2   : #f5be5a
-]
+# Global tiles: uniform amber, opacity varies by zoom
+_GLOBAL_RGB = (200, 145, 45)
+
+# User tiles: blue
+_USER_RGB = (41, 128, 185)
+
+# Opacity: two-slope piecewise linear interpolation with a knee at zoom 8.
+# Steep slope from zoom_min to knee (200→140), gentle slope from knee to zoom_max (140→90).
+_OPACITY_AT_MIN_ZOOM = 240
+_OPACITY_AT_KNEE = 140
+_OPACITY_AT_MAX_ZOOM = 90
+_KNEE_ZOOM = 8
+_OUTLINE_OPACITY = 240
 
 
-def _get_color(max_points):
-    for threshold, color in COLORS:
-        if max_points >= threshold:
-            return color
-    return COLORS[-1][1]
+def _get_opacity(zoom):
+    zoom_min = settings.TILES_STATIC_MIN_ZOOM
+    zoom_max = settings.TILES_STATIC_MAX_ZOOM
+    if zoom_max == zoom_min:
+        return _OPACITY_AT_MIN_ZOOM
+    zoom = max(zoom_min, min(zoom_max, zoom))
+    if zoom <= _KNEE_ZOOM:
+        if _KNEE_ZOOM == zoom_min:
+            return _OPACITY_AT_MIN_ZOOM
+        t = (zoom - zoom_min) / (_KNEE_ZOOM - zoom_min)
+        return int(_OPACITY_AT_MIN_ZOOM + t * (_OPACITY_AT_KNEE - _OPACITY_AT_MIN_ZOOM))
+    t = (zoom - _KNEE_ZOOM) / (zoom_max - _KNEE_ZOOM)
+    return int(_OPACITY_AT_KNEE + t * (_OPACITY_AT_MAX_ZOOM - _OPACITY_AT_KNEE))
 
 
 def generate_tiles_for_bbox(zoom, west, south, east, north):
@@ -74,14 +88,17 @@ def generate_tiles_for_bbox(zoom, west, south, east, north):
             img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (0, 0, 0, 0))
             draw = ImageDraw.Draw(img)
 
-            for _hex_id, geom_wkt, max_points in hexagons:
+            opacity = _get_opacity(zoom)
+            fill = _GLOBAL_RGB + (opacity,)
+            outline = _GLOBAL_RGB + (_OUTLINE_OPACITY,)
+
+            for _hex_id, geom_wkt, _max_points in hexagons:
                 coords = parse_wkt_polygon(geom_wkt)
                 pixels = [
                     lnglat_to_pixel(lng, lat, tile_west, tile_south, tile_east, tile_north)
                     for lng, lat in coords
                 ]
-                color = _get_color(max_points)
-                draw.polygon(pixels, fill=color, outline=color[:3] + (200,))
+                draw.polygon(pixels, fill=fill, outline=outline)
 
             tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
             tile_path.parent.mkdir(parents=True, exist_ok=True)
@@ -89,11 +106,6 @@ def generate_tiles_for_bbox(zoom, west, south, east, north):
             count += 1
 
     return count
-
-
-# User-specific tiles (blue, single color)
-USER_FILL_COLOR = (41, 128, 185, 160)
-USER_OUTLINE_COLOR = (41, 128, 185, 200)
 
 
 def generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north):
@@ -131,13 +143,17 @@ def generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, nor
             img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (0, 0, 0, 0))
             draw = ImageDraw.Draw(img)
 
+            opacity = _get_opacity(zoom)
+            fill = _USER_RGB + (opacity,)
+            outline = _USER_RGB + (_OUTLINE_OPACITY,)
+
             for _hex_id, geom_wkt, _points in hexagons:
                 coords = parse_wkt_polygon(geom_wkt)
                 pixels = [
                     lnglat_to_pixel(lng, lat, tile_west, tile_south, tile_east, tile_north)
                     for lng, lat in coords
                 ]
-                draw.polygon(pixels, fill=USER_FILL_COLOR, outline=USER_OUTLINE_COLOR)
+                draw.polygon(pixels, fill=fill, outline=outline)
 
             tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
             tile_path.parent.mkdir(parents=True, exist_ok=True)

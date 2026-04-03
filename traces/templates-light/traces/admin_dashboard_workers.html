@@ -174,12 +174,7 @@ h1 {
 {% block content %}
 <div id="page-inner">
   <div class="main-content">
-    <h1>{% trans "Workers" %}</h1>
 
-    <div class="worker-count">
-      <span class="number">{{ active_count }}</span>
-      <span class="label">{% trans "active workers" %}</span>
-    </div>
 
     <div class="status-pills">
       <span class="pill"><span class="count">{{ job_counts.todo }}</span> {% trans "queued" %}</span>
@@ -257,6 +252,7 @@ h1 {
       <li><a href="{% url 'admin_dashboard_traces' %}">{% trans "Pending traces" %}</a></li>
       <li><a href="{% url 'admin_dashboard_workers' %}" class="active">{% trans "Workers" %}</a></li>
       <li><a href="{% url 'admin_dashboard_geozones' %}">{% trans "Geozones" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_colors' %}">{% trans "Colors" %}</a></li>
       <li><a href="{% url 'trace_create' %}">{% trans "Create" %}</a></li>
     </ul>
   </aside>

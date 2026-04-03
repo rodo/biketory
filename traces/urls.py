@@ -17,6 +17,7 @@ urlpatterns = [
     path("admin-dashboard/premium/", views.admin_dashboard_premium, name="admin_dashboard_premium"),
     path("admin-dashboard/traces/", views.admin_dashboard_traces, name="admin_dashboard_traces"),
     path("admin-dashboard/workers/", views.admin_dashboard_workers, name="admin_dashboard_workers"),
+    path("admin-dashboard/colors/", views.admin_dashboard_colors, name="admin_dashboard_colors"),
     path("admin-dashboard/geozones/", views.admin_dashboard_geozones, name="admin_dashboard_geozones"),
     path(
         "admin-dashboard/geozones/<int:pk>/",
@@ -29,6 +30,8 @@ urlpatterns = [
         name="admin_dashboard_geozone_toggle",
     ),
 
+    path("strava/activities/", views.strava_activities, name="strava_activities"),
+    path("strava/import/", views.strava_import, name="strava_import"),
     path("pricing/", views.pricing, name="pricing"),
     path("stats/monthly/", views.stats_monthly, name="stats_monthly"),
     path("stats/traces/", views.stats_traces, name="stats_traces"),
