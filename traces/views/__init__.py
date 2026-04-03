@@ -1,11 +1,11 @@
 from .about import about  # noqa: F401
 from .admin_dashboard import admin_dashboard  # noqa: F401
+from .admin_dashboard_colors import admin_dashboard_colors  # noqa: F401
 from .admin_dashboard_geozones import (  # noqa: F401
     admin_dashboard_geozone_detail,
     admin_dashboard_geozone_toggle,
     admin_dashboard_geozones,
 )
-from .admin_dashboard_colors import admin_dashboard_colors  # noqa: F401
 from .admin_dashboard_premium import admin_dashboard_premium  # noqa: F401
 from .admin_dashboard_traces import admin_dashboard_traces  # noqa: F401
 from .admin_dashboard_workers import admin_dashboard_workers  # noqa: F401
@@ -25,11 +25,11 @@ from .share import shared_profile  # noqa: F401
 from .stats_badges import stats_badges  # noqa: F401
 from .stats_monthly import stats_monthly  # noqa: F401
 from .stats_pie import stats_traces  # noqa: F401
+from .strava_import import strava_activities, strava_import  # noqa: F401
 from .subscription import subscription_required  # noqa: F401
 from .subscription_history import subscription_history  # noqa: F401
 from .trace_create import trace_create  # noqa: F401
 from .trace_detail import api_trace_status, trace_detail  # noqa: F401
 from .trace_list import trace_list  # noqa: F401
 from .trace_surfaces import trace_surfaces  # noqa: F401
-from .strava_import import strava_activities, strava_import  # noqa: F401
 from .upload import upload_trace  # noqa: F401
