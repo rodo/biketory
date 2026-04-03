@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db.models import Union
 from django.http import JsonResponse
@@ -17,19 +18,26 @@ def trace_detail(request, trace_uuid):
     surface_union = surfaces.aggregate(u=Union("polygon"))["u"]
     hexagons = Hexagon.objects.filter(geom__within=surface_union) if surface_union else Hexagon.objects.none()
 
-    route_geojson = json.dumps({
+    map_config = {
+        "elementId": "map",
+        "tileUrl": settings.TILE_SERVER_URL,
+        "zoomMin": settings.MAP_ZOOM_MIN,
+        "zoomMax": settings.MAP_ZOOM_MAX,
+    }
+
+    route_geojson = {
         "type": "Feature",
         "geometry": json.loads(trace.route.geojson),
         "properties": {},
-    }) if trace.route else "null"
+    } if trace.route else None
 
-    surfaces_geojson = json.dumps({
+    surfaces_geojson = {
         "type": "FeatureCollection",
         "features": [
             {"type": "Feature", "geometry": json.loads(s.polygon.geojson), "properties": {}}
             for s in surfaces
         ],
-    })
+    }
 
     owner_username = trace.uploaded_by.username if trace.uploaded_by else ""
 
@@ -38,7 +46,7 @@ def trace_detail(request, trace_uuid):
         for s in HexagonScore.objects.filter(hexagon__in=hexagons, user=trace.uploaded_by)
     }
 
-    hexagons_geojson = json.dumps({
+    hexagons_geojson = {
         "type": "FeatureCollection",
         "features": [
             {
@@ -48,7 +56,7 @@ def trace_detail(request, trace_uuid):
             }
             for h in hexagons
         ],
-    })
+    }
 
     prev_trace = Trace.objects.filter(uploaded_at__lt=trace.uploaded_at).order_by("-uploaded_at").first()
     next_trace = Trace.objects.filter(uploaded_at__gt=trace.uploaded_at).order_by("uploaded_at").first()
@@ -73,6 +81,7 @@ def trace_detail(request, trace_uuid):
 
     return render(request, "traces/trace_detail.html", {
         "trace": trace,
+        "map_config": map_config,
         "route_geojson": route_geojson,
         "surfaces_geojson": surfaces_geojson,
         "hexagons_geojson": hexagons_geojson,

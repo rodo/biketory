@@ -1,5 +1,6 @@
 from .about import about  # noqa: F401
 from .admin_dashboard import admin_dashboard  # noqa: F401
+from .admin_dashboard_colors import admin_dashboard_colors  # noqa: F401
 from .admin_dashboard_geozones import (  # noqa: F401
     admin_dashboard_geozone_detail,
     admin_dashboard_geozone_toggle,
@@ -24,6 +25,7 @@ from .share import shared_profile  # noqa: F401
 from .stats_badges import stats_badges  # noqa: F401
 from .stats_monthly import stats_monthly  # noqa: F401
 from .stats_pie import stats_traces  # noqa: F401
+from .strava_import import strava_activities, strava_import  # noqa: F401
 from .subscription import subscription_required  # noqa: F401
 from .subscription_history import subscription_history  # noqa: F401
 from .trace_create import trace_create  # noqa: F401

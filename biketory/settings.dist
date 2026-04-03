@@ -188,6 +188,14 @@ LOGOUT_REDIRECT_URL = "landing"
 
 TILE_SERVER_URL = "http://{s}.tiles.openstreetmap.org/{z}/{x}/{y}.png"
 
+# Landing page — which hexagon layers to display
+# Static tiles = PNG overlays at low zoom; Dynamic hexagons = API-fetched at high zoom
+# For non-authenticated users, all hexagons are "others" (OWN_* settings are ignored).
+LANDING_SHOW_OWN_STATIC_TILES = True
+LANDING_SHOW_OWN_DYNAMIC_HEXAGONS = True
+LANDING_SHOW_OTHER_STATIC_TILES = True
+LANDING_SHOW_OTHER_DYNAMIC_HEXAGONS = True
+
 # Minimum area in m² for a closed surface to be stored
 MIN_SURFACE_AREA_M2 = 900
 
@@ -240,9 +248,10 @@ SOCIALACCOUNT_PROVIDERS = {
 if STRAVA_AUTH_ENABLED:
     SOCIALACCOUNT_PROVIDERS["strava"] = {
         "APP": {
-            "client_id": os.environ.get("STRAVA_CLIENT_ID", ""),
-            "secret": os.environ.get("STRAVA_CLIENT_SECRET", ""),
+            "client_id": STRAVA_CLIENT_ID,
+            "secret": STRAVA_CLIENT_SECRET,
         },
+        "SCOPE": ["read,activity:read_all"],
     }
 
 if OSM_AUTH_ENABLED:

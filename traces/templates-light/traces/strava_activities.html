@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+#page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.quota-bar-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.quota-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.quota-label strong { color: var(--bg); }
+
+.quota-track {
+  height: 6px;
+  background: #ddd6c9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.quota-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+  background: var(--accent);
+}
+
+.quota-fill.full { background: #c0392b; }
+
+.quota-reset {
+  font-size: 0.76rem;
+  color: #c0392b;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+.alert-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.alert a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+thead {
+  background: #f2f1ec;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+thead th {
+  color: var(--bg);
+  text-align: left;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #f9f8f4; }
+
+tbody td {
+  padding: 0.8rem 1.1rem;
+  color: var(--bg);
+  font-size: 0.9rem;
+}
+
+.imported-tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #d4edda;
+  color: #155724;
+}
+
+.btn-import {
+  display: inline-block;
+  padding: 0.65rem 1.5rem;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 1rem;
+}
+
+.btn-import:hover { opacity: 0.88; }
+.btn-import:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover { text-decoration: underline; }
+
+.empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  text-align: center;
+}
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Import from Strava" %}</h1>
+<p class="subtitle">{% trans "Select activities to import as Biketory traces." %}</p>
+
+<!-- Quota bar -->
+<div class="quota-bar-wrap">
+  <div class="quota-label">
+    <span>{% trans "Uploads today" %}</span>
+    <strong>{{ uploads_today }}&thinsp;/&thinsp;{{ daily_limit }}</strong>
+  </div>
+  <div class="quota-track">
+    <div class="quota-fill {% if limit_reached %}full{% endif %}"
+         style="width:{% widthratio uploads_today daily_limit 100 %}%">
+    </div>
+  </div>
+  {% if limit_reached %}
+    <div class="quota-reset">
+      {% trans "Limit reached" %} — {% trans "next slot available in" %} {{ next_slot|timeuntil }}
+      ({{ next_slot|date:"H:i" }})
+    </div>
+  {% endif %}
+</div>
+
+{% if not strava_connected %}
+  <div class="alert alert-warning">
+    {% trans "Your Strava account is not connected." %}
+    <a href="{% url 'strava_login' %}">{% trans "Connect Strava" %}</a>
+  </div>
+{% elif strava_error %}
+  <div class="alert alert-error">{{ strava_error }}</div>
+{% elif activities %}
+  <form method="post" action="{% url 'strava_import' %}">
+    {% csrf_token %}
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "Distance" %}</th>
+          <th>{% trans "Type" %}</th>
+          <th>{% trans "Status" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for act in activities %}
+        <tr>
+          <td>
+            {% if act.already_imported %}
+              <!-- no checkbox -->
+            {% elif limit_reached %}
+              <input type="checkbox" disabled>
+            {% else %}
+              <input type="checkbox" name="activity_ids" value="{{ act.id }}">
+            {% endif %}
+          </td>
+          <td>{{ act.name }}</td>
+          <td>{{ act.start_date_local|truncatechars:16 }}</td>
+          <td>{{ act.distance_km|floatformat:1 }} km</td>
+          <td>{{ act.type }}</td>
+          <td>
+            {% if act.already_imported %}
+              <span class="imported-tag">{% trans "Imported" %}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit" class="btn-import" {% if limit_reached %}disabled{% endif %}>
+      {% trans "Import selection" %}
+    </button>
+  </form>
+{% else %}
+  <p class="empty">{% trans "No recent activities found on Strava." %}</p>
+{% endif %}
+
+<a href="{% url 'upload_trace' %}" class="back-link">&larr; {% trans "Back to upload" %}</a>
+{% endblock %}

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.db.models import Count, Sum
@@ -8,7 +9,7 @@ from django.shortcuts import render
 
 from statistics.models import LeaderboardEntry
 from traces.badges import BADGE_CATALOGUE
-from traces.models import HexagonScore, Trace, UserBadge, UserProfile
+from traces.models import Hexagon, HexagonScore, Trace, UserBadge, UserProfile
 
 _SQL_DIR = Path(__file__).resolve().parent.parent / "sql"
 _STREAK_DAILY_SQL = (_SQL_DIR / "streak_daily.sql").read_text()
@@ -31,16 +32,26 @@ def dashboard(request):
         .order_by("-uploaded_at")
         .first()
     )
-    route_geojson = "null"
-    surfaces_geojson = "null"
+    route_geojson = None
+    surfaces_geojson = None
+    hexagons_geojson = None
+    map_config = None
     if last_trace and last_trace.route:
-        route_geojson = json.dumps({
+        map_config = {
+            "elementId": "mini-map",
+            "tileUrl": settings.TILE_SERVER_URL,
+            "zoomMin": settings.MAP_ZOOM_MIN,
+            "zoomMax": settings.MAP_ZOOM_MAX,
+            "zoomControl": False,
+            "attribution": False,
+        }
+        route_geojson = {
             "type": "Feature",
             "geometry": json.loads(last_trace.route.geojson),
             "properties": {},
-        })
+        }
         surfaces = last_trace.closed_surfaces.all()
-        surfaces_geojson = json.dumps({
+        surfaces_geojson = {
             "type": "FeatureCollection",
             "features": [
                 {
@@ -50,7 +61,26 @@ def dashboard(request):
                 }
                 for s in surfaces
             ],
-        })
+        }
+        from django.contrib.gis.db.models import Union
+        surface_union = surfaces.aggregate(u=Union("polygon"))["u"]
+        if surface_union:
+            hexagons = Hexagon.objects.filter(geom__within=surface_union)
+            scores = {
+                s.hexagon_id: s.points
+                for s in HexagonScore.objects.filter(hexagon__in=hexagons, user=user)
+            }
+            hexagons_geojson = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": json.loads(h.geom.geojson),
+                        "properties": {"points": scores.get(h.pk, 0)},
+                    }
+                    for h in hexagons
+                ],
+            }
 
     # ── Stat cards ──
     traces_count = Trace.objects.filter(uploaded_by=user).count()
@@ -105,8 +135,10 @@ def dashboard(request):
     return render(request, "traces/dashboard.html", {
         "user_profile": user_profile,
         "last_trace": last_trace,
+        "map_config": map_config,
         "route_geojson": route_geojson,
         "surfaces_geojson": surfaces_geojson,
+        "hexagons_geojson": hexagons_geojson,
         "traces_count": traces_count,
         "hexagons_acquired": hexagons_acquired,
         "total_points": total_points,

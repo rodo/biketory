@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, LineString, MultiLineString
 from django.db import connection
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from traces.models import ClosedSurface, Trace, UserProfile
 
@@ -175,3 +176,119 @@ def _upload_quota(user):
     else:
         next_slot = None
     return count, limit, next_slot
+
+
+def create_trace(gpx_file, user):
+    """Shared upload pipeline: parse, validate, create Trace, enqueue jobs.
+
+    Returns (trace, error_message). On success trace is set and error is None.
+    On failure trace is None and error is a translatable string.
+    """
+    from django.contrib.gis.geos import Polygon
+    from procrastinate.exceptions import AlreadyEnqueued
+
+    route, first_point_date, length_km = _parse_route(gpx_file)
+
+    if length_km > MAX_TRACE_LENGTH_KM:
+        return None, _(
+            "Trace too long (%(length).0f km)."
+            " Maximum allowed is %(max)d km."
+        ) % {"length": length_km, "max": MAX_TRACE_LENGTH_KM}
+
+    if first_point_date and Trace.objects.filter(
+        uploaded_by=user, first_point_date=first_point_date
+    ).exists():
+        return None, _("This trace has already been uploaded (same start date detected).")
+
+    trace = Trace.objects.create(
+        gpx_file=gpx_file,
+        route=route,
+        length_km=length_km,
+        first_point_date=first_point_date,
+        uploaded_by=user,
+    )
+
+    if route:
+        _create_trace_hexagons(route)
+        extent = route.extent
+        buf = 0.01
+        bbox = Polygon.from_bbox((
+            extent[0] - buf, extent[1] - buf,
+            extent[2] + buf, extent[3] + buf,
+        ))
+        bbox.srid = 4326
+        trace.bbox = bbox
+        trace.save(update_fields=["bbox"])
+
+    from traces.tasks import (
+        award_trace_badges,
+        extract_surfaces,
+        generate_tiles,
+        generate_user_tiles,
+    )
+    try:
+        extract_surfaces.configure(
+            queueing_lock=f"extract_surfaces_{trace.pk}",
+        ).defer(trace_id=trace.pk)
+    except AlreadyEnqueued:
+        pass
+    try:
+        award_trace_badges.configure(
+            queueing_lock=f"award_badges_{trace.pk}",
+        ).defer(trace_id=trace.pk)
+    except AlreadyEnqueued:
+        pass
+    if route:
+        for zoom in range(settings.TILES_STATIC_MIN_ZOOM, settings.TILES_STATIC_MAX_ZOOM + 1):
+            try:
+                generate_tiles.configure(
+                    queueing_lock=f"generate_tiles_{trace.pk}_{zoom}",
+                ).defer(trace_id=trace.pk, zoom=zoom)
+            except AlreadyEnqueued:
+                pass
+        if user.profile.is_premium:
+            for zoom in range(settings.TILES_STATIC_MIN_ZOOM, settings.TILES_STATIC_MAX_ZOOM + 1):
+                try:
+                    generate_user_tiles.configure(
+                        queueing_lock=f"generate_user_tiles_{user.pk}_{trace.pk}_{zoom}",
+                    ).defer(trace_id=trace.pk, user_id=user.pk, zoom=zoom)
+                except AlreadyEnqueued:
+                    pass
+
+    _reward_referral_sponsor(user)
+
+    return trace, None
+
+
+def _reward_referral_sponsor(user):
+    if Trace.objects.filter(uploaded_by=user).count() != 1:
+        return
+
+    from referrals.models import Referral
+
+    referral = Referral.objects.filter(
+        referee=user, status=Referral.ACCEPTED, rewarded=False
+    ).first()
+    if not referral:
+        return
+
+    import datetime
+
+    from dateutil.relativedelta import relativedelta
+
+    from traces.models import Subscription
+
+    today = datetime.date.today()
+    latest_sub = Subscription.objects.filter(user=referral.sponsor).order_by("-end_date").first()
+    if latest_sub:
+        start = max(latest_sub.end_date + datetime.timedelta(days=1), today)
+    else:
+        start = today
+    Subscription.objects.create(
+        user=referral.sponsor,
+        start_date=start,
+        end_date=start + relativedelta(months=1),
+    )
+
+    referral.rewarded = True
+    referral.save(update_fields=["rewarded"])

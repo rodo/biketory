@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+#page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.scene-banner {
+  width: 100%;
+  max-width: 440px;
+  display: block;
+  margin-bottom: -1px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 0 0 12px 12px;
+  padding: 2rem 2.5rem 2.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.card h1 { color: var(--bg); font-size: 1.5rem; margin-bottom: 0.25rem; }
+.card p.subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
+
+.field { margin-bottom: 1.25rem; }
+
+.field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bg);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0dcd5;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95rem;
+  color: var(--bg);
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.field input:focus { border-color: var(--accent); }
+
+.field-errors { margin-top: 0.35rem; font-size: 0.78rem; color: #c0392b; }
+
+button[type="submit"] {
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 0.5rem;
+}
+
+button[type="submit"]:hover { opacity: 0.88; }
+
+.footer-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.footer-link a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.footer-link a:hover { text-decoration: underline; }
+{% endblock %}
+
+{% block content %}
+<!-- Mountain cycling scene -->
+<svg class="scene-banner" viewBox="0 0 440 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <rect width="440" height="90" fill="#e8f0e0"/>
+  <path d="M0 90 C80 90 110 30 200 45 C290 60 320 10 400 22 C425 28 445 55 460 45 L460 90 Z" fill="#d4e4c8"/>
+  <path d="M0 90 C70 90 110 58 170 65 C230 72 260 44 330 52 C375 57 410 70 440 66 L440 90 Z" fill="#b8d4a0"/>
+  <path d="M0 80 C50 72 100 66 160 63 C220 60 260 60 320 58 C360 57 400 62 440 65"
+        stroke="#4f6814" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5" fill="none"/>
+  <g transform="translate(165, 58) scale(-1,1)">
+    <circle cx="-7" cy="2"  r="4.5" stroke="#2d3a2e" stroke-width="1.5" fill="none"/>
+    <circle cx="7"  cy="2"  r="4.5" stroke="#2d3a2e" stroke-width="1.5" fill="none"/>
+    <path d="M-7 2 L0 -4 L7 2 L2 2 Z" stroke="#2d3a2e" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+    <path d="M0 -4 L-1 -8 L2.5 -10.5" stroke="#2d3a2e" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="3" cy="-12" r="2.2" fill="#2d3a2e"/>
+    <path d="M7 -3 L7 -7 M5.5 -7 L8.5 -7" stroke="#2d3a2e" stroke-width="1.3" stroke-linecap="round"/>
+  </g>
+  <circle cx="50" cy="20" r="10" fill="#f0d080" opacity="0.7"/>
+  <circle cx="50" cy="20" r="7"  fill="#f0d080"/>
+</svg>
+
+<div class="card">
+  <h1>{% trans "Complete your sign up" %}</h1>
+  <p class="subtitle">
+    {% blocktrans with provider=account.get_provider.name %}You are signing up via {{ provider }}. Please complete the form below.{% endblocktrans %}
+  </p>
+
+  <form method="post" action="{% url 'socialaccount_signup' %}">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="field-errors">{{ field.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    {{ redirect_field }}
+    <button type="submit">{% trans "Sign Up" %}</button>
+  </form>
+
+  <p class="footer-link">{% trans "Already have an account?" %} <a href="{% url 'account_login' %}">{% trans "Log in" %}</a></p>
+</div>
+{% endblock %}

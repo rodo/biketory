@@ -9,7 +9,7 @@ def admin_dashboard_traces(request):
     traces = (
         Trace.objects.filter(status=Trace.STATUS_NOT_ANALYZED)
         .select_related("uploaded_by")
-        .order_by("-uploaded_at")[:10]
+        .order_by("-uploaded_at")[:20]
     )
 
     return render(

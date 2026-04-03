@@ -1,0 +1,191 @@
+/* dashboard.css — dashboard-specific styles */
+
+/* ── Hero row ── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-info {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-info .user-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--bg);
+  margin-bottom: 0.3rem;
+}
+
+.hero-info .user-username {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.hero-info .user-email {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.premium-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+.premium-badge.premium { background: var(--accent); color: #fff; }
+.premium-badge.free { background: #e0dcd5; color: var(--bg); }
+
+.hero-map-wrap {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.last-trace-title {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+}
+
+.last-trace-title:hover { text-decoration: underline; }
+
+#mini-map {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.no-trace-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.no-trace-msg a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.no-trace-msg a:hover { text-decoration: underline; }
+
+/* ── Stat cards row ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.stat-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+/* ── Progression row ── */
+.progression {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0ede6;
+}
+.progress-item:last-child { border-bottom: none; }
+
+.progress-item .p-label {
+  font-size: 0.88rem;
+  color: var(--bg);
+}
+
+.progress-item .p-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+/* ── Friends activity row ── */
+.friend-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f0ede6;
+}
+.friend-row:last-child { border-bottom: none; }
+
+.friend-row .friend-name {
+  font-weight: 600;
+  color: var(--bg);
+  font-size: 0.9rem;
+}
+
+.friend-row .friend-date {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.friend-row a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.friend-row a:hover { text-decoration: underline; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero,
+  .progression {
+    grid-template-columns: 1fr;
+  }
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

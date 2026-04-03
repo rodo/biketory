@@ -109,18 +109,20 @@ html, body { overflow: hidden; padding-top: 0; }
 <div class="layers-menu" id="layers-menu">
   <button class="layers-btn" id="layers-btn" onclick="toggleLayersMenu()">{% trans "Layers" %} &#9662;</button>
   <div class="layers-dropdown" id="layers-dropdown">
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and landing_show_own_dynamic_hexagons %}
     <label class="layer-item">
       <input type="checkbox" id="toggle-mine" checked onchange="toggleLayer('mine', this.checked)">
       <span class="layer-swatch" style="background:linear-gradient(to right, #6bb5e0, #1a4971)"></span>
       {% trans "My hexagons" %}
     </label>
     {% endif %}
+    {% if landing_show_other_dynamic_hexagons %}
     <label class="layer-item">
       <input type="checkbox" id="toggle-others" checked onchange="toggleLayer('others', this.checked)">
       <span class="layer-swatch" style="background:linear-gradient(to right, #b0bfb1, #4a5e4c)"></span>
       {% trans "Other users" %}
     </label>
+    {% endif %}
     {% if user.is_authenticated %}
     <hr class="layers-separator">
     <div class="layer-sub-label">{% trans "Friends" %}</div>
@@ -190,24 +192,28 @@ html, body { overflow: hidden; padding-top: 0; }
   const friendColors = {};
 
   // Static PNG tile overlay for low zoom levels
+  {% if landing_show_other_static_tiles %}
   const hexTileLayer = L.tileLayer('{{ media_url }}tiles/{z}/{x}/{y}.png', {
     minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
   });
+  {% endif %}
 
-  {% if is_premium %}
+  {% if is_premium and landing_show_own_static_tiles %}
   const userTileLayer = L.tileLayer('{{ media_url }}tiles/{{ user_tile_prefix }}/{z}/{x}/{y}.png', {
     minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
   });
   {% endif %}
 
   function updateOverlayVisibility() {
-    if (map.getZoom() < MIN_HEX_ZOOM && !hiddenLayers.has('others')) {
+    {% if landing_show_other_static_tiles %}
+    if ({% if landing_show_other_dynamic_hexagons %}map.getZoom() < MIN_HEX_ZOOM && {% endif %}!hiddenLayers.has('others')) {
       if (!map.hasLayer(hexTileLayer)) hexTileLayer.addTo(map);
     } else {
       if (map.hasLayer(hexTileLayer)) map.removeLayer(hexTileLayer);
     }
-    {% if is_premium %}
-    if (map.getZoom() < MIN_HEX_ZOOM && !hiddenLayers.has('mine')) {
+    {% endif %}
+    {% if is_premium and landing_show_own_static_tiles %}
+    if ({% if landing_show_own_dynamic_hexagons %}map.getZoom() < MIN_HEX_ZOOM && {% endif %}!hiddenLayers.has('mine')) {
       if (!map.hasLayer(userTileLayer)) userTileLayer.addTo(map);
     } else {
       if (map.hasLayer(userTileLayer)) map.removeLayer(userTileLayer);

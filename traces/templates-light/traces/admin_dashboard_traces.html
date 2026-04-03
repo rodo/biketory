@@ -109,8 +109,6 @@ h1 {
 {% block content %}
 <div id="page-inner">
   <div class="main-content">
-    <h1>{% trans "Pending traces" %}</h1>
-
     <div class="card">
       {% if traces %}
       <table class="trace-table">
@@ -145,6 +143,7 @@ h1 {
       <li><a href="{% url 'admin_dashboard_traces' %}" class="active">{% trans "Pending traces" %}</a></li>
       <li><a href="{% url 'admin_dashboard_workers' %}">{% trans "Workers" %}</a></li>
       <li><a href="{% url 'admin_dashboard_geozones' %}">{% trans "Geozones" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_colors' %}">{% trans "Colors" %}</a></li>
       <li><a href="{% url 'trace_create' %}">{% trans "Create" %}</a></li>
     </ul>
   </aside>

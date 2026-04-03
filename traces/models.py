@@ -237,6 +237,23 @@ class UserBadge(models.Model):
         return f"{self.user} — {self.badge_id}"
 
 
+class StravaImport(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="strava_imports"
+    )
+    strava_activity_id = models.BigIntegerField()
+    trace = models.OneToOneField(
+        "Trace", null=True, on_delete=models.SET_NULL, related_name="strava_import"
+    )
+    imported_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [("user", "strava_activity_id")]
+
+    def __str__(self):
+        return f"StravaImport #{self.strava_activity_id} — {self.user}"
+
+
 class MonthlyStatsRefresh(models.Model):
     """Singleton row tracking when the hexagon_monthly_stats matview was last refreshed."""
     refreshed_at = models.DateTimeField()

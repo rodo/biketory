@@ -208,7 +208,7 @@ class FirstTraceRewardTest(TestCase):
     def test_first_trace_rewards_sponsor(self):
         Trace.objects.create(uploaded_by=self.referee)
 
-        from traces.views.upload import _reward_referral_sponsor
+        from traces.trace_processing import _reward_referral_sponsor
         _reward_referral_sponsor(self.referee)
 
         self.referral.refresh_from_db()
@@ -222,7 +222,7 @@ class FirstTraceRewardTest(TestCase):
         Trace.objects.create(uploaded_by=self.referee)
         Trace.objects.create(uploaded_by=self.referee)
 
-        from traces.views.upload import _reward_referral_sponsor
+        from traces.trace_processing import _reward_referral_sponsor
         _reward_referral_sponsor(self.referee)
 
         self.referral.refresh_from_db()
@@ -237,7 +237,7 @@ class FirstTraceRewardTest(TestCase):
         )
         Trace.objects.create(uploaded_by=self.referee)
 
-        from traces.views.upload import _reward_referral_sponsor
+        from traces.trace_processing import _reward_referral_sponsor
         _reward_referral_sponsor(self.referee)
 
         self.assertEqual(Subscription.objects.filter(user=self.sponsor).count(), 2)

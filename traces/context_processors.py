@@ -13,4 +13,8 @@ def tile_server(request):
         "tiles_static_max_zoom": settings.TILES_STATIC_MAX_ZOOM,
         "tiles_dynamic_min_zoom": settings.TILES_DYNAMIC_MIN_ZOOM,
         "tiles_dynamic_max_zoom": settings.TILES_DYNAMIC_MAX_ZOOM,
+        "landing_show_own_static_tiles": getattr(settings, "LANDING_SHOW_OWN_STATIC_TILES", True),
+        "landing_show_own_dynamic_hexagons": getattr(settings, "LANDING_SHOW_OWN_DYNAMIC_HEXAGONS", True),
+        "landing_show_other_static_tiles": getattr(settings, "LANDING_SHOW_OTHER_STATIC_TILES", True),
+        "landing_show_other_dynamic_hexagons": getattr(settings, "LANDING_SHOW_OTHER_DYNAMIC_HEXAGONS", True),
     }
