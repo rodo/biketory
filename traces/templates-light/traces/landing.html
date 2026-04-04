@@ -332,8 +332,10 @@ html, body { overflow: hidden; padding-top: 0; }
       });
   }
 
+  {% if landing_show_other_dynamic_hexagons or user.is_authenticated and landing_show_own_dynamic_hexagons %}
   loadHexagons();
   map.on('moveend', loadHexagons);
+  {% endif %}
 
   function buildFriendToggles() {
     const el = document.getElementById('friend-toggles');
