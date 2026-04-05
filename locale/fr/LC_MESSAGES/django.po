@@ -3161,6 +3161,18 @@ msgstr "Communauté Django"
 msgid "Connect, get help, or contribute"
 msgstr ""
 
+#: traces/templates-light/traces/dashboard.html
+msgid "Best zone ranking"
+msgstr "Meilleur classement zone"
+
+#: traces/templates-light/traces/dashboard.html
+msgid "Hexagons conquered"
+msgstr "Hexagones conquis"
+
+#: traces/templates-light/traces/dashboard.html
+msgid "View leaderboard"
+msgstr "Voir le classement"
+
 #~ msgid "Profile"
 #~ msgstr "Profil"
 

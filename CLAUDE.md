@@ -77,7 +77,7 @@ referrals/         Referral/invitation system
     test_models.py
     test_views.py
 geozones/          Geographic zones application
-  models.py        GeoZone, ZoneLeaderboardEntry
+  models.py        GeoZone, ZoneLeaderboardEntry, MonthlyZoneRanking
   admin.py         GeoZone admin with Leaflet map
   urls.py
   views/
@@ -85,6 +85,7 @@ geozones/          Geographic zones application
   sql/
     zone_leaderboard_conquered.sql  Conquered hexagons per zone
     zone_leaderboard_acquired.sql   Acquired hexagons per zone
+    user_best_zone_month.sql        Best monthly ranking per zone for a user
   management/commands/
     load_geozones.py               Load zones from media/src/ GeoJSON files
     compute_zone_leaderboard.py    Compute per-zone leaderboard entries
@@ -107,6 +108,7 @@ geozones/          Geographic zones application
 | `Subscription` | `user` (FK User), `start_date`, `end_date`, `created_at` — ordered by `-start_date` |
 | `GeoZone` | `code` (unique), `name`, `admin_level` (OSM admin_level, 2=country), `parent` (self FK), `geom` (MultiPolygon 4326), `loaded_at` |
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
+| `MonthlyZoneRanking` | `zone` (FK GeoZone), `period` (Date, 1st of month), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, period, user_id) |
 
 ## Management commands
 
@@ -136,7 +138,7 @@ python manage.py compute_leaderboard
 python manage.py load_geozones
 
 # Compute per-zone leaderboard (all zones or single --zone-code)
-python manage.py compute_zone_leaderboard [--zone-code FR]
+python manage.py compute_zone_leaderboard [--zone-code FR] [--snapshot-month YYYY-MM]
 
 # Defer badge analysis jobs for unanalyzed traces
 python manage.py analyze_traces

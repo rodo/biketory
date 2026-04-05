@@ -17,6 +17,9 @@ _DISTANCE_TOTAL_SQL = (_SQL_DIR / "distance_total.sql").read_text()
 _DISTANCE_MONTHLY_SQL = (_SQL_DIR / "distance_monthly.sql").read_text()
 _FRIEND_ACTIVITY_SQL = (_SQL_DIR / "dashboard_friend_activity.sql").read_text()
 
+_GEOZONES_SQL_DIR = Path(__file__).resolve().parent.parent.parent / "geozones" / "sql"
+_USER_BEST_ZONE_MONTH_SQL = (_GEOZONES_SQL_DIR / "user_best_zone_month.sql").read_text()
+
 
 @login_required
 def dashboard(request):
@@ -132,6 +135,16 @@ def dashboard(request):
         columns = [col[0] for col in cursor.description]
         friend_activity = [dict(zip(columns, row, strict=True)) for row in cursor.fetchall()]
 
+    # ── Best zone ranking (premium only) ──
+    best_zone_ranking = None
+    if user_profile.is_premium:
+        with connection.cursor() as cursor:
+            cursor.execute(_USER_BEST_ZONE_MONTH_SQL, [uid])
+            row = cursor.fetchone()
+            if row:
+                cols = [col[0] for col in cursor.description]
+                best_zone_ranking = dict(zip(cols, row, strict=True))
+
     return render(request, "traces/dashboard.html", {
         "user_profile": user_profile,
         "last_trace": last_trace,
@@ -148,4 +161,5 @@ def dashboard(request):
         "distance_monthly": distance_monthly,
         "recent_badges": recent_badges,
         "friend_activity": friend_activity,
+        "best_zone_ranking": best_zone_ranking,
     })

@@ -90,6 +90,25 @@
       <p class="empty-msg">{% trans "Upload traces to unlock your first badges!" %}</p>
     {% endif %}
   </div>
+
+  {% if best_zone_ranking %}
+  <div class="card-block">
+    <h2>{% trans "Best zone ranking" %}</h2>
+    <div class="progress-item">
+      <span class="p-label">{{ best_zone_ranking.zone_name }}</span>
+      <span class="p-value">#{{ best_zone_ranking.rank_conquered }}</span>
+    </div>
+    <div class="progress-item">
+      <span class="p-label">{% trans "Month" %}</span>
+      <span class="p-value">{{ best_zone_ranking.period|date:"F Y" }}</span>
+    </div>
+    <div class="progress-item">
+      <span class="p-label">{% trans "Hexagons conquered" %}</span>
+      <span class="p-value">{{ best_zone_ranking.hexagons_conquered }}</span>
+    </div>
+    <a class="see-all" href="{% url 'zone_leaderboard' best_zone_ranking.zone_code %}">{% trans "View leaderboard" %} &rarr;</a>
+  </div>
+  {% endif %}
 </div>
 
 {# ── Friend activity ── #}
