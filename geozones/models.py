@@ -3,7 +3,7 @@ from django.db import models
 
 
 class GeoZone(models.Model):
-    code = models.CharField(max_length=20, unique=True)
+    code = models.CharField(max_length=20)
     name = models.CharField(max_length=255)
     admin_level = models.PositiveSmallIntegerField()
     parent = models.ForeignKey(
@@ -20,6 +20,12 @@ class GeoZone(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["admin_level"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["code"],
+                name="geozone_code_unique",
+            ),
         ]
 
     def __str__(self):
