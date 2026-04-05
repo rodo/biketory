@@ -39,6 +39,7 @@ CREATE EXTENSION postgis;
 | `purge_surfaces` | Delete all closed surfaces, reset `extracted` flags on traces, and clear user surface stats. Requires `--yes` to skip confirmation. |
 | `analyze_traces` | Defer analysis jobs for traces stuck in `not_analyzed` or `surface_extracted` status. |
 | `compute_leaderboard` | Compute the leaderboard (hexagons conquered & acquired). |
+| `compute_cluster_leaderboard` | Compute the largest contiguous cluster leaderboard (users ranked by their biggest connected group of conquered hexagons). |
 | `load_geozones` | Load geographic zones from GeoJSON files in `media/src/`. |
 | `compute_zone_leaderboard` | Compute leaderboard per geographic zone (hexagons conquered & acquired). Accepts `--zone-code` for a single zone. |
 | `expire_premium` | Set `is_premium=False` on user profiles with no active subscription. Run daily via cron. |

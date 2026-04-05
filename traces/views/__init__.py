@@ -17,6 +17,7 @@ from .delete_trace import delete_trace  # noqa: F401
 from .friends import friends  # noqa: F401
 from .hexagon_detail import hexagon_detail  # noqa: F401
 from .landing import landing, landing_hexagons  # noqa: F401
+from .cluster_leaderboard import cluster_leaderboard  # noqa: F401
 from .leaderboard import leaderboard  # noqa: F401
 from .pricing import pricing  # noqa: F401
 from .register import register  # noqa: F401

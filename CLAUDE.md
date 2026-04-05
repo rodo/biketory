@@ -46,6 +46,7 @@ traces/            Main application
     hexagon_detail.py JSON API — top scores for a hexagon (public)
     profile.py       User profile with stats and hexagon map (login required)
     friends.py       Friend search, requests, accept/decline/remove (login required)
+    cluster_leaderboard.py  Largest contiguous cluster leaderboard (login required)
     leaderboard.py   Leaderboard — conquered & acquired hexagons (login required)
     subscription_history.py  Subscription history (login required)
     strava_import.py Strava activity import (login required)
@@ -110,6 +111,7 @@ geozones/          Geographic zones application
 | `GeoZone` | `code` (unique), `name`, `admin_level` (OSM admin_level, 2=country), `parent` (self FK), `geom` (MultiPolygon 4326), `loaded_at` |
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 | `MonthlyZoneRanking` | `zone` (FK GeoZone), `period` (Date, 1st of month), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, period, user_id) |
+| `ClusterLeaderboardEntry` | `user_id` (int, unique), `username`, `is_premium`, `largest_cluster_hex_count`, `largest_cluster_area_m2` (float), `largest_cluster_geom` (MultiPolygon 4326), `rank`, `computed_at` |
 
 ## Management commands
 
@@ -134,6 +136,9 @@ python manage.py purge_surfaces [--yes]
 
 # Compute the leaderboard (hexagons conquered & acquired)
 python manage.py compute_leaderboard
+
+# Compute the largest contiguous cluster leaderboard
+python manage.py compute_cluster_leaderboard
 
 # Load geographic zones from media/src/ GeoJSON files
 python manage.py load_geozones
@@ -180,6 +185,7 @@ python manage.py reset_data [--yes]
 | `/profile/` | `dashboard` (legacy alias) | required |
 | `/friends/` | `friends` | required |
 | `/leaderboard/` | `leaderboard` | required |
+| `/leaderboard/surface/` | `cluster_leaderboard` | required |
 | `/leaderboard/zone/<code>/` | `zone_leaderboard` | required + premium |
 | `/pricing/` | `pricing` | public |
 | `/s/<code>/` | `shared_profile` | public |

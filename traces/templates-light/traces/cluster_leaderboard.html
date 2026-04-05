@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Leaderboard" %} — Biketory{% endblock %}
+{% block title %}{% trans "Largest surface" %} — Biketory{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
 
 {% block extra_css %}
 #page-inner {
@@ -72,6 +76,43 @@ h1 {
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
+.top-maps {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.top-map-card {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.top-map-card .map-container {
+  height: 200px;
+}
+
+.top-map-card .map-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.top-map-card .map-label .medal { font-size: 1.1rem; }
+
+.top-map-card .map-label .stats {
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: auto;
+  font-size: 0.78rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -101,7 +142,8 @@ tr.current-user td {
 
 .rank-col { width: 60px; }
 .count-col { width: 120px; text-align: right; }
-th.count-col { text-align: right; }
+.area-col { width: 120px; text-align: right; }
+th.count-col, th.area-col { text-align: right; }
 
 .premium-badge {
   display: inline-block;
@@ -153,7 +195,22 @@ tr.separator td {
 {% block content %}
 <div id="page-inner">
   <div class="main-content">
-    <h1>{% trans "Leaderboard" %}</h1>
+    <h1>{% trans "Largest surface" %}</h1>
+
+    {% if top_entries %}
+    <div class="top-maps">
+      {% for t in top_entries %}
+      <div class="top-map-card">
+        <div class="map-container" id="top-map-{{ t.rank }}" data-geojson="{{ t.geojson }}" data-rank="{{ t.rank }}"></div>
+        <div class="map-label">
+          <span class="medal">{% if t.rank == 1 %}&#129351;{% elif t.rank == 2 %}&#129352;{% elif t.rank == 3 %}&#129353;{% endif %}</span>
+          {{ t.username }}
+          <span class="stats">{{ t.hex_count }} hex — {{ t.area_km2 }} km²</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="card">
       {% if entries %}
@@ -163,6 +220,7 @@ tr.separator td {
             <th class="rank-col">#</th>
             <th>{% trans "User" %}</th>
             <th class="count-col">{% trans "Hexagons" %}</th>
+            <th class="area-col">{% trans "Surface" %} (km²)</th>
           </tr>
         </thead>
         <tbody id="leaderboard-body">
@@ -170,16 +228,18 @@ tr.separator td {
           <tr{% if e.is_current_user %} class="current-user"{% endif %}>
             <td class="rank-col">{{ e.rank }}</td>
             <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
-            <td class="count-col">{{ e.count }}</td>
+            <td class="count-col">{{ e.hex_count }}</td>
+            <td class="area-col">{{ e.area_km2 }}</td>
           </tr>
           {% endfor %}
           {% if user_neighborhood %}
-          <tr class="separator" id="neighborhood-separator"><td colspan="3">&#8942;</td></tr>
+          <tr class="separator" id="neighborhood-separator"><td colspan="4">&#8942;</td></tr>
           {% for e in user_neighborhood %}
           <tr class="neighborhood-row{% if e.is_current_user %} current-user{% endif %}">
             <td class="rank-col">{{ e.rank }}</td>
             <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
-            <td class="count-col">{{ e.count }}</td>
+            <td class="count-col">{{ e.hex_count }}</td>
+            <td class="area-col">{{ e.area_km2 }}</td>
           </tr>
           {% endfor %}
           {% endif %}
@@ -200,32 +260,45 @@ tr.separator td {
   <aside class="sidebar">
     <h2>{% trans "Leaderboard" %}</h2>
     <ul>
-      <li><a href="?type=conquered"{% if lb_type == "conquered" %} class="active"{% endif %}>{% trans "Conquered" %}</a></li>
-      <li><a href="?type=acquired"{% if lb_type == "acquired" %} class="active"{% endif %}>{% trans "Acquired" %}</a></li>
-      <li><a href="?type=points"{% if lb_type == "points" %} class="active"{% endif %}>{% trans "Points" %}</a></li>
-      <li><a href="{% url 'cluster_leaderboard' %}">{% trans "Largest surface" %}</a></li>
+      <li><a href="{% url 'leaderboard' %}?type=conquered">{% trans "Conquered" %}</a></li>
+      <li><a href="{% url 'leaderboard' %}?type=acquired">{% trans "Acquired" %}</a></li>
+      <li><a href="{% url 'leaderboard' %}?type=points">{% trans "Points" %}</a></li>
+      <li><a href="{% url 'cluster_leaderboard' %}" class="active">{% trans "Largest surface" %}</a></li>
     </ul>
-
-    {% if zone_countries %}
-    <h2>{% trans "Zones" %}</h2>
-    <ul>
-      {% for c in zone_countries %}
-      <li><a href="{% url 'zone_leaderboard' zone_code=c.code %}">{{ c.name }}</a></li>
-      {% endfor %}
-    </ul>
-    {% endif %}
   </aside>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function() {
+  const RANK_COLORS = { 1: '#f0a500', 2: '#94a3b8', 3: '#cd7f32' };
+
+  document.querySelectorAll('.map-container').forEach(function(el) {
+    const geojson = JSON.parse(el.dataset.geojson);
+    const rank = parseInt(el.dataset.rank);
+    const map = L.map(el.id, { zoomControl: false, attributionControl: false });
+    L.tileLayer('{{ tile_server_url }}', {
+      maxZoom: 18,
+    }).addTo(map);
+
+    if (geojson && geojson.features.length > 0) {
+      const color = RANK_COLORS[rank] || '#888';
+      const layer = L.geoJSON(geojson, {
+        style: { fillColor: color, fillOpacity: 0.5, color: color, weight: 2 },
+      }).addTo(map);
+      map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+    } else {
+      map.setView([46.5, 2.5], 5);
+    }
+  });
+
+  /* Load more */
   const btn = document.getElementById('btn-more');
   if (!btn) return;
 
   const tbody = document.getElementById('leaderboard-body');
-  const lbType = '{{ lb_type }}';
   let offset = {{ entries|length }};
 
   function premiumBadge(isPremium) {
@@ -244,10 +317,9 @@ tr.separator td {
     btn.disabled = true;
     btn.textContent = '...';
 
-    /* Remove neighborhood before inserting new rows */
     removeNeighborhood();
 
-    fetch(`?type=${lbType}&offset=${offset}`, {
+    fetch(`?offset=${offset}`, {
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(r => r.json())
@@ -255,23 +327,22 @@ tr.separator td {
       data.entries.forEach(e => {
         const tr = document.createElement('tr');
         if (e.is_current_user) tr.className = 'current-user';
-        tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
+        tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.hex_count}</td><td class="area-col">${e.area_km2}</td>`;
         tbody.appendChild(tr);
       });
       offset += data.entries.length;
 
-      /* Re-append neighborhood if user still not in main list */
       if (data.user_neighborhood && !data.entries.some(e => e.is_current_user)) {
         const sep = document.createElement('tr');
         sep.className = 'separator';
         sep.id = 'neighborhood-separator';
-        sep.innerHTML = '<td colspan="3">&#8942;</td>';
+        sep.innerHTML = '<td colspan="4">&#8942;</td>';
         tbody.appendChild(sep);
         data.user_neighborhood.forEach(e => {
           const tr = document.createElement('tr');
           tr.className = 'neighborhood-row';
           if (e.is_current_user) tr.className += ' current-user';
-          tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
+          tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.hex_count}</td><td class="area-col">${e.area_km2}</td>`;
           tbody.appendChild(tr);
         });
       }

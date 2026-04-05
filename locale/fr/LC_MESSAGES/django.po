@@ -3181,6 +3181,15 @@ msgstr "Hexagones conquis"
 msgid "View leaderboard"
 msgstr "Voir le classement"
 
+#: traces/templates-light/traces/cluster_leaderboard.html
+#: traces/templates-light/traces/leaderboard.html
+msgid "Largest surface"
+msgstr "Plus grande surface"
+
+#: traces/templates-light/traces/cluster_leaderboard.html
+msgid "Surface"
+msgstr "Surface"
+
 #~ msgid "Profile"
 #~ msgstr "Profil"
 

@@ -1,3 +1,4 @@
+from django.contrib.gis.db import models as gis_models
 from django.db import models
 
 
@@ -140,3 +141,28 @@ class LeaderboardEntry(models.Model):
 
     def __str__(self):
         return f"{self.username} — conquered:{self.hexagons_conquered} acquired:{self.hexagons_acquired}"
+
+
+class ClusterLeaderboardEntry(models.Model):
+    user_id = models.IntegerField()
+    username = models.CharField(max_length=150)
+    is_premium = models.BooleanField(default=False)
+    largest_cluster_hex_count = models.PositiveIntegerField()
+    largest_cluster_area_m2 = models.FloatField()
+    largest_cluster_geom = gis_models.MultiPolygonField(srid=4326, null=True)
+    rank = models.PositiveIntegerField()
+    computed_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["rank"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id"],
+                name="cluster_leaderboard_user_unique",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.username} — cluster:{self.largest_cluster_hex_count} hex"
