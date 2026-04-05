@@ -85,7 +85,8 @@ geozones/          Geographic zones application
   sql/
     zone_leaderboard_conquered.sql  Conquered hexagons per zone
     zone_leaderboard_acquired.sql   Acquired hexagons per zone
-    user_best_zone_month.sql        Best monthly ranking per zone for a user
+    user_best_zone_month.sql        Top 3 best monthly rankings per zone for a user
+    user_current_zone_ranks.sql     Live zone rankings for a user
   management/commands/
     load_geozones.py               Load zones from media/src/ GeoJSON files
     compute_zone_leaderboard.py    Compute per-zone leaderboard entries

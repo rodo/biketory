@@ -19,6 +19,7 @@ _FRIEND_ACTIVITY_SQL = (_SQL_DIR / "dashboard_friend_activity.sql").read_text()
 
 _GEOZONES_SQL_DIR = Path(__file__).resolve().parent.parent.parent / "geozones" / "sql"
 _USER_BEST_ZONE_MONTH_SQL = (_GEOZONES_SQL_DIR / "user_best_zone_month.sql").read_text()
+_USER_CURRENT_ZONE_RANKS_SQL = (_GEOZONES_SQL_DIR / "user_current_zone_ranks.sql").read_text()
 
 
 @login_required
@@ -135,15 +136,24 @@ def dashboard(request):
         columns = [col[0] for col in cursor.description]
         friend_activity = [dict(zip(columns, row, strict=True)) for row in cursor.fetchall()]
 
-    # ── Best zone ranking (premium only) ──
-    best_zone_ranking = None
+    # ── Best zone rankings (premium only, top 3) ──
+    best_zone_rankings = []
     if user_profile.is_premium:
         with connection.cursor() as cursor:
             cursor.execute(_USER_BEST_ZONE_MONTH_SQL, [uid])
-            row = cursor.fetchone()
-            if row:
-                cols = [col[0] for col in cursor.description]
-                best_zone_ranking = dict(zip(cols, row, strict=True))
+            cols = [col[0] for col in cursor.description]
+            best_zone_rankings = [dict(zip(cols, row, strict=True)) for row in cursor.fetchall()]
+
+            if best_zone_rankings:
+                cursor.execute(_USER_CURRENT_ZONE_RANKS_SQL, [uid])
+                live_cols = [col[0] for col in cursor.description]
+                live_by_zone = {
+                    r["zone_id"]: r
+                    for r in (dict(zip(live_cols, row, strict=True)) for row in cursor.fetchall())
+                }
+                for entry in best_zone_rankings:
+                    live = live_by_zone.get(entry["zone_id"])
+                    entry["current_rank_conquered"] = live["rank_conquered"] if live else None
 
     return render(request, "traces/dashboard.html", {
         "user_profile": user_profile,
@@ -161,5 +171,5 @@ def dashboard(request):
         "distance_monthly": distance_monthly,
         "recent_badges": recent_badges,
         "friend_activity": friend_activity,
-        "best_zone_ranking": best_zone_ranking,
+        "best_zone_rankings": best_zone_rankings,
     })

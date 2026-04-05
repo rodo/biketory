@@ -38,10 +38,10 @@ class Command(BaseCommand):
         try:
             year, month = raw.split("-")
             return date(int(year), int(month), 1)
-        except (ValueError, AttributeError):
+        except (ValueError, AttributeError) as err:
             raise CommandError(
                 f"Invalid --snapshot-month format: '{raw}'. Expected YYYY-MM."
-            )
+            ) from err
 
     def _compute_zone_data(self, zone):
         with connection.cursor() as cursor:

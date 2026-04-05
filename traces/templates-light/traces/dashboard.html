@@ -10,6 +10,32 @@
 
 {% block content %}
 
+<div class="dashboard-layout">
+
+{% if best_zone_rankings %}
+{# ── Left sidebar: zone rankings ── #}
+<aside class="zone-sidebar">
+  <h2>{% trans "Zone rankings" %}</h2>
+  {% for zr in best_zone_rankings %}
+  <div class="zone-rank-card">
+    <div class="zone-rank-name">{{ zr.zone_name }}</div>
+    <div class="zone-rank-best">
+      <span class="zone-rank-label">{% trans "Best" %}</span>
+      <span class="zone-rank-value">#{{ zr.rank_conquered }}</span>
+      <span class="zone-rank-period">{{ zr.period|date:"M Y" }}</span>
+    </div>
+    <div class="zone-rank-current">
+      <span class="zone-rank-label">{% trans "Current" %}</span>
+      <span class="zone-rank-value">{% if zr.current_rank_conquered %}#{{ zr.current_rank_conquered }}{% else %}—{% endif %}</span>
+    </div>
+    <a class="zone-rank-link" href="{% url 'zone_leaderboard' zr.zone_code %}">{% trans "View leaderboard" %} &rarr;</a>
+  </div>
+  {% endfor %}
+</aside>
+{% endif %}
+
+<div class="dashboard-main">
+
 {# ── Hero row ── #}
 <div class="hero">
   <div class="hero-info">
@@ -91,24 +117,6 @@
     {% endif %}
   </div>
 
-  {% if best_zone_ranking %}
-  <div class="card-block">
-    <h2>{% trans "Best zone ranking" %}</h2>
-    <div class="progress-item">
-      <span class="p-label">{{ best_zone_ranking.zone_name }}</span>
-      <span class="p-value">#{{ best_zone_ranking.rank_conquered }}</span>
-    </div>
-    <div class="progress-item">
-      <span class="p-label">{% trans "Month" %}</span>
-      <span class="p-value">{{ best_zone_ranking.period|date:"F Y" }}</span>
-    </div>
-    <div class="progress-item">
-      <span class="p-label">{% trans "Hexagons conquered" %}</span>
-      <span class="p-value">{{ best_zone_ranking.hexagons_conquered }}</span>
-    </div>
-    <a class="see-all" href="{% url 'zone_leaderboard' best_zone_ranking.zone_code %}">{% trans "View leaderboard" %} &rarr;</a>
-  </div>
-  {% endif %}
 </div>
 
 {# ── Friend activity ── #}
@@ -127,6 +135,9 @@
     <p class="empty-msg">{% trans "Add friends to follow their progress!" %}</p>
   {% endif %}
 </div>
+
+</div>{# .dashboard-main #}
+</div>{# .dashboard-layout #}
 {% endblock %}
 
 {% block extra_js %}

@@ -3162,8 +3162,16 @@ msgid "Connect, get help, or contribute"
 msgstr ""
 
 #: traces/templates-light/traces/dashboard.html
-msgid "Best zone ranking"
-msgstr "Meilleur classement zone"
+msgid "Zone rankings"
+msgstr "Classements par zone"
+
+#: traces/templates-light/traces/dashboard.html
+msgid "Best"
+msgstr "Meilleur"
+
+#: traces/templates-light/traces/dashboard.html
+msgid "Current"
+msgstr "Actuel"
 
 #: traces/templates-light/traces/dashboard.html
 msgid "Hexagons conquered"
