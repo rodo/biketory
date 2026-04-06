@@ -12,6 +12,7 @@ from .admin_dashboard_workers import admin_dashboard_workers  # noqa: F401
 from .api_stats import api_stats_monthly, api_stats_traces  # noqa: F401
 from .api_upload import api_upload_trace  # noqa: F401
 from .badges import badges  # noqa: F401
+from .cluster_leaderboard import cluster_leaderboard  # noqa: F401
 from .dashboard import dashboard  # noqa: F401
 from .delete_trace import delete_trace  # noqa: F401
 from .friends import friends  # noqa: F401
