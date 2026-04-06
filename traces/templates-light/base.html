@@ -220,6 +220,7 @@
         <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} class="active"{% endif %}>{% trans "Dashboard" %}</a>
         <a href="{% url 'leaderboard' %}"{% if request.resolver_match.url_name == 'leaderboard' or request.resolver_match.url_name == 'zone_leaderboard' %} class="active"{% endif %}>{% trans "Leaderboard" %}</a>
         <a href="{% url 'stats_monthly' %}"{% if request.resolver_match.url_name == 'stats_monthly' or request.resolver_match.url_name == 'stats_traces' or request.resolver_match.url_name == 'stats_badges' %} class="active"{% endif %}>{% trans "Stats" %}</a>
+        <a href="{% url 'challenge_list' %}"{% if request.resolver_match.url_name == 'challenge_list' or request.resolver_match.url_name == 'challenge_detail' %} class="active"{% endif %}>{% trans "Challenges" %}</a>
       {% endif %}
       <a href="{% url 'pricing' %}"{% if request.resolver_match.url_name == 'pricing' %} class="active"{% endif %}>{% trans "Pricing" %}</a>
       <a href="{% url 'about' %}"{% if request.resolver_match.url_name == 'about' %} class="active"{% endif %}>{% trans "About" %}</a>

@@ -51,6 +51,14 @@ CREATE EXTENSION postgis;
 Surface extraction and badge analysis are processed asynchronously via [procrastinate](https://procrastinate.readthedocs.io/). Start workers with:
 
 ```bash
-python manage.py procrastinate worker -q surface_extraction,badges
+python manage.py procrastinate worker -q surface_extraction,badges,tiles,challenges
 ```
+
+## Challenges
+
+Temporary challenges linked to hexagons. An admin creates a challenge via the admin dashboard, selects target hexagons on a Leaflet map (with on-the-fly generation), and players explicitly register. A leaderboard is recomputed every 3h via procrastinate. The top 3 can earn a badge and/or a subscription.
+
+Two challenge types:
+- **capture_hexagon**: count hexagons owned by the participant among the challenge hexagons
+- **max_points**: sum of HexagonScore.points earned during the challenge period on challenge hexagons
 

@@ -77,6 +77,24 @@ referrals/         Referral/invitation system
   tests/
     test_models.py
     test_views.py
+challenges/        Challenges system
+  models.py        Challenge, ChallengeHexagon, ChallengeParticipant, ChallengeLeaderboardEntry, ChallengeSponsor, ChallengeReward
+  admin.py         Challenge admin with inlines
+  urls.py
+  views/
+    challenge_list.py       List of challenges (login required)
+    challenge_detail.py     Challenge detail + leaderboard + join (login required)
+    admin_challenges.py     Admin dashboard: list, create, detail (superuser)
+    api_hexagons.py         API JSON: generate/list hexagons in bbox (superuser)
+  sql/
+    challenge_score_capture.sql  Score for capture_hexagon challenges
+    challenge_score_points.sql   Score for max_points challenges
+  tasks.py                  Procrastinate task: compute_challenge_leaderboards
+  rewards.py                Award badges + subscriptions to challenge winners
+  tests/
+    test_models.py
+    test_views.py
+    test_tasks.py
 geozones/          Geographic zones application
   models.py        GeoZone, ZoneLeaderboardEntry, MonthlyZoneRanking
   admin.py         GeoZone admin with Leaflet map
@@ -112,6 +130,12 @@ geozones/          Geographic zones application
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 | `MonthlyZoneRanking` | `zone` (FK GeoZone), `period` (Date, 1st of month), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, period, user_id) |
 | `ClusterLeaderboardEntry` | `user_id` (int, unique), `username`, `is_premium`, `largest_cluster_hex_count`, `largest_cluster_area_m2` (float), `largest_cluster_geom` (MultiPolygon 4326), `rank`, `computed_at` |
+| `Challenge` | `title`, `description`, `challenge_type` (capture_hexagon/max_points), `capture_mode` (any/all, nullable), `premium_only`, `geozone` (FK GeoZone, nullable), `start_date`, `end_date`, `created_by` (FK User), `created_at` |
+| `ChallengeHexagon` | `challenge` (FK), `hexagon` (FK) — unique (challenge, hexagon) |
+| `ChallengeParticipant` | `challenge` (FK), `user` (FK), `joined_at` — unique (challenge, user) |
+| `ChallengeLeaderboardEntry` | `challenge` (FK), `user_id`, `username`, `is_premium`, `score`, `rank`, `computed_at` — unique (challenge, user_id) |
+| `ChallengeSponsor` | `challenge` (FK), `name`, `logo` (ImageField, nullable), `url` |
+| `ChallengeReward` | `challenge` (FK), `rank_threshold`, `reward_type` (badge/subscription_3m/subscription_6m/subscription_1y), `badge_id` — unique (challenge, rank_threshold, reward_type) |
 
 ## Management commands
 
@@ -195,6 +219,13 @@ python manage.py reset_data [--yes]
 | `/strava/activities/` | `strava_activities` | required |
 | `/strava/import/` | `strava_import` (POST) | required |
 | `/subscriptions/` | `subscription_history` | required |
+| `/challenges/` | `challenge_list` | required |
+| `/challenges/<pk>/` | `challenge_detail` | required |
+| `/challenges/<pk>/join/` | `join_challenge` (POST) | required |
+| `/admin-dashboard/challenges/` | `admin_challenges` | superuser |
+| `/admin-dashboard/challenges/create/` | `admin_challenge_create` | superuser |
+| `/admin-dashboard/challenges/<pk>/` | `admin_challenge_detail` | superuser |
+| `/api/challenges/hexagons/` | `api_challenge_hexagons` | superuser |
 
 ## Landing page map
 
