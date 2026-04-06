@@ -331,8 +331,7 @@ h1 {
 <script>
 (function() {
   const map = L.map('hex-map').setView([46.5, 2.5], 10);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap',
+  L.tileLayer('{{ tile_server_url }}', {
     maxZoom: 18,
   }).addTo(map);
 

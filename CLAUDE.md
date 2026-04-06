@@ -264,6 +264,18 @@ cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 
 **Important:** never use `%s` in SQL comments inside `.sql` files — psycopg2 and psycopg3 count them as parameter placeholders.
 
+## Map tile source
+
+All Leaflet maps **must** use the tile URL from `settings.TILE_SERVER_URL`, exposed in templates as `{{ tile_server_url }}` via the `traces.context_processors.tile_server` context processor. **Never hardcode a tile URL** (e.g. `https://{s}.tile.openstreetmap.org/…`) in templates or JavaScript.
+
+```javascript
+// Good
+L.tileLayer('{{ tile_server_url }}', { maxZoom: 18 }).addTo(map);
+
+// Bad — never do this
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { ... });
+```
+
 ## API Stats constraints
 
 `traces/views/api_stats.py` must only query models from the `statistics` application. No direct access to `traces` models is allowed in this view.
