@@ -157,7 +157,8 @@ html, body { overflow: hidden; padding-top: 0; }
   });
 
   L.tileLayer('{{ tile_server_url }}', {
-    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    zIndex: 1
   }).addTo(map);
 
   const graticuleGroup = L.layerGroup().addTo(map);
@@ -194,13 +195,13 @@ html, body { overflow: hidden; padding-top: 0; }
   // Static PNG tile overlay for low zoom levels
   {% if landing_show_other_static_tiles %}
   const hexTileLayer = L.tileLayer('{{ media_url }}tiles/{z}/{x}/{y}.png', {
-    minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
+    minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: '', zIndex: 10
   });
   {% endif %}
 
   {% if is_premium and landing_show_own_static_tiles %}
   const userTileLayer = L.tileLayer('{{ media_url }}tiles/{{ user_tile_prefix }}/{z}/{x}/{y}.png', {
-    minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: ''
+    minZoom: {{ tiles_static_min_zoom }}, maxZoom: {{ tiles_static_max_zoom }}, opacity: 0.8, errorTileUrl: '', zIndex: 10
   });
   {% endif %}
 
