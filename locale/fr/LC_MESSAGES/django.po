@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 12:59+0000\n"
+"POT-Creation-Date: 2026-04-06 16:06+0000\n"
 "PO-Revision-Date: 2026-03-29 00:00+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,8 +141,8 @@ msgstr "Communauté"
 msgid "10 friends added"
 msgstr "10 amis ajoutés"
 
-#: traces/badges.py:33 traces/templates-light/traces/trace_detail.html:74
-#: traces/templates-light/traces/trace_list.html:147
+#: traces/badges.py:33 traces/templates-light/traces/trace_detail.html:60
+#: traces/templates-light/traces/trace_list.html:146
 msgid "Surfaces"
 msgstr "Surfaces"
 
@@ -396,7 +396,7 @@ msgstr "Obtenir les 4 badges saisonniers"
 
 #: traces/badges.py:96 traces/templates-light/traces/strava_activities.html:205
 #: traces/templates-light/traces/trace_create.html:92
-#: traces/templates-light/traces/trace_list.html:118
+#: traces/templates-light/traces/trace_list.html:117
 msgid "Distance"
 msgstr "Distance"
 
@@ -499,7 +499,6 @@ msgid "Create an account"
 msgstr "Créer un compte"
 
 #: traces/templates-light/base.html:220 traces/templates-light/base.html:243
-#: traces/templates-light/traces/dashboard.html:12
 #, fuzzy
 #| msgid "Admin Dashboard"
 msgid "Dashboard"
@@ -510,6 +509,7 @@ msgstr "Tableau de bord admin"
 #: traces/templates-light/geozones/zone_leaderboard.html:155
 #: traces/templates-light/geozones/zone_leaderboard.html:200
 #: traces/templates-light/geozones/zone_leaders.html:223
+#: traces/templates-light/traces/cluster_leaderboard.html:261
 #: traces/templates-light/traces/leaderboard.html:4
 #: traces/templates-light/traces/leaderboard.html:156
 #: traces/templates-light/traces/leaderboard.html:201
@@ -540,16 +540,16 @@ msgstr "Notifications"
 
 #: traces/templates-light/base.html:237
 #: traces/templates-light/traces/admin_dashboard.html:129
+#: traces/templates-light/traces/admin_dashboard_colors.html:151
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:237
 #: traces/templates-light/traces/admin_dashboard_geozones.html:167
 #: traces/templates-light/traces/admin_dashboard_premium.html:129
-#: traces/templates-light/traces/admin_dashboard_traces.html:141
-#: traces/templates-light/traces/admin_dashboard_workers.html:253
+#: traces/templates-light/traces/admin_dashboard_traces.html:139
+#: traces/templates-light/traces/admin_dashboard_workers.html:248
 msgid "Admin"
 msgstr "Admin"
 
 #: traces/templates-light/base.html:248
-#: traces/templates-light/traces/trace_list.html:109
 msgid "My traces"
 msgstr "Mes traces"
 
@@ -600,14 +600,16 @@ msgid "Sign up"
 msgstr "S'inscrire"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:157
+#: traces/templates-light/traces/cluster_leaderboard.html:256
 #: traces/templates-light/traces/leaderboard.html:196
 msgid "Last updated:"
 msgstr "Dernière mise à jour :"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:166
 #: traces/templates-light/geozones/zone_leaders.html:194
-#: traces/templates-light/traces/admin_dashboard_traces.html:120
-#: traces/templates-light/traces/landing.html:302
+#: traces/templates-light/traces/admin_dashboard_traces.html:118
+#: traces/templates-light/traces/cluster_leaderboard.html:221
+#: traces/templates-light/traces/landing.html:309
 #: traces/templates-light/traces/leaderboard.html:164
 #: traces/templates-light/traces/stats_badges.html:261
 msgid "User"
@@ -616,10 +618,11 @@ msgstr "Utilisateur"
 #: traces/templates-light/geozones/zone_leaderboard.html:167
 #: traces/templates-light/geozones/zone_leaders.html:195
 #: traces/templates-light/traces/about.html:96
+#: traces/templates-light/traces/cluster_leaderboard.html:222
 #: traces/templates-light/traces/leaderboard.html:165
 #: traces/templates-light/traces/share.html:87
 #: traces/templates-light/traces/trace_detail.html:29
-#: traces/templates-light/traces/trace_detail.html:75
+#: traces/templates-light/traces/trace_detail.html:61
 #: traces/templates/traces/profile.html:113
 msgid "Hexagons"
 msgstr "Hexagones"
@@ -628,6 +631,7 @@ msgstr "Hexagones"
 #: traces/templates-light/geozones/zone_leaders.html:212
 #: traces/templates-light/traces/admin_dashboard.html:123
 #: traces/templates-light/traces/admin_dashboard_premium.html:123
+#: traces/templates-light/traces/cluster_leaderboard.html:249
 #: traces/templates-light/traces/leaderboard.html:189
 #: traces/templates-light/traces/stats.html:172
 #: traces/templates-light/traces/stats_monthly.html:104
@@ -637,19 +641,23 @@ msgstr "Aucune donnée."
 
 #: traces/templates-light/geozones/zone_leaderboard.html:195
 #: traces/templates-light/geozones/zone_leaderboard.html:290
+#: traces/templates-light/traces/cluster_leaderboard.html:253
+#: traces/templates-light/traces/cluster_leaderboard.html:354
 #: traces/templates-light/traces/leaderboard.html:193
-#: traces/templates-light/traces/leaderboard.html:282
+#: traces/templates-light/traces/leaderboard.html:283
 msgid "Load more"
 msgstr "Charger plus"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:202
 #: traces/templates-light/geozones/zone_leaders.html:231
+#: traces/templates-light/traces/cluster_leaderboard.html:263
 #: traces/templates-light/traces/leaderboard.html:203
 msgid "Conquered"
 msgstr "Conquis"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:203
 #: traces/templates-light/geozones/zone_leaders.html:232
+#: traces/templates-light/traces/cluster_leaderboard.html:264
 #: traces/templates-light/traces/leaderboard.html:204
 msgid "Acquired"
 msgstr "Acquis"
@@ -665,7 +673,7 @@ msgid "Global leaderboard"
 msgstr "Classement global"
 
 #: traces/templates-light/geozones/zone_leaderboard.html:211
-#: traces/templates-light/traces/leaderboard.html:209
+#: traces/templates-light/traces/leaderboard.html:210
 msgid "Zones"
 msgstr "Zones"
 
@@ -721,8 +729,8 @@ msgstr "Inviter"
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:183
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:218
 #: traces/templates-light/traces/admin_dashboard_geozones.html:135
-#: traces/templates-light/traces/admin_dashboard_workers.html:199
-#: traces/templates-light/traces/admin_dashboard_workers.html:231
+#: traces/templates-light/traces/admin_dashboard_workers.html:194
+#: traces/templates-light/traces/admin_dashboard_workers.html:226
 #: traces/templates-light/traces/strava_activities.html:207
 #: traces/templates-light/traces/subscription_history.html:83
 msgid "Status"
@@ -747,8 +755,8 @@ msgid "Delete this invitation?"
 msgstr "Supprimer cette invitation ?"
 
 #: traces/templates-light/referrals/referral_list.html:190
-#: traces/templates-light/traces/trace_detail.html:88
-#: traces/templates-light/traces/trace_detail.html:105
+#: traces/templates-light/traces/trace_detail.html:94
+#: traces/templates-light/traces/trace_detail.html:111
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
 msgstr "Supprimer"
@@ -983,6 +991,7 @@ msgstr ""
 "service externe."
 
 #: traces/templates-light/traces/admin_dashboard.html:4
+#: traces/templates-light/traces/admin_dashboard_colors.html:4
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:4
 #: traces/templates-light/traces/admin_dashboard_geozones.html:4
 #: traces/templates-light/traces/admin_dashboard_premium.html:4
@@ -1016,78 +1025,113 @@ msgid "Year"
 msgstr "Année"
 
 #: traces/templates-light/traces/admin_dashboard.html:131
+#: traces/templates-light/traces/admin_dashboard_colors.html:153
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:239
 #: traces/templates-light/traces/admin_dashboard_geozones.html:169
 #: traces/templates-light/traces/admin_dashboard_premium.html:131
-#: traces/templates-light/traces/admin_dashboard_traces.html:143
-#: traces/templates-light/traces/admin_dashboard_workers.html:255
+#: traces/templates-light/traces/admin_dashboard_traces.html:141
+#: traces/templates-light/traces/admin_dashboard_workers.html:250
 msgid "Users"
 msgstr "Utilisateurs"
 
 #: traces/templates-light/traces/admin_dashboard.html:132
+#: traces/templates-light/traces/admin_dashboard_colors.html:154
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:240
 #: traces/templates-light/traces/admin_dashboard_geozones.html:170
 #: traces/templates-light/traces/admin_dashboard_premium.html:4
 #: traces/templates-light/traces/admin_dashboard_premium.html:132
-#: traces/templates-light/traces/admin_dashboard_traces.html:144
-#: traces/templates-light/traces/admin_dashboard_workers.html:256
+#: traces/templates-light/traces/admin_dashboard_traces.html:142
+#: traces/templates-light/traces/admin_dashboard_workers.html:251
 msgid "Premium"
 msgstr "Premium"
 
 #: traces/templates-light/traces/admin_dashboard.html:133
+#: traces/templates-light/traces/admin_dashboard_colors.html:155
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:241
 #: traces/templates-light/traces/admin_dashboard_geozones.html:171
 #: traces/templates-light/traces/admin_dashboard_premium.html:133
 #: traces/templates-light/traces/admin_dashboard_traces.html:4
-#: traces/templates-light/traces/admin_dashboard_traces.html:112
-#: traces/templates-light/traces/admin_dashboard_traces.html:145
-#: traces/templates-light/traces/admin_dashboard_workers.html:257
+#: traces/templates-light/traces/admin_dashboard_traces.html:143
+#: traces/templates-light/traces/admin_dashboard_workers.html:252
 msgid "Pending traces"
 msgstr "Traces en attente"
 
 #: traces/templates-light/traces/admin_dashboard.html:134
+#: traces/templates-light/traces/admin_dashboard_colors.html:156
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:242
 #: traces/templates-light/traces/admin_dashboard_geozones.html:172
 #: traces/templates-light/traces/admin_dashboard_premium.html:134
-#: traces/templates-light/traces/admin_dashboard_traces.html:146
+#: traces/templates-light/traces/admin_dashboard_traces.html:144
 #: traces/templates-light/traces/admin_dashboard_workers.html:4
-#: traces/templates-light/traces/admin_dashboard_workers.html:177
-#: traces/templates-light/traces/admin_dashboard_workers.html:192
-#: traces/templates-light/traces/admin_dashboard_workers.html:258
+#: traces/templates-light/traces/admin_dashboard_workers.html:187
+#: traces/templates-light/traces/admin_dashboard_workers.html:253
 msgid "Workers"
 msgstr "Workers"
 
 #: traces/templates-light/traces/admin_dashboard.html:135
+#: traces/templates-light/traces/admin_dashboard_colors.html:157
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:243
 #: traces/templates-light/traces/admin_dashboard_geozones.html:4
 #: traces/templates-light/traces/admin_dashboard_geozones.html:124
 #: traces/templates-light/traces/admin_dashboard_geozones.html:173
 #: traces/templates-light/traces/admin_dashboard_premium.html:135
-#: traces/templates-light/traces/admin_dashboard_traces.html:147
-#: traces/templates-light/traces/admin_dashboard_workers.html:259
+#: traces/templates-light/traces/admin_dashboard_traces.html:145
+#: traces/templates-light/traces/admin_dashboard_workers.html:254
 msgid "Geozones"
 msgstr "Géozones"
 
 #: traces/templates-light/traces/admin_dashboard.html:136
+#: traces/templates-light/traces/admin_dashboard_colors.html:158
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:244
 #: traces/templates-light/traces/admin_dashboard_geozones.html:174
 #: traces/templates-light/traces/admin_dashboard_premium.html:136
-#: traces/templates-light/traces/admin_dashboard_traces.html:148
-#: traces/templates-light/traces/admin_dashboard_workers.html:260
+#: traces/templates-light/traces/admin_dashboard_traces.html:146
+#: traces/templates-light/traces/admin_dashboard_workers.html:255
+msgid "Colors"
+msgstr ""
+
+#: traces/templates-light/traces/admin_dashboard.html:137
+#: traces/templates-light/traces/admin_dashboard_colors.html:159
+#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:245
+#: traces/templates-light/traces/admin_dashboard_geozones.html:175
+#: traces/templates-light/traces/admin_dashboard_premium.html:137
+#: traces/templates-light/traces/admin_dashboard_traces.html:147
+#: traces/templates-light/traces/admin_dashboard_workers.html:256
 msgid "Create"
 msgstr "Créer"
 
-#: traces/templates-light/traces/admin_dashboard.html:158
-#: traces/templates-light/traces/admin_dashboard.html:202
+#: traces/templates-light/traces/admin_dashboard.html:159
+#: traces/templates-light/traces/admin_dashboard.html:203
 msgid "New registrations"
 msgstr "Nouvelles inscriptions"
 
-#: traces/templates-light/traces/admin_dashboard.html:165
-#: traces/templates-light/traces/admin_dashboard.html:209
-#: traces/templates-light/traces/admin_dashboard_premium.html:165
-#: traces/templates-light/traces/admin_dashboard_premium.html:209
+#: traces/templates-light/traces/admin_dashboard.html:166
+#: traces/templates-light/traces/admin_dashboard.html:210
+#: traces/templates-light/traces/admin_dashboard_premium.html:166
+#: traces/templates-light/traces/admin_dashboard_premium.html:210
 msgid "Cumulative"
 msgstr "Cumulé"
+
+#: traces/templates-light/traces/admin_dashboard_colors.html:4
+#: traces/templates-light/traces/admin_dashboard_colors.html:126
+msgid "Tile Colors"
+msgstr ""
+
+#: traces/templates-light/traces/admin_dashboard_colors.html:132
+#, fuzzy
+#| msgid "Global"
+msgid "Global tiles"
+msgstr "Global"
+
+#: traces/templates-light/traces/admin_dashboard_colors.html:136
+#, fuzzy
+#| msgid "Users"
+msgid "User tiles"
+msgstr "Utilisateurs"
+
+#: traces/templates-light/traces/admin_dashboard_colors.html:140
+msgid "Zoom"
+msgstr ""
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:177
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:216
@@ -1108,32 +1152,32 @@ msgstr "Parent"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:185
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:227
-#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:288
+#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:289
 #: traces/templates-light/traces/admin_dashboard_geozones.html:148
-#: traces/templates-light/traces/admin_dashboard_geozones.html:201
+#: traces/templates-light/traces/admin_dashboard_geozones.html:202
 #: traces/templates-light/traces/subscription_history.html:93
 msgid "Active"
 msgstr "Actif"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:185
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:227
-#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:292
+#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:293
 #: traces/templates-light/traces/admin_dashboard_geozones.html:148
-#: traces/templates-light/traces/admin_dashboard_geozones.html:205
+#: traces/templates-light/traces/admin_dashboard_geozones.html:206
 msgid "Inactive"
 msgstr "Inactif"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:187
-#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:289
+#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:290
 #: traces/templates-light/traces/admin_dashboard_geozones.html:153
-#: traces/templates-light/traces/admin_dashboard_geozones.html:202
+#: traces/templates-light/traces/admin_dashboard_geozones.html:203
 msgid "Deactivate"
 msgstr "Désactiver"
 
 #: traces/templates-light/traces/admin_dashboard_geozone_detail.html:187
-#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:293
+#: traces/templates-light/traces/admin_dashboard_geozone_detail.html:294
 #: traces/templates-light/traces/admin_dashboard_geozones.html:153
-#: traces/templates-light/traces/admin_dashboard_geozones.html:206
+#: traces/templates-light/traces/admin_dashboard_geozones.html:207
 msgid "Activate"
 msgstr "Activer"
 
@@ -1149,74 +1193,70 @@ msgstr "Aucune géozone chargée."
 msgid "Premium subscriptions"
 msgstr "Abonnements Premium"
 
-#: traces/templates-light/traces/admin_dashboard_premium.html:158
-#: traces/templates-light/traces/admin_dashboard_premium.html:202
+#: traces/templates-light/traces/admin_dashboard_premium.html:159
+#: traces/templates-light/traces/admin_dashboard_premium.html:203
 msgid "New subscriptions"
 msgstr "Nouveaux abonnements"
 
-#: traces/templates-light/traces/admin_dashboard_traces.html:119
-#: traces/templates-light/traces/trace_list.html:116
+#: traces/templates-light/traces/admin_dashboard_traces.html:117
+#: traces/templates-light/traces/trace_list.html:115
 #: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
 msgid "File"
 msgstr "Fichier"
 
-#: traces/templates-light/traces/admin_dashboard_traces.html:121
+#: traces/templates-light/traces/admin_dashboard_traces.html:119
 msgid "Uploaded"
 msgstr "Téléversé"
 
-#: traces/templates-light/traces/admin_dashboard_traces.html:135
+#: traces/templates-light/traces/admin_dashboard_traces.html:133
 msgid "No pending traces."
 msgstr "Aucune trace en attente."
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:181
-msgid "active workers"
-msgstr "workers actifs"
-
-#: traces/templates-light/traces/admin_dashboard_workers.html:185
+#: traces/templates-light/traces/admin_dashboard_workers.html:180
 msgid "queued"
 msgstr "en attente"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:186
+#: traces/templates-light/traces/admin_dashboard_workers.html:181
 msgid "running"
 msgstr "en cours"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:187
+#: traces/templates-light/traces/admin_dashboard_workers.html:182
 msgid "succeeded"
 msgstr "réussi"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:188
+#: traces/templates-light/traces/admin_dashboard_workers.html:183
 msgid "failed"
 msgstr "échoué"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:198
+#: traces/templates-light/traces/admin_dashboard_workers.html:193
 msgid "Last heartbeat"
 msgstr "Dernier signal"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:209
+#: traces/templates-light/traces/admin_dashboard_workers.html:204
 msgid "active"
 msgstr "actif"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:211
+#: traces/templates-light/traces/admin_dashboard_workers.html:206
 msgid "inactive"
 msgstr "inactif"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:219
+#: traces/templates-light/traces/admin_dashboard_workers.html:214
 msgid "No workers registered."
 msgstr "Aucun worker enregistré."
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:224
+#: traces/templates-light/traces/admin_dashboard_workers.html:219
 msgid "Recent jobs"
 msgstr "Tâches récentes"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:230
+#: traces/templates-light/traces/admin_dashboard_workers.html:225
 msgid "Task"
 msgstr "Tâche"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:232
+#: traces/templates-light/traces/admin_dashboard_workers.html:227
 msgid "Attempts"
 msgstr "Tentatives"
 
-#: traces/templates-light/traces/admin_dashboard_workers.html:247
+#: traces/templates-light/traces/admin_dashboard_workers.html:242
 msgid "No jobs."
 msgstr "Aucune tâche."
 
@@ -1234,100 +1274,134 @@ msgstr "badges"
 msgid "Unlocked"
 msgstr "Débloqué"
 
-#: traces/templates-light/traces/dashboard.html:29
+#: traces/templates-light/traces/cluster_leaderboard.html:4
+#: traces/templates-light/traces/cluster_leaderboard.html:198
+#: traces/templates-light/traces/cluster_leaderboard.html:266
+#: traces/templates-light/traces/leaderboard.html:206
+msgid "Largest surface"
+msgstr "Plus grande surface"
+
+#: traces/templates-light/traces/cluster_leaderboard.html:223
+msgid "Surface"
+msgstr "Surface"
+
+#: traces/templates-light/traces/cluster_leaderboard.html:265
+#: traces/templates-light/traces/landing.html:309
+#: traces/templates-light/traces/leaderboard.html:205
+#: traces/templates-light/traces/trace_create.html:96
+msgid "Points"
+msgstr "Points"
+
+#: traces/templates-light/traces/dashboard.html:18
+msgid "Zone rankings"
+msgstr "Classements par zone"
+
+#: traces/templates-light/traces/dashboard.html:23
+msgid "Best"
+msgstr "Meilleur"
+
+#: traces/templates-light/traces/dashboard.html:28
+msgid "Current"
+msgstr "Actuel"
+
+#: traces/templates-light/traces/dashboard.html:31
+msgid "View leaderboard"
+msgstr "Voir le classement"
+
+#: traces/templates-light/traces/dashboard.html:54
 #, fuzzy
 #| msgid "First trace"
 msgid "Latest trace"
 msgstr "Première trace"
 
-#: traces/templates-light/traces/dashboard.html:33
+#: traces/templates-light/traces/dashboard.html:58
 msgid ""
 "No trace yet. <a href=\"/upload/\">Upload your first GPX trace</a> to get "
 "started!"
 msgstr ""
 
-#: traces/templates-light/traces/dashboard.html:42
+#: traces/templates-light/traces/dashboard.html:67
 #: traces/templates-light/traces/share.html:83
 #: traces/templates/traces/profile.html:109
 msgid "Uploaded traces"
 msgstr "Traces téléversées"
 
-#: traces/templates-light/traces/dashboard.html:46 traces/views/api_stats.py:38
+#: traces/templates-light/traces/dashboard.html:71 traces/views/api_stats.py:38
 msgid "Hexagons acquired"
 msgstr "Hexagones acquis"
 
-#: traces/templates-light/traces/dashboard.html:50
+#: traces/templates-light/traces/dashboard.html:75
 #: traces/templates-light/traces/share.html:91
 #: traces/templates/traces/profile.html:117
 msgid "Total points"
 msgstr "Points totaux"
 
-#: traces/templates-light/traces/dashboard.html:54
+#: traces/templates-light/traces/dashboard.html:79
 #: traces/templates-light/traces/stats_badges.html:260
 msgid "Rank"
 msgstr "Rang"
 
-#: traces/templates-light/traces/dashboard.html:62
+#: traces/templates-light/traces/dashboard.html:87
 msgid "Streak & distance"
 msgstr ""
 
-#: traces/templates-light/traces/dashboard.html:64
+#: traces/templates-light/traces/dashboard.html:89
 #, fuzzy
 #| msgid "Daily streaks"
 msgid "Daily streak"
 msgstr "Séries quotidiennes"
 
-#: traces/templates-light/traces/dashboard.html:65
+#: traces/templates-light/traces/dashboard.html:90
 msgid "days"
 msgstr ""
 
-#: traces/templates-light/traces/dashboard.html:68
+#: traces/templates-light/traces/dashboard.html:93
 #, fuzzy
 #| msgid "Distance"
 msgid "Total distance"
 msgstr "Distance"
 
-#: traces/templates-light/traces/dashboard.html:72
+#: traces/templates-light/traces/dashboard.html:97
 #, fuzzy
 #| msgid "By month"
 msgid "This month"
 msgstr "Par mois"
 
-#: traces/templates-light/traces/dashboard.html:78
+#: traces/templates-light/traces/dashboard.html:103
 #, fuzzy
 #| msgid "Rarest badges"
 msgid "Latest badges"
 msgstr "Badges les plus rares"
 
-#: traces/templates-light/traces/dashboard.html:89
+#: traces/templates-light/traces/dashboard.html:114
 #, fuzzy
 #| msgid "view all"
 msgid "View all"
 msgstr "voir tout"
 
-#: traces/templates-light/traces/dashboard.html:91
+#: traces/templates-light/traces/dashboard.html:116
 msgid "Upload traces to unlock your first badges!"
 msgstr ""
 
-#: traces/templates-light/traces/dashboard.html:98
+#: traces/templates-light/traces/dashboard.html:124
 #, fuzzy
 #| msgid "Recent activity"
 msgid "Friend activity"
 msgstr "Activité récente"
 
-#: traces/templates-light/traces/dashboard.html:104
+#: traces/templates-light/traces/dashboard.html:130
 #, fuzzy
 #| msgid "First trace"
 msgid "View trace"
 msgstr "Première trace"
 
-#: traces/templates-light/traces/dashboard.html:107
+#: traces/templates-light/traces/dashboard.html:133
 #, fuzzy
 #| msgid "All friends"
 msgid "View all friends"
 msgstr "Tous les amis"
 
-#: traces/templates-light/traces/dashboard.html:109
+#: traces/templates-light/traces/dashboard.html:135
 msgid "Add friends to follow their progress!"
 msgstr ""
 
@@ -1339,27 +1413,21 @@ msgstr "Calques"
 msgid "My hexagons"
 msgstr "Mes hexagones"
 
-#: traces/templates-light/traces/landing.html:122
+#: traces/templates-light/traces/landing.html:123
 msgid "Other users"
 msgstr "Autres utilisateurs"
 
-#: traces/templates-light/traces/landing.html:126
+#: traces/templates-light/traces/landing.html:128
 #: traces/templates/traces/friends.html:105
 #: traces/templates/traces/profile.html:125
 msgid "Friends"
 msgstr "Amis"
 
-#: traces/templates-light/traces/landing.html:130
+#: traces/templates-light/traces/landing.html:132
 msgid "All friends"
 msgstr "Tous les amis"
 
-#: traces/templates-light/traces/landing.html:302
-#: traces/templates-light/traces/leaderboard.html:205
-#: traces/templates-light/traces/trace_create.html:96
-msgid "Points"
-msgstr "Points"
-
-#: traces/templates-light/traces/landing.html:302
+#: traces/templates-light/traces/landing.html:309
 msgid "Last activity"
 msgstr "Dernière activité"
 
@@ -1580,12 +1648,12 @@ msgid "Download GPX"
 msgstr "Télécharger le GPX"
 
 #: traces/templates-light/traces/trace_detail.html:17
-#: traces/templates-light/traces/trace_list.html:117
+#: traces/templates-light/traces/trace_list.html:116
 msgid "First point date"
 msgstr "Date du premier point"
 
 #: traces/templates-light/traces/trace_detail.html:21
-#: traces/templates-light/traces/trace_list.html:119
+#: traces/templates-light/traces/trace_list.html:118
 msgid "Uploaded on"
 msgstr "Téléversé le"
 
@@ -1594,7 +1662,7 @@ msgid "Extracted surfaces"
 msgstr "Surfaces extraites"
 
 #: traces/templates-light/traces/trace_detail.html:37
-#: traces/templates-light/traces/trace_list.html:129
+#: traces/templates-light/traces/trace_list.html:128
 msgid "Analysis in progress..."
 msgstr "Analyse en cours…"
 
@@ -1609,11 +1677,7 @@ msgstr[1] "%(counter)s traces en attente dans la file"
 msgid "Surfaces extracted, computing badges..."
 msgstr "Surfaces extraites, calcul des badges…"
 
-#: traces/templates-light/traces/trace_detail.html:53
-msgid "Unlocked badges"
-msgstr "Badges débloqués"
-
-#: traces/templates-light/traces/trace_detail.html:68
+#: traces/templates-light/traces/trace_detail.html:54
 msgid ""
 "This trace does not contain any closed surface. Make sure your route forms a "
 "loop."
@@ -1621,37 +1685,41 @@ msgstr ""
 "Cette trace ne contient aucune surface fermée. Assurez-vous que votre "
 "parcours forme une boucle."
 
-#: traces/templates-light/traces/trace_detail.html:73
+#: traces/templates-light/traces/trace_detail.html:59
 msgid "Trace"
 msgstr "Trace"
 
-#: traces/templates-light/traces/trace_detail.html:85
+#: traces/templates-light/traces/trace_detail.html:73
+msgid "Unlocked badges"
+msgstr "Badges débloqués"
+
+#: traces/templates-light/traces/trace_detail.html:91
 msgid "Previous"
 msgstr "Précédent"
 
-#: traces/templates-light/traces/trace_detail.html:93
+#: traces/templates-light/traces/trace_detail.html:99
 msgid "Next"
 msgstr "Suivant"
 
-#: traces/templates-light/traces/trace_detail.html:99
+#: traces/templates-light/traces/trace_detail.html:105
 msgid "Delete trace"
 msgstr "Supprimer la trace"
 
-#: traces/templates-light/traces/trace_detail.html:100
+#: traces/templates-light/traces/trace_detail.html:106
 msgid "Are you sure you want to delete this trace?"
 msgstr "Êtes-vous sûr de vouloir supprimer cette trace ?"
 
-#: traces/templates-light/traces/trace_detail.html:102
+#: traces/templates-light/traces/trace_detail.html:108
 #: traces/templates/traces/friends.html:139
 #: traces/templates/traces/friends.html:210
 msgid "Cancel"
 msgstr "Annuler"
 
-#: traces/templates-light/traces/trace_list.html:147
+#: traces/templates-light/traces/trace_list.html:146
 msgid "View closed surfaces"
 msgstr "Voir les surfaces fermées"
 
-#: traces/templates-light/traces/trace_list.html:157
+#: traces/templates-light/traces/trace_list.html:156
 msgid "No traces uploaded yet."
 msgstr "Aucune trace téléversée pour le moment."
 
@@ -1849,30 +1917,39 @@ msgstr ""
 "Disponible avec un abonnement <a href=\"%(premium_url)s\" style=\"color:"
 "var(--accent);font-weight:600;text-decoration:none;\">Premium</a>."
 
+#: traces/trace_processing.py:199
+msgid "Unable to analyze this trace."
+msgstr "Impossible d'analyser cette trace."
+
+#: traces/trace_processing.py:206
+#, python-format
+msgid "Trace too long (%(length).0f km). Maximum allowed is %(max)d km."
+msgstr ""
+"Trace trop longue (%(length).0f km). Le maximum autorisé est de %(max)d km."
+
+#: traces/trace_processing.py:213
+msgid "This trace has already been uploaded (same start date detected)."
+msgstr "Cette trace a déjà été téléversée (même date de départ détectée)."
+
 #: traces/views/api_stats.py:43
 msgid "New hexagons"
 msgstr "Nouveaux hexagones"
 
-#: traces/views/api_upload.py:36
+#: traces/views/api_upload.py:30
 msgid "Invalid or expired token."
 msgstr "Jeton invalide ou expiré."
 
-#: traces/views/api_upload.py:39
+#: traces/views/api_upload.py:33
 msgid "API access requires an active Premium subscription."
 msgstr "L'accès API nécessite un abonnement Premium actif."
 
-#: traces/views/api_upload.py:43
+#: traces/views/api_upload.py:37
 msgid "Missing gpx_file field."
 msgstr "Champ gpx_file manquant."
 
-#: traces/views/api_upload.py:49 traces/views/strava_import.py:98
+#: traces/views/api_upload.py:43 traces/views/strava_import.py:98
 msgid "Daily upload limit reached."
 msgstr "Limite quotidienne de téléversement atteinte."
-
-#: traces/views/api_upload.py:61
-#, python-format
-msgid "Trace too long (%(length).0f km). Maximum is %(max)d km."
-msgstr "Trace trop longue (%(length).0f km). Le maximum est de %(max)d km."
 
 #: traces/views/settings.py:49
 msgid "First name must be 150 characters or fewer."
@@ -1929,16 +2006,6 @@ msgstr ""
 msgid ""
 "%(count)d activity(ies) skipped (already imported, no GPS, or too long)."
 msgstr ""
-
-#: traces/views/upload.py:35
-#, python-format
-msgid "Trace too long (%(length).0f km). Maximum allowed is %(max)d km."
-msgstr ""
-"Trace trop longue (%(length).0f km). Le maximum autorisé est de %(max)d km."
-
-#: traces/views/upload.py:44
-msgid "This trace has already been uploaded (same start date detected)."
-msgstr "Cette trace a déjà été téléversée (même date de départ détectée)."
 
 #: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
 msgid "Messages"
@@ -3161,34 +3228,15 @@ msgstr "Communauté Django"
 msgid "Connect, get help, or contribute"
 msgstr ""
 
-#: traces/templates-light/traces/dashboard.html
-msgid "Zone rankings"
-msgstr "Classements par zone"
+#~ msgid "active workers"
+#~ msgstr "workers actifs"
 
-#: traces/templates-light/traces/dashboard.html
-msgid "Best"
-msgstr "Meilleur"
+#, python-format
+#~ msgid "Trace too long (%(length).0f km). Maximum is %(max)d km."
+#~ msgstr "Trace trop longue (%(length).0f km). Le maximum est de %(max)d km."
 
-#: traces/templates-light/traces/dashboard.html
-msgid "Current"
-msgstr "Actuel"
-
-#: traces/templates-light/traces/dashboard.html
-msgid "Hexagons conquered"
-msgstr "Hexagones conquis"
-
-#: traces/templates-light/traces/dashboard.html
-msgid "View leaderboard"
-msgstr "Voir le classement"
-
-#: traces/templates-light/traces/cluster_leaderboard.html
-#: traces/templates-light/traces/leaderboard.html
-msgid "Largest surface"
-msgstr "Plus grande surface"
-
-#: traces/templates-light/traces/cluster_leaderboard.html
-msgid "Surface"
-msgstr "Surface"
+#~ msgid "Hexagons conquered"
+#~ msgstr "Hexagones conquis"
 
 #~ msgid "Profile"
 #~ msgstr "Profil"
