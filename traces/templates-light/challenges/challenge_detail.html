@@ -100,8 +100,30 @@ h1 {
   width: 100%;
   height: 350px;
   border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.map-legend {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
   margin-bottom: 1.5rem;
 }
+
+.map-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.map-legend .leg-mine::before { background: #2980b9; }
+.map-legend .leg-other::before { background: #e74c3c; }
+.map-legend .leg-free::before { background: #4f6814; }
 
 .card {
   background: var(--surface);
@@ -245,6 +267,11 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
     {% endif %}
 
     <div id="challenge-map"></div>
+    <div class="map-legend">
+      <span class="leg-mine">{% trans "Yours" %}</span>
+      <span class="leg-other">{% trans "Conquered" %}</span>
+      <span class="leg-free">{% trans "Free" %}</span>
+    </div>
 
     <div class="card">
       <h2>{% trans "Leaderboard" %}</h2>
@@ -340,21 +367,24 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
 <script>
 (function() {
   const geojson = JSON.parse(document.getElementById('hexagons-geojson').textContent);
+  const currentUserId = {{ request.user.pk }};
 
   const map = L.map('challenge-map').setView([46.5, 2.5], 6);
   L.tileLayer('{{ tile_server_url }}', {
     maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
   if (geojson.features.length > 0) {
     const layer = L.geoJSON(geojson, {
-      style: function() {
-        return {
-          color: '#4f6814',
-          weight: 1,
-          fillColor: '#4f6814',
-          fillOpacity: 0.3,
-        };
+      style: function(feature) {
+        const ownerId = feature.properties.owner_id;
+        if (ownerId === currentUserId) {
+          return { color: '#2980b9', weight: 1, fillColor: '#2980b9', fillOpacity: 0.45 };
+        } else if (ownerId) {
+          return { color: '#e74c3c', weight: 1, fillColor: '#e74c3c', fillOpacity: 0.35 };
+        }
+        return { color: '#4f6814', weight: 1, fillColor: '#4f6814', fillOpacity: 0.25 };
       }
     }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [20, 20] });

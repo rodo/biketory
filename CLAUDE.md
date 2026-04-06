@@ -268,9 +268,14 @@ cursor.execute("SELECT * FROM my_table WHERE id = %s", [pk])
 
 All Leaflet maps **must** use the tile URL from `settings.TILE_SERVER_URL`, exposed in templates as `{{ tile_server_url }}` via the `traces.context_processors.tile_server` context processor. **Never hardcode a tile URL** (e.g. `https://{s}.tile.openstreetmap.org/…`) in templates or JavaScript.
 
+All Leaflet maps **must** include OpenStreetMap copyright attribution. Use the standard format below — every `L.tileLayer` call must have an `attribution` option.
+
 ```javascript
 // Good
-L.tileLayer('{{ tile_server_url }}', { maxZoom: 18 }).addTo(map);
+L.tileLayer('{{ tile_server_url }}', {
+  maxZoom: 18,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+}).addTo(map);
 
 // Bad — never do this
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { ... });

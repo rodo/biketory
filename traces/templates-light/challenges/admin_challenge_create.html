@@ -333,6 +333,7 @@ h1 {
   const map = L.map('hex-map').setView([46.5, 2.5], 10);
   L.tileLayer('{{ tile_server_url }}', {
     maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
   const MIN_ZOOM_LOAD = 11;

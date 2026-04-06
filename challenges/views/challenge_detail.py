@@ -95,26 +95,26 @@ def challenge_detail(request, pk):
 
 
 def _build_hexagons_geojson(challenge):
-    """Build a GeoJSON FeatureCollection of the challenge hexagons."""
+    """Build a GeoJSON FeatureCollection dict of the challenge hexagons."""
     import json
 
     from django.contrib.gis.geos import GEOSGeometry
 
     hexagons = (
         challenge.challenge_hexagons.select_related("hexagon")
-        .values_list("hexagon__geom", "hexagon__owner_id")
+        .values_list("hexagon__pk", "hexagon__geom", "hexagon__owner_id")
     )
 
     features = []
-    for geom_wkt, owner_id in hexagons:
+    for hex_pk, geom_wkt, owner_id in hexagons:
         geom = GEOSGeometry(geom_wkt)
         features.append({
             "type": "Feature",
             "geometry": json.loads(geom.geojson),
-            "properties": {"owner_id": owner_id},
+            "properties": {"id": hex_pk, "owner_id": owner_id},
         })
 
-    return json.dumps({"type": "FeatureCollection", "features": features})
+    return {"type": "FeatureCollection", "features": features}
 
 
 @require_POST
