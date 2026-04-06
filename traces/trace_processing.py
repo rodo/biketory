@@ -193,10 +193,11 @@ def create_trace(gpx_file, user):
 
     gpx = gpxpy.parse(gpx_file)
 
-    valid, reason_code = validate_trace(gpx)
-    if not valid:
-        logger.warning("Trace rejected for user %s: %s", user, reason_code)
-        return None, _("Unable to analyze this trace.")
+    if settings.TRACE_VALIDATION_ENABLED:
+        valid, reason_code = validate_trace(gpx)
+        if not valid:
+            logger.warning("Trace rejected for user %s: %s", user, reason_code)
+            return None, _("Unable to analyze this trace.")
 
     gpx_file.seek(0)
     route, first_point_date, length_km = _parse_route(gpx_file)
