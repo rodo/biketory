@@ -1,3 +1,4 @@
+import logging
 import math
 from collections import defaultdict
 from datetime import timedelta
@@ -11,6 +12,9 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from traces.models import ClosedSurface, Trace, UserProfile
+from traces.trace_validation import validate_trace
+
+logger = logging.getLogger(__name__)
 
 _SQL_DIR = Path(__file__).resolve().parent / "sql"
 
@@ -187,6 +191,15 @@ def create_trace(gpx_file, user):
     from django.contrib.gis.geos import Polygon
     from procrastinate.exceptions import AlreadyEnqueued
 
+    gpx = gpxpy.parse(gpx_file)
+
+    if settings.TRACE_VALIDATION_ENABLED:
+        valid, reason_code = validate_trace(gpx)
+        if not valid:
+            logger.warning("Trace rejected for user %s: %s", user, reason_code)
+            return None, _("Unable to analyze this trace.")
+
+    gpx_file.seek(0)
     route, first_point_date, length_km = _parse_route(gpx_file)
 
     if length_km > MAX_TRACE_LENGTH_KM:
