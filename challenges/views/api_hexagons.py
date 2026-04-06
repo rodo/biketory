@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.gis.geos import Polygon
@@ -8,12 +7,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
 from traces.models import Hexagon
+from traces.trace_processing import _HEX_SIDE_M, _INSERT_HEXAGONS_SQL
 
-_SQL_DIR = Path(__file__).resolve().parent.parent.parent / "traces" / "sql"
-_INSERT_HEXAGONS_SQL = (_SQL_DIR / "insert_hexagons.sql").read_text()
-
-# Hexagon edge size in meters (same as trace processing)
-_HEX_EDGE = 200.0
+MIN_ZOOM_FOR_GENERATION = 14
 
 
 @staff_member_required
@@ -33,8 +29,14 @@ def api_challenge_hexagons(request):
     bbox_geom.srid = 4326
 
     if request.method == "POST":
+        zoom = int(request.GET.get("zoom", 0))
+        if zoom < MIN_ZOOM_FOR_GENERATION:
+            return JsonResponse(
+                {"error": f"Zoom must be >= {MIN_ZOOM_FOR_GENERATION}"},
+                status=400,
+            )
         with connection.cursor() as cursor:
-            cursor.execute(_INSERT_HEXAGONS_SQL, [_HEX_EDGE, bbox_geom.ewkt])
+            cursor.execute(_INSERT_HEXAGONS_SQL, [_HEX_SIDE_M, bbox_geom.wkt])
 
     hexagons = Hexagon.objects.filter(geom__intersects=bbox_geom).values_list(
         "pk", "geom", "owner_id"
