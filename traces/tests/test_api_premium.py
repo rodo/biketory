@@ -11,6 +11,7 @@ from traces.models import ApiToken, Subscription
 
 from ._helpers import make_user
 
+
 def _today():
     return timezone.now().date()
 

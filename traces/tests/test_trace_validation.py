@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta, timezone as dt_tz
+from datetime import timedelta
 
 import gpxpy
 import gpxpy.gpx
-
 from django.test import TestCase
 from django.utils import timezone
 

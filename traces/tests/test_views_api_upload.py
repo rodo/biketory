@@ -11,6 +11,7 @@ from traces.models import ApiToken, Subscription, Trace
 
 from ._helpers import make_user
 
+
 def _minimal_gpx():
     return (
         b'<?xml version="1.0"?>'

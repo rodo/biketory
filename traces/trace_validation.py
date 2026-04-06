@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-
 # --- Thresholds ---
 MAX_AVG_SPEED_KMH = 60
 MAX_PEAK_SPEED_KMH = 80

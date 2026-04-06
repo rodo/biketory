@@ -10,6 +10,7 @@ from traces.trace_processing import MAX_TRACE_LENGTH_KM
 
 from ._helpers import make_user, small_route
 
+
 class TraceLengthLimitTest(TestCase):
 
     def setUp(self):
