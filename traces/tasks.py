@@ -94,6 +94,12 @@ def recompute_leaderboard():
     except AlreadyEnqueued:
         pass
 
+    from challenges.tasks import compute_challenge_leaderboards
+    try:
+        compute_challenge_leaderboards.defer()
+    except AlreadyEnqueued:
+        pass
+
 
 @app.task(queue="tiles", queueing_lock="recompute_zone_leaderboard")
 def recompute_zone_leaderboard():

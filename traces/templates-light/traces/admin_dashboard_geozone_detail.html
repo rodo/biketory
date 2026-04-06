@@ -241,6 +241,7 @@ h1 {
       <li><a href="{% url 'admin_dashboard_traces' %}">{% trans "Pending traces" %}</a></li>
       <li><a href="{% url 'admin_dashboard_workers' %}">{% trans "Workers" %}</a></li>
       <li><a href="{% url 'admin_dashboard_geozones' %}" class="active">{% trans "Geozones" %}</a></li>
+      <li><a href="{% url 'admin_challenges' %}">{% trans "Challenges" %}</a></li>
       <li><a href="{% url 'trace_create' %}">{% trans "Create" %}</a></li>
     </ul>
   </aside>
@@ -255,7 +256,7 @@ h1 {
   const map = L.map('map', { minZoom: 2, maxZoom: 14 });
 
   L.tileLayer('{{ tile_server_url }}', {
-    attribution: '&copy; OpenStreetMap contributors',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19,
   }).addTo(map);
 

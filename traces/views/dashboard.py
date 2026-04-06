@@ -155,6 +155,23 @@ def dashboard(request):
                     live = live_by_zone.get(entry["zone_id"])
                     entry["current_rank_conquered"] = live["rank_conquered"] if live else None
 
+    # ── Active challenges ──
+    from django.utils import timezone
+
+    from challenges.models import Challenge, ChallengeParticipant
+
+    now = timezone.now()
+    user_challenge_ids = set(
+        ChallengeParticipant.objects.filter(user=user).values_list("challenge_id", flat=True)
+    )
+    active_challenges = list(
+        Challenge.objects.filter(
+            start_date__lte=now,
+            end_date__gte=now,
+            pk__in=user_challenge_ids,
+        ).order_by("end_date")[:5]
+    )
+
     return render(request, "traces/dashboard.html", {
         "user_profile": user_profile,
         "last_trace": last_trace,
@@ -172,4 +189,5 @@ def dashboard(request):
         "recent_badges": recent_badges,
         "friend_activity": friend_activity,
         "best_zone_rankings": best_zone_rankings,
+        "active_challenges": active_challenges,
     })

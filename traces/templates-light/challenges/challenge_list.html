@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Challenges" %} — Biketory{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  color: var(--bg);
+  font-size: 1.1rem;
+  margin: 2rem 0 1rem;
+}
+
+.challenge-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.challenge-info { flex: 1; min-width: 0; }
+
+.challenge-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--bg);
+  text-decoration: none;
+}
+
+.challenge-title:hover { color: var(--accent); }
+
+.challenge-meta {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+.badge-premium {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+}
+
+.badge-joined {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #d4edda;
+  color: #155724;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.badge-ended {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #f0ede6;
+  color: var(--muted);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.empty-msg {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <h1>{% trans "Challenges" %}</h1>
+
+  {% if active_challenges %}
+  <h2>{% trans "Active" %}</h2>
+  {% for c in active_challenges %}
+  <div class="challenge-card">
+    <div class="challenge-info">
+      <a href="{% url 'challenge_detail' c.pk %}" class="challenge-title">
+        {{ c.title }}
+        {% if c.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
+      </a>
+      <div class="challenge-meta">
+        {{ c.get_challenge_type_display }} &middot;
+        {% trans "Ends" %} {{ c.end_date|date:"Y-m-d H:i" }}
+      </div>
+    </div>
+    {% if c.pk in user_challenge_ids %}
+      <span class="badge-joined">{% trans "Joined" %}</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if upcoming_challenges %}
+  <h2>{% trans "Upcoming" %}</h2>
+  {% for c in upcoming_challenges %}
+  <div class="challenge-card">
+    <div class="challenge-info">
+      <a href="{% url 'challenge_detail' c.pk %}" class="challenge-title">
+        {{ c.title }}
+        {% if c.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
+      </a>
+      <div class="challenge-meta">
+        {{ c.get_challenge_type_display }} &middot;
+        {% trans "Starts" %} {{ c.start_date|date:"Y-m-d H:i" }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if ended_challenges %}
+  <h2>{% trans "Ended" %}</h2>
+  {% for c in ended_challenges %}
+  <div class="challenge-card">
+    <div class="challenge-info">
+      <a href="{% url 'challenge_detail' c.pk %}" class="challenge-title">
+        {{ c.title }}
+      </a>
+      <div class="challenge-meta">
+        {{ c.get_challenge_type_display }} &middot;
+        {% trans "Ended" %} {{ c.end_date|date:"Y-m-d H:i" }}
+      </div>
+    </div>
+    <span class="badge-ended">{% trans "Ended" %}</span>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if not active_challenges and not upcoming_challenges and not ended_challenges %}
+    <p class="empty-msg">{% trans "No challenges yet." %}</p>
+  {% endif %}
+</div>
+{% endblock %}

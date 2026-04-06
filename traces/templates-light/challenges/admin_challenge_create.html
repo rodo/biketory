@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Create Challenge" %} — Biketory{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.main-content { flex: 1; min-width: 0; }
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.sidebar h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar li a {
+  display: block;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sidebar li a:hover { background: #f0ede6; }
+
+.sidebar li a.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 1.5rem;
+}
+
+.form-card h2 {
+  font-size: 1rem;
+  color: var(--bg);
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--bg);
+  margin-bottom: 0.3rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="datetime-local"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.form-group textarea { min-height: 80px; resize: vertical; }
+
+.form-group input[type="checkbox"] { margin-right: 0.3rem; }
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-row .form-group { flex: 1; }
+
+#hex-map {
+  width: 100%;
+  height: 400px;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.btn-gen {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.btn-gen:hover { opacity: 0.88; }
+.btn-gen:disabled, .btn-load:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-load {
+  display: inline-block;
+  background: var(--bg);
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.btn-load:hover { opacity: 0.88; }
+
+#hex-count {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.btn-submit {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-submit:hover { opacity: 0.88; }
+
+.reward-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.reward-row input, .reward-row select {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.82rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.reward-row input[type="number"] { width: 60px; }
+.reward-row input[type="text"] { width: 120px; }
+
+.btn-add-reward {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.3rem;
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <div class="main-content">
+    <h1>{% trans "Create Challenge" %}</h1>
+
+    <form method="post" enctype="multipart/form-data" id="challenge-form">
+      {% csrf_token %}
+
+      <div class="form-card">
+        <h2>{% trans "General" %}</h2>
+        <div class="form-group">
+          <label for="title">{% trans "Title" %}</label>
+          <input type="text" name="title" id="title" required maxlength="255">
+        </div>
+        <div class="form-group">
+          <label for="description">{% trans "Description" %}</label>
+          <textarea name="description" id="description"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="challenge_type">{% trans "Type" %}</label>
+            <select name="challenge_type" id="challenge_type">
+              {% for val, label in challenge_types %}
+              <option value="{{ val }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group" id="capture-mode-group">
+            <label for="capture_mode">{% trans "Capture mode" %}</label>
+            <select name="capture_mode" id="capture_mode">
+              <option value="">—</option>
+              {% for val, label in capture_modes %}
+              <option value="{{ val }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="start_date">{% trans "Start date" %}</label>
+            <input type="datetime-local" name="start_date" id="start_date" required>
+          </div>
+          <div class="form-group">
+            <label for="end_date">{% trans "End date" %}</label>
+            <input type="datetime-local" name="end_date" id="end_date" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" name="premium_only"> {% trans "Premium only" %}
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="geozone">{% trans "GeoZone (for max_points)" %}</label>
+          <select name="geozone" id="geozone">
+            <option value="">—</option>
+            {% for z in geozones %}
+            <option value="{{ z.pk }}">{{ z.name }} ({{ z.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2>{% trans "Hexagons" %}</h2>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.75rem;">
+          {% trans "Navigate the map, generate hexagons, then click to select/deselect." %}
+        </p>
+        <div id="hex-map"></div>
+        <button type="button" class="btn-load" id="btn-load" disabled>{% trans "Load hexagons" %}</button>
+        <button type="button" class="btn-gen" id="btn-generate" disabled>{% trans "Generate hexagons" %}</button>
+        <div id="hex-zoom-warn" style="font-size:0.82rem;color:#e74c3c;margin-bottom:0.5rem;"></div>
+        <div id="hex-count">{% trans "Selected" %}: <strong>0</strong></div>
+        <input type="hidden" name="hexagon_ids" id="hexagon_ids">
+      </div>
+
+      <div class="form-card">
+        <h2>{% trans "Rewards" %}</h2>
+        <div id="rewards-list"></div>
+        <button type="button" class="btn-add-reward" id="btn-add-reward">+ {% trans "Add reward" %}</button>
+        <input type="hidden" name="rewards_json" id="rewards_json">
+      </div>
+
+      <div class="form-card">
+        <h2>{% trans "Sponsor" %}</h2>
+        <div class="form-group">
+          <label for="sponsor_name">{% trans "Name" %}</label>
+          <input type="text" name="sponsor_name" id="sponsor_name" maxlength="255">
+        </div>
+        <div class="form-group">
+          <label for="sponsor_url">{% trans "Website" %}</label>
+          <input type="text" name="sponsor_url" id="sponsor_url">
+        </div>
+        <div class="form-group">
+          <label for="sponsor_logo">{% trans "Logo" %}</label>
+          <input type="file" name="sponsor_logo" id="sponsor_logo" accept="image/*">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">{% trans "Create" %}</button>
+    </form>
+  </div>
+
+  <aside class="sidebar">
+    <h2>{% trans "Admin" %}</h2>
+    <ul>
+      <li><a href="{% url 'admin_dashboard' %}">{% trans "Users" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_premium' %}">{% trans "Premium" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_traces' %}">{% trans "Pending traces" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_workers' %}">{% trans "Workers" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_geozones' %}">{% trans "Geozones" %}</a></li>
+      <li><a href="{% url 'admin_challenges' %}" class="active">{% trans "Challenges" %}</a></li>
+      <li><a href="{% url 'trace_create' %}">{% trans "Create" %}</a></li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  const map = L.map('hex-map').setView([46.5, 2.5], 10);
+  L.tileLayer('{{ tile_server_url }}', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
+
+  const MIN_ZOOM_LOAD = 11;
+  const MIN_ZOOM_GENERATE = 14;
+  let hexLayer = null;
+  const selectedIds = new Set();
+  const btnLoad = document.getElementById('btn-load');
+  const btnGenerate = document.getElementById('btn-generate');
+  const zoomWarn = document.getElementById('hex-zoom-warn');
+
+  function updateCount() {
+    document.querySelector('#hex-count strong').textContent = selectedIds.size;
+    document.getElementById('hexagon_ids').value = Array.from(selectedIds).join(',');
+  }
+
+  function updateButtons() {
+    const zoom = map.getZoom();
+    const canLoad = zoom >= MIN_ZOOM_LOAD;
+    const canGenerate = zoom >= MIN_ZOOM_GENERATE;
+    btnLoad.disabled = !canLoad;
+    btnGenerate.disabled = !canGenerate;
+
+    if (!canLoad) {
+      zoomWarn.textContent = '{% trans "Zoom in to level 11 to load hexagons, level 14 to generate." %}';
+      zoomWarn.style.display = '';
+    } else if (!canGenerate) {
+      zoomWarn.textContent = '{% trans "Zoom in to level 14 to generate new hexagons." %}';
+      zoomWarn.style.display = '';
+    } else {
+      zoomWarn.style.display = 'none';
+    }
+  }
+
+  function displayHexagons(data) {
+    if (data.error) return;
+    if (hexLayer) map.removeLayer(hexLayer);
+    hexLayer = L.geoJSON(data, {
+      style: function(feature) {
+        const selected = selectedIds.has(feature.properties.id);
+        return {
+          color: selected ? '#4f6814' : '#999',
+          weight: 1,
+          fillColor: selected ? '#4f6814' : '#ddd',
+          fillOpacity: selected ? 0.5 : 0.15,
+        };
+      },
+      onEachFeature: function(feature, layer) {
+        layer.on('click', function() {
+          const id = feature.properties.id;
+          if (selectedIds.has(id)) {
+            selectedIds.delete(id);
+          } else {
+            selectedIds.add(id);
+          }
+          hexLayer.resetStyle(layer);
+          updateCount();
+        });
+      }
+    }).addTo(map);
+  }
+
+  function fetchHexagons(method) {
+    const zoom = map.getZoom();
+    const b = map.getBounds();
+    const bbox = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].join(',');
+    const url = '{% url "api_challenge_hexagons" %}?bbox=' + bbox + '&zoom=' + zoom;
+
+    const opts = { method: method, headers: {} };
+    if (method === 'POST') {
+      opts.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    }
+
+    fetch(url, opts).then(r => r.json()).then(displayHexagons);
+  }
+
+  btnLoad.addEventListener('click', function() {
+    if (map.getZoom() >= MIN_ZOOM_LOAD) fetchHexagons('GET');
+  });
+
+  btnGenerate.addEventListener('click', function() {
+    if (map.getZoom() >= MIN_ZOOM_GENERATE) fetchHexagons('POST');
+  });
+
+  map.on('zoomend', updateButtons);
+  updateButtons();
+
+  // Rewards
+  const rewardTypes = [
+    {% for val, label in reward_types %}
+    { value: '{{ val }}', label: '{{ label }}' },
+    {% endfor %}
+  ];
+
+  const rewardsList = document.getElementById('rewards-list');
+
+  function addRewardRow() {
+    const row = document.createElement('div');
+    row.className = 'reward-row';
+
+    let options = rewardTypes.map(t => '<option value="' + t.value + '">' + t.label + '</option>').join('');
+
+    row.innerHTML =
+      '<input type="number" class="rw-rank" min="1" max="3" value="1" placeholder="#">' +
+      '<select class="rw-type">' + options + '</select>' +
+      '<input type="text" class="rw-badge" placeholder="badge_id">' +
+      '<button type="button" class="btn-remove" onclick="this.parentElement.remove()">&times;</button>';
+    rewardsList.appendChild(row);
+  }
+
+  document.getElementById('btn-add-reward').addEventListener('click', addRewardRow);
+
+  document.getElementById('challenge-form').addEventListener('submit', function() {
+    const rows = rewardsList.querySelectorAll('.reward-row');
+    const rewards = [];
+    rows.forEach(function(row) {
+      rewards.push({
+        rank_threshold: parseInt(row.querySelector('.rw-rank').value, 10),
+        reward_type: row.querySelector('.rw-type').value,
+        badge_id: row.querySelector('.rw-badge').value,
+      });
+    });
+    document.getElementById('rewards_json').value = JSON.stringify(rewards);
+  });
+
+  // Show/hide capture mode based on type
+  const typeSelect = document.getElementById('challenge_type');
+  const captureModeGroup = document.getElementById('capture-mode-group');
+  function toggleCaptureMode() {
+    captureModeGroup.style.display = typeSelect.value === 'capture_hexagon' ? '' : 'none';
+  }
+  typeSelect.addEventListener('change', toggleCaptureMode);
+  toggleCaptureMode();
+})();
+</script>
+{% endblock %}

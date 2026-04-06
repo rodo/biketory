@@ -136,6 +136,21 @@
   {% endif %}
 </div>
 
+{# ── Active challenges ── #}
+{% if active_challenges %}
+<div class="card-block">
+  <h2>{% trans "Active challenges" %}</h2>
+  {% for c in active_challenges %}
+  <div class="friend-row">
+    <span class="friend-name">{{ c.title }}</span>
+    <span class="friend-date">{% trans "Ends" %} {{ c.end_date|date:"Y-m-d" }}</span>
+    <a href="{% url 'challenge_detail' c.pk %}">{% trans "View" %} &rarr;</a>
+  </div>
+  {% endfor %}
+  <a class="see-all" href="{% url 'challenge_list' %}">{% trans "All challenges" %} &rarr;</a>
+</div>
+{% endif %}
+
 </div>{# .dashboard-main #}
 </div>{# .dashboard-layout #}
 {% endblock %}

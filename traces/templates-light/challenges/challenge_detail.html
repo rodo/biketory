@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ challenge.title }} — Biketory{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_css %}
+#page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.main-content { flex: 1; min-width: 0; }
+
+.sidebar-right {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+h1 {
+  color: var(--bg);
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.challenge-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.challenge-description {
+  font-size: 0.9rem;
+  color: var(--bg);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.badge-premium {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+}
+
+.badge-status {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.badge-status.active { background: #d4edda; color: #155724; }
+.badge-status.upcoming { background: #cce5ff; color: #004085; }
+.badge-status.ended { background: #f0ede6; color: var(--muted); }
+
+.btn-join {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+}
+
+.btn-join:hover { opacity: 0.88; }
+.btn-join:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.joined-msg {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #155724;
+  background: #d4edda;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+#challenge-map {
+  width: 100%;
+  height: 350px;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.map-legend {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.map-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.map-legend .leg-mine::before { background: #2980b9; }
+.map-legend .leg-other::before { background: #e74c3c; }
+.map-legend .leg-free::before { background: #4f6814; }
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  font-size: 1rem;
+  color: var(--bg);
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid #eee;
+}
+
+td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #f0ede6;
+  color: var(--bg);
+}
+
+tr.current-user td { background: #f5f9ec; font-weight: 700; }
+
+.load-more {
+  display: block;
+  text-align: center;
+  padding: 0.7rem;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.load-more:hover { text-decoration: underline; }
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  padding: 0.4rem 0;
+  color: var(--bg);
+}
+
+.reward-rank {
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 2rem;
+}
+
+.sponsor-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.sponsor-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.sponsor-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--bg);
+}
+
+.sponsor-name a { color: var(--accent); text-decoration: none; }
+.sponsor-name a:hover { text-decoration: underline; }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: var(--bg);
+}
+
+.stat-label { color: var(--muted); }
+.stat-value { font-weight: 700; }
+
+@media (max-width: 768px) {
+  #page-inner { flex-direction: column; }
+  .sidebar-right { width: 100%; }
+}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <div class="main-content">
+    <h1>
+      {{ challenge.title }}
+      {% if challenge.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
+      {% if is_active %}<span class="badge-status active">{% trans "Active" %}</span>{% endif %}
+      {% if is_upcoming %}<span class="badge-status upcoming">{% trans "Upcoming" %}</span>{% endif %}
+      {% if is_ended %}<span class="badge-status ended">{% trans "Ended" %}</span>{% endif %}
+    </h1>
+
+    <div class="challenge-meta">
+      {{ challenge.get_challenge_type_display }}
+      {% if challenge.capture_mode %} &middot; {{ challenge.get_capture_mode_display }}{% endif %}
+      &middot; {{ challenge.start_date|date:"Y-m-d H:i" }} — {{ challenge.end_date|date:"Y-m-d H:i" }}
+    </div>
+
+    {% if challenge.description %}
+    <div class="challenge-description">{{ challenge.description|linebreaksbr }}</div>
+    {% endif %}
+
+    {% if is_participant %}
+      <div class="joined-msg">{% trans "You are participating in this challenge" %}</div>
+    {% elif not is_ended %}
+      {% if can_join %}
+      <form method="post" action="{% url 'join_challenge' challenge.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-join">{% trans "Join challenge" %}</button>
+      </form>
+      {% else %}
+      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">{% trans "This challenge is reserved for premium members." %}</div>
+      {% endif %}
+    {% endif %}
+
+    <div id="challenge-map"></div>
+    <div class="map-legend">
+      <span class="leg-mine">{% trans "Yours" %}</span>
+      <span class="leg-other">{% trans "Conquered" %}</span>
+      <span class="leg-free">{% trans "Free" %}</span>
+    </div>
+
+    <div class="card">
+      <h2>{% trans "Leaderboard" %}</h2>
+      {% if entries %}
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{% trans "Player" %}</th>
+            <th>{% trans "Score" %}</th>
+          </tr>
+        </thead>
+        <tbody id="lb-body">
+          {% for e in entries %}
+          <tr{% if e.is_current_user %} class="current-user"{% endif %}>
+            <td>{{ e.rank }}</td>
+            <td>
+              {{ e.username }}
+              {% if e.is_premium %}<span class="badge-premium">P</span>{% endif %}
+            </td>
+            <td>{{ e.score }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if has_more %}
+      <a class="load-more" id="load-more" data-offset="{{ entries|length }}">{% trans "Load more" %}</a>
+      {% endif %}
+      {% else %}
+      <p style="color:var(--muted);font-size:0.9rem;">{% trans "No leaderboard data yet." %}</p>
+      {% endif %}
+
+      {% if user_entry and not entries.0.is_current_user %}
+      <div style="margin-top:1rem;padding:0.6rem 0.75rem;background:#f5f9ec;border-radius:6px;font-size:0.85rem;">
+        {% trans "Your rank" %}: <strong>#{{ user_entry.rank }}</strong> &middot;
+        {% trans "Score" %}: <strong>{{ user_entry.score }}</strong>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <aside class="sidebar-right">
+    <div class="card">
+      <h2>{% trans "Info" %}</h2>
+      <div class="stat-row">
+        <span class="stat-label">{% trans "Participants" %}</span>
+        <span class="stat-value">{{ participant_count }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">{% trans "Type" %}</span>
+        <span class="stat-value">{{ challenge.get_challenge_type_display }}</span>
+      </div>
+      {% if challenge.geozone %}
+      <div class="stat-row">
+        <span class="stat-label">{% trans "Zone" %}</span>
+        <span class="stat-value">{{ challenge.geozone.name }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if rewards %}
+    <div class="card">
+      <h2>{% trans "Rewards" %}</h2>
+      {% for r in rewards %}
+      <div class="reward-item">
+        <span class="reward-rank">≤ {{ r.rank_threshold }}</span>
+        <span>{{ r.get_reward_type_display }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if sponsors %}
+    <div class="card">
+      <h2>{% trans "Sponsors" %}</h2>
+      {% for s in sponsors %}
+      <div class="sponsor-item">
+        {% if s.logo %}<img class="sponsor-logo" src="{{ s.logo.url }}" alt="{{ s.name }}">{% endif %}
+        <div class="sponsor-name">
+          {% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.name }}</a>{% else %}{{ s.name }}{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ hexagons_geojson|json_script:"hexagons-geojson" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  const geojson = JSON.parse(document.getElementById('hexagons-geojson').textContent);
+  const currentUserId = {{ request.user.pk }};
+
+  const map = L.map('challenge-map').setView([46.5, 2.5], 6);
+  L.tileLayer('{{ tile_server_url }}', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
+
+  if (geojson.features.length > 0) {
+    const layer = L.geoJSON(geojson, {
+      style: function(feature) {
+        const ownerId = feature.properties.owner_id;
+        if (ownerId === currentUserId) {
+          return { color: '#2980b9', weight: 1, fillColor: '#2980b9', fillOpacity: 0.45 };
+        } else if (ownerId) {
+          return { color: '#e74c3c', weight: 1, fillColor: '#e74c3c', fillOpacity: 0.35 };
+        }
+        return { color: '#4f6814', weight: 1, fillColor: '#4f6814', fillOpacity: 0.25 };
+      }
+    }).addTo(map);
+    map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+  }
+
+  // Load more
+  const btn = document.getElementById('load-more');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      const offset = parseInt(btn.dataset.offset, 10);
+      fetch('?offset=' + offset, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(r => r.json())
+      .then(data => {
+        const tbody = document.getElementById('lb-body');
+        data.entries.forEach(e => {
+          const tr = document.createElement('tr');
+          if (e.is_current_user) tr.className = 'current-user';
+          tr.innerHTML =
+            '<td>' + e.rank + '</td>' +
+            '<td>' + e.username + (e.is_premium ? ' <span class="badge-premium">P</span>' : '') + '</td>' +
+            '<td>' + e.score + '</td>';
+          tbody.appendChild(tr);
+        });
+        if (data.has_more) {
+          btn.dataset.offset = offset + data.entries.length;
+        } else {
+          btn.remove();
+        }
+      });
+    });
+  }
+})();
+</script>
+{% endblock %}
