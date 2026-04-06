@@ -1,5 +1,6 @@
 import tempfile
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
@@ -9,7 +10,6 @@ from django.utils import timezone
 from traces.models import ApiToken, Subscription, Trace
 
 from ._helpers import make_user
-
 
 def _minimal_gpx():
     return (
@@ -61,6 +61,9 @@ class ApiUploadTest(TestCase):
             start_date=today - timedelta(days=1),
             end_date=today + timedelta(days=30),
         )
+        patcher = patch("traces.trace_processing.validate_trace", return_value=(True, None))
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def test_missing_file_returns_400(self):
         resp = self.client.post(

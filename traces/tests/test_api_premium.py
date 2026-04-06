@@ -1,5 +1,6 @@
 import datetime
 import tempfile
+from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
@@ -9,7 +10,6 @@ from django.utils import timezone
 from traces.models import ApiToken, Subscription
 
 from ._helpers import make_user
-
 
 def _today():
     return timezone.now().date()
@@ -41,6 +41,9 @@ class ApiUploadPremiumCheckTest(TestCase):
         self.user = make_user()
         self.token = _make_token(self.user)
         self.auth = f"Bearer {self.token.token}"
+        patcher = patch("traces.trace_processing.validate_trace", return_value=(True, None))
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def test_non_premium_returns_403(self):
         f = SimpleUploadedFile("t.gpx", _minimal_gpx(), content_type="application/gpx+xml")

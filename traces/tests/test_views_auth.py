@@ -1,4 +1,5 @@
 import tempfile
+from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
@@ -9,12 +10,14 @@ from traces.trace_processing import MAX_TRACE_LENGTH_KM
 
 from ._helpers import make_user, small_route
 
-
 class TraceLengthLimitTest(TestCase):
 
     def setUp(self):
         self.user = make_user()
         self.client.force_login(self.user)
+        patcher = patch("traces.trace_processing.validate_trace", return_value=(True, None))
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def _gpx_with_length(self, length_km):
         """Build a minimal GPX string spanning approximately length_km."""
@@ -60,6 +63,9 @@ class UploadQuotaTest(TestCase):
     def setUp(self):
         self.user = make_user()
         self.client.force_login(self.user)
+        patcher = patch("traces.trace_processing.validate_trace", return_value=(True, None))
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def _minimal_gpx(self, time_tag="2024-01-01T00:00:00Z"):
         return (
