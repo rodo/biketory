@@ -1,6 +1,5 @@
 from .about import about  # noqa: F401
 from .admin_dashboard import admin_dashboard  # noqa: F401
-from .admin_dashboard_colors import admin_dashboard_colors  # noqa: F401
 from .admin_dashboard_geozones import (  # noqa: F401
     admin_dashboard_geozone_detail,
     admin_dashboard_geozone_toggle,

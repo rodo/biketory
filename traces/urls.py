@@ -17,7 +17,6 @@ urlpatterns = [
     path("admin-dashboard/premium/", views.admin_dashboard_premium, name="admin_dashboard_premium"),
     path("admin-dashboard/traces/", views.admin_dashboard_traces, name="admin_dashboard_traces"),
     path("admin-dashboard/workers/", views.admin_dashboard_workers, name="admin_dashboard_workers"),
-    path("admin-dashboard/colors/", views.admin_dashboard_colors, name="admin_dashboard_colors"),
     path("admin-dashboard/geozones/", views.admin_dashboard_geozones, name="admin_dashboard_geozones"),
     path(
         "admin-dashboard/geozones/<int:pk>/",
