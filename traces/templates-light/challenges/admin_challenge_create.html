@@ -131,6 +131,23 @@ h1 {
 }
 
 .btn-gen:hover { opacity: 0.88; }
+.btn-gen:disabled, .btn-load:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-load {
+  display: inline-block;
+  background: var(--bg);
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.btn-load:hover { opacity: 0.88; }
 
 #hex-count {
   font-size: 0.82rem;
@@ -260,8 +277,9 @@ h1 {
           {% trans "Navigate the map, generate hexagons, then click to select/deselect." %}
         </p>
         <div id="hex-map"></div>
+        <button type="button" class="btn-load" id="btn-load" disabled>{% trans "Load hexagons" %}</button>
         <button type="button" class="btn-gen" id="btn-generate" disabled>{% trans "Generate hexagons" %}</button>
-        <div id="hex-zoom-warn" style="font-size:0.82rem;color:#e74c3c;margin-bottom:0.5rem;">{% trans "Zoom in to level 14 or higher to generate hexagons." %}</div>
+        <div id="hex-zoom-warn" style="font-size:0.82rem;color:#e74c3c;margin-bottom:0.5rem;"></div>
         <div id="hex-count">{% trans "Selected" %}: <strong>0</strong></div>
         <input type="hidden" name="hexagon_ids" id="hexagon_ids">
       </div>
@@ -318,9 +336,11 @@ h1 {
     maxZoom: 18,
   }).addTo(map);
 
-  const MIN_ZOOM = 14;
+  const MIN_ZOOM_LOAD = 11;
+  const MIN_ZOOM_GENERATE = 14;
   let hexLayer = null;
   const selectedIds = new Set();
+  const btnLoad = document.getElementById('btn-load');
   const btnGenerate = document.getElementById('btn-generate');
   const zoomWarn = document.getElementById('hex-zoom-warn');
 
@@ -329,19 +349,56 @@ h1 {
     document.getElementById('hexagon_ids').value = Array.from(selectedIds).join(',');
   }
 
-  function updateGenerateButton() {
-    const canGenerate = map.getZoom() >= MIN_ZOOM;
+  function updateButtons() {
+    const zoom = map.getZoom();
+    const canLoad = zoom >= MIN_ZOOM_LOAD;
+    const canGenerate = zoom >= MIN_ZOOM_GENERATE;
+    btnLoad.disabled = !canLoad;
     btnGenerate.disabled = !canGenerate;
-    zoomWarn.style.display = canGenerate ? 'none' : '';
+
+    if (!canLoad) {
+      zoomWarn.textContent = '{% trans "Zoom in to level 11 to load hexagons, level 14 to generate." %}';
+      zoomWarn.style.display = '';
+    } else if (!canGenerate) {
+      zoomWarn.textContent = '{% trans "Zoom in to level 14 to generate new hexagons." %}';
+      zoomWarn.style.display = '';
+    } else {
+      zoomWarn.style.display = 'none';
+    }
   }
 
-  function loadHexagons(generate) {
-    const zoom = map.getZoom();
-    if (generate && zoom < MIN_ZOOM) return;
+  function displayHexagons(data) {
+    if (data.error) return;
+    if (hexLayer) map.removeLayer(hexLayer);
+    hexLayer = L.geoJSON(data, {
+      style: function(feature) {
+        const selected = selectedIds.has(feature.properties.id);
+        return {
+          color: selected ? '#4f6814' : '#999',
+          weight: 1,
+          fillColor: selected ? '#4f6814' : '#ddd',
+          fillOpacity: selected ? 0.5 : 0.15,
+        };
+      },
+      onEachFeature: function(feature, layer) {
+        layer.on('click', function() {
+          const id = feature.properties.id;
+          if (selectedIds.has(id)) {
+            selectedIds.delete(id);
+          } else {
+            selectedIds.add(id);
+          }
+          hexLayer.resetStyle(layer);
+          updateCount();
+        });
+      }
+    }).addTo(map);
+  }
 
+  function fetchHexagons(method) {
+    const zoom = map.getZoom();
     const b = map.getBounds();
     const bbox = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].join(',');
-    const method = generate ? 'POST' : 'GET';
     const url = '{% url "api_challenge_hexagons" %}?bbox=' + bbox + '&zoom=' + zoom;
 
     const opts = { method: method, headers: {} };
@@ -349,47 +406,19 @@ h1 {
       opts.headers['X-CSRFToken'] = '{{ csrf_token }}';
     }
 
-    fetch(url, opts)
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) return;
-        if (hexLayer) map.removeLayer(hexLayer);
-        hexLayer = L.geoJSON(data, {
-          style: function(feature) {
-            const selected = selectedIds.has(feature.properties.id);
-            return {
-              color: selected ? '#4f6814' : '#999',
-              weight: 1,
-              fillColor: selected ? '#4f6814' : '#ddd',
-              fillOpacity: selected ? 0.5 : 0.15,
-            };
-          },
-          onEachFeature: function(feature, layer) {
-            layer.on('click', function() {
-              const id = feature.properties.id;
-              if (selectedIds.has(id)) {
-                selectedIds.delete(id);
-              } else {
-                selectedIds.add(id);
-              }
-              hexLayer.resetStyle(layer);
-              updateCount();
-            });
-          }
-        }).addTo(map);
-      });
+    fetch(url, opts).then(r => r.json()).then(displayHexagons);
   }
 
-  btnGenerate.addEventListener('click', function() {
-    loadHexagons(true);
+  btnLoad.addEventListener('click', function() {
+    if (map.getZoom() >= MIN_ZOOM_LOAD) fetchHexagons('GET');
   });
 
-  map.on('moveend', function() {
-    updateGenerateButton();
-    if (hexLayer) loadHexagons(false);
+  btnGenerate.addEventListener('click', function() {
+    if (map.getZoom() >= MIN_ZOOM_GENERATE) fetchHexagons('POST');
   });
-  map.on('zoomend', updateGenerateButton);
-  updateGenerateButton();
+
+  map.on('zoomend', updateButtons);
+  updateButtons();
 
   // Rewards
   const rewardTypes = [
