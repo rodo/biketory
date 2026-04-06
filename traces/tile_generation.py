@@ -24,8 +24,8 @@ _HEXAGONS_FOR_TILE_SQL = (_SQL_DIR / "hexagons_for_tile.sql").read_text()
 _USER_HEXAGONS_EXTENT_SQL = (_SQL_DIR / "user_hexagons_extent.sql").read_text()
 _USER_HEXAGONS_FOR_TILE_SQL = (_SQL_DIR / "user_hexagons_for_tile.sql").read_text()
 
-# Global tiles: uniform amber, opacity varies by zoom
-_GLOBAL_RGB = (200, 145, 45)
+# Global tiles: coral, opacity varies by zoom
+_GLOBAL_RGB = (232, 99, 111)
 
 # User tiles: blue
 _USER_RGB = (41, 128, 185)
