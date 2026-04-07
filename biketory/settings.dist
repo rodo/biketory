@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "notifs",
     "geozones",
     "referrals",
+    "challenges",
 ]
 
 if STRAVA_AUTH_ENABLED:
@@ -297,6 +298,10 @@ LOGGING = {
             "level": "INFO",
         },
         "geozones": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
+        "challenges": {
             "handlers": ["console", "file"],
             "level": "INFO",
         },
