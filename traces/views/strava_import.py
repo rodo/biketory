@@ -80,7 +80,6 @@ def strava_activities(request):
 def _strava_debug_info(user):
     """Gather Strava connection debug info (only used when DEBUG=True)."""
     from allauth.socialaccount.models import SocialAccount
-
     from django.utils import timezone as dj_timezone
 
     info = {}
