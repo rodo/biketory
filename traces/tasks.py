@@ -213,3 +213,31 @@ def generate_user_tiles(trace_id: int, user_id: int, zoom: int):
     west, south, east, north = trace.bbox.extent
     count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
     logger.info("Trace %d user %d zoom %d: %d user tiles generated.", trace_id, user_id, zoom, count)
+
+
+@app.task(queue="tiles")
+def regenerate_tiles_for_bbox(west: float, south: float, east: float, north: float, zoom: int):
+    """Regenerate hexagon tiles for a bounding box (used after trace deletion)."""
+    count = generate_tiles_for_bbox(zoom, west, south, east, north)
+    logger.info("Regenerated %d tiles at zoom %d for bbox.", count, zoom)
+
+
+@app.task(queue="tiles")
+def regenerate_score_tiles_for_bbox(west: float, south: float, east: float, north: float, zoom: int):
+    """Regenerate score tiles for a bounding box (used after trace deletion)."""
+    count = generate_score_tiles_for_bbox(zoom, west, south, east, north)
+    logger.info("Regenerated %d score tiles at zoom %d for bbox.", count, zoom)
+
+
+@app.task(queue="tiles")
+def regenerate_user_tiles_for_bbox(user_id: int, west: float, south: float, east: float, north: float, zoom: int):
+    """Regenerate per-user tiles for a bounding box (used after trace deletion)."""
+    from traces.models import UserProfile
+    try:
+        hexagram = UserProfile.objects.values_list("hexagram", flat=True).get(user_id=user_id)
+    except UserProfile.DoesNotExist:
+        logger.warning("User %d has no profile, skipping user tile regeneration.", user_id)
+        return
+
+    count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
+    logger.info("Regenerated %d user tiles at zoom %d for user %d.", count, zoom, user_id)

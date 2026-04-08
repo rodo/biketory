@@ -1,5 +1,36 @@
 from django.conf import settings
+from django.contrib.gis.db import models as gis_models
 from django.db import models
+
+
+class Dataset(models.Model):
+    name = models.CharField(max_length=255)
+    source_file = models.CharField(max_length=500)
+    md5_hash = models.CharField(max_length=32, unique=True)
+    feature_count = models.PositiveIntegerField(default=0)
+    imported_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class DatasetFeature(models.Model):
+    dataset = models.ForeignKey(
+        Dataset,
+        on_delete=models.CASCADE,
+        related_name="features",
+    )
+    geom = gis_models.PointField(srid=4326)
+    properties = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["dataset"]),
+        ]
+
+    def __str__(self):
+        return f"Feature #{self.pk} — Dataset #{self.dataset_id}"
 
 
 class Challenge(models.Model):
@@ -8,12 +39,14 @@ class Challenge(models.Model):
     TYPE_ACTIVE_DAYS = "active_days"
     TYPE_NEW_HEXAGONS = "new_hexagons"
     TYPE_DISTINCT_ZONES = "distinct_zones"
+    TYPE_DATASET_POINTS = "dataset_points"
     TYPE_CHOICES = [
         (TYPE_CAPTURE_HEXAGON, "Capture hexagon"),
         (TYPE_MAX_POINTS, "Max points"),
         (TYPE_ACTIVE_DAYS, "Active days"),
         (TYPE_NEW_HEXAGONS, "New hexagons"),
         (TYPE_DISTINCT_ZONES, "Distinct zones"),
+        (TYPE_DATASET_POINTS, "Dataset points"),
     ]
 
     CAPTURE_ANY = "any"
@@ -46,6 +79,13 @@ class Challenge(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="created_challenges",
+    )
+    dataset = models.ForeignKey(
+        Dataset,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="challenges",
     )
     goal_threshold = models.PositiveIntegerField(null=True, blank=True)
     zone_admin_level = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -97,6 +137,7 @@ class ChallengeParticipant(models.Model):
         on_delete=models.CASCADE,
         related_name="challenge_participations",
     )
+    score = models.IntegerField(default=0)
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -185,3 +226,41 @@ class ChallengeReward(models.Model):
 
     def __str__(self):
         return f"Challenge #{self.challenge_id} — rank≤{self.rank_threshold} → {self.reward_type}"
+
+
+class ChallengeDatasetScore(models.Model):
+    challenge = models.ForeignKey(
+        Challenge,
+        on_delete=models.CASCADE,
+        related_name="dataset_scores",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="challenge_dataset_scores",
+    )
+    dataset_feature = models.ForeignKey(
+        DatasetFeature,
+        on_delete=models.CASCADE,
+        related_name="challenge_scores",
+    )
+    trace = models.ForeignKey(
+        "traces.Trace",
+        on_delete=models.CASCADE,
+        related_name="challenge_dataset_scores",
+    )
+    earned_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["challenge", "user"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["challenge", "user", "dataset_feature"],
+                name="challenge_dataset_score_unique",
+            ),
+        ]
+
+    def __str__(self):
+        return f"Challenge #{self.challenge_id} — User #{self.user_id} — Feature #{self.dataset_feature_id}"

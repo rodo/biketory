@@ -17,6 +17,7 @@ _SCORE_ACTIVE_DAYS_SQL = (_SQL_DIR / "challenge_score_active_days.sql").read_tex
 _SCORE_NEW_HEXAGONS_SQL = (_SQL_DIR / "challenge_score_new_hexagons.sql").read_text()
 _SCORE_NEW_HEXAGONS_GEOZONE_SQL = (_SQL_DIR / "challenge_score_new_hexagons_geozone.sql").read_text()
 _SCORE_DISTINCT_ZONES_SQL = (_SQL_DIR / "challenge_score_distinct_zones.sql").read_text()
+_SCORE_DATASET_POINTS_SQL = (_SQL_DIR / "challenge_score_dataset_points.sql").read_text()
 
 
 def _compute_scores(challenge):
@@ -62,6 +63,8 @@ def _compute_scores(challenge):
                     challenge.pk,
                 ],
             )
+        elif challenge.challenge_type == Challenge.TYPE_DATASET_POINTS:
+            cursor.execute(_SCORE_DATASET_POINTS_SQL, [challenge.pk])
         return cursor.fetchall()
 
 

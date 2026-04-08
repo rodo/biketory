@@ -51,11 +51,11 @@
         <div class="form-row">
           <div class="form-group">
             <label for="start_date">{% trans "Start date" %}</label>
-            <input type="datetime-local" name="start_date" id="start_date" required>
+            <input type="date" name="start_date" id="start_date" required>
           </div>
           <div class="form-group">
             <label for="end_date">{% trans "End date" %}</label>
-            <input type="datetime-local" name="end_date" id="end_date" required>
+            <input type="date" name="end_date" id="end_date" required>
           </div>
         </div>
         <div class="form-group">
@@ -75,6 +75,15 @@
         <div class="form-group" id="goal-threshold-group">
           <label for="goal_threshold">{% trans "Goal threshold" %}</label>
           <input type="number" name="goal_threshold" id="goal_threshold" min="1">
+        </div>
+        <div class="form-group" id="dataset-group">
+          <label for="dataset">{% trans "Dataset" %}</label>
+          <select name="dataset" id="dataset">
+            <option value="">—</option>
+            {% for ds in datasets %}
+            <option value="{{ ds.pk }}">{{ ds.name }} ({{ ds.feature_count }} pts)</option>
+            {% endfor %}
+          </select>
         </div>
         <div class="form-row" id="distinct-zones-group">
           <div class="form-group">

@@ -27,6 +27,7 @@ A Django application for uploading GPX traces and visualising closed geographic 
 | `expire_premium` | Set `is_premium=False` on user profiles with no active subscription. Run daily via cron. |
 | `purge_jobs` | Delete all procrastinate jobs and events. Only works with `DEBUG=True`. |
 | `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
+| `load_dataset` | Import GeoJSON Point datasets from `data/` directory. Accepts `--path` for a specific file and `--name` for a custom name. Skips files already imported (MD5 check). |
 
 ## Challenges
 

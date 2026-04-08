@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,6 +11,7 @@ from challenges.models import (
     ChallengeLeaderboardEntry,
     ChallengeReward,
     ChallengeSponsor,
+    Dataset,
 )
 from geozones.models import GeoZone
 
@@ -37,6 +39,8 @@ def admin_challenge_create(request):
         zone_admin_raw = request.POST.get("zone_admin_level", "").strip()
         hex_per_zone_raw = request.POST.get("hexagons_per_zone", "").strip()
 
+        dataset_raw = request.POST.get("dataset", "").strip()
+
         challenge = Challenge.objects.create(
             title=request.POST["title"],
             description=request.POST.get("description", ""),
@@ -44,11 +48,12 @@ def admin_challenge_create(request):
             capture_mode=request.POST.get("capture_mode") or None,
             premium_only=request.POST.get("premium_only") == "on",
             geozone_id=request.POST.get("geozone") or None,
+            dataset_id=int(dataset_raw) if dataset_raw else None,
             goal_threshold=int(goal_raw) if goal_raw else None,
             zone_admin_level=int(zone_admin_raw) if zone_admin_raw else None,
             hexagons_per_zone=int(hex_per_zone_raw) if hex_per_zone_raw else None,
-            start_date=request.POST["start_date"],
-            end_date=request.POST["end_date"],
+            start_date=timezone.make_aware(datetime.strptime(request.POST["start_date"], "%Y-%m-%d")),
+            end_date=timezone.make_aware(datetime.strptime(request.POST["end_date"], "%Y-%m-%d")),
             created_by=request.user,
         )
 
@@ -94,8 +99,11 @@ def admin_challenge_create(request):
         .order_by("admin_level")
     )
 
+    datasets = Dataset.objects.all().order_by("name")
+
     return render(request, "challenges/admin_challenge_create.html", {
         "geozones": geozones,
+        "datasets": datasets,
         "challenge_types": Challenge.TYPE_CHOICES,
         "capture_modes": Challenge.CAPTURE_MODE_CHOICES,
         "reward_types": ChallengeReward.REWARD_TYPE_CHOICES,
@@ -127,6 +135,16 @@ def admin_challenge_detail(request, pk):
         from challenges.views.challenge_detail import _build_hexagons_geojson
         hexagons_geojson = _build_hexagons_geojson(challenge)
 
+    # Dataset GeoJSON for dataset_points challenges
+    dataset_geojson = {"type": "FeatureCollection", "features": []}
+    has_dataset = (
+        challenge.challenge_type == Challenge.TYPE_DATASET_POINTS
+        and challenge.dataset_id is not None
+    )
+    if has_dataset:
+        from challenges.views.challenge_detail import _build_dataset_geojson
+        dataset_geojson = _build_dataset_geojson(challenge)
+
     return render(request, "challenges/admin_challenge_detail.html", {
         "challenge": challenge,
         "is_active": is_active,
@@ -137,4 +155,6 @@ def admin_challenge_detail(request, pk):
         "sponsors": sponsors,
         "rewards": rewards,
         "hexagons_geojson": hexagons_geojson,
+        "has_dataset": has_dataset,
+        "dataset_geojson": dataset_geojson,
     })

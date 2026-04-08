@@ -82,7 +82,10 @@ def generate_tiles_for_bbox(zoom, west, south, east, north):
                 )
                 hexagons = cursor.fetchall()
 
+            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
+
             if not hexagons:
+                tile_path.unlink(missing_ok=True)
                 continue
 
             img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (0, 0, 0, 0))
@@ -100,7 +103,6 @@ def generate_tiles_for_bbox(zoom, west, south, east, north):
                 ]
                 draw.polygon(pixels, fill=fill, outline=outline)
 
-            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
             tile_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(tile_path, "PNG")
             count += 1
@@ -137,7 +139,10 @@ def generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, nor
                 )
                 hexagons = cursor.fetchall()
 
+            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
+
             if not hexagons:
+                tile_path.unlink(missing_ok=True)
                 continue
 
             img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (0, 0, 0, 0))
@@ -155,7 +160,6 @@ def generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, nor
                 ]
                 draw.polygon(pixels, fill=fill, outline=outline)
 
-            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
             tile_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(tile_path, "PNG")
             count += 1
@@ -228,7 +232,10 @@ def generate_score_tiles_for_bbox(zoom, west, south, east, north):
                 )
                 hexagons = cursor.fetchall()
 
+            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
+
             if not hexagons:
+                tile_path.unlink(missing_ok=True)
                 continue
 
             img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (0, 0, 0, 0))
@@ -257,7 +264,6 @@ def generate_score_tiles_for_bbox(zoom, west, south, east, north):
                 # White text on top
                 draw.text((x, y), label, fill=(255, 255, 255, 255), font=font)
 
-            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
             tile_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(tile_path, "PNG")
             count += 1
