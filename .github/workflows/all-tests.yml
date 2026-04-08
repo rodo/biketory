@@ -45,6 +45,9 @@ jobs:
       - name: Prepare CI settings
         run: cp biketory/settings.dist biketory/settings_ci.py
 
+      - name: Install pip
+        run: apt-get update -qq && apt-get install -y --no-install-recommends python3-pip
+
       - name: Install Python dependencies
         run: pip install --break-system-packages -r requirements-dev.txt
 
