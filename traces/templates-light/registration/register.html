@@ -105,6 +105,21 @@ button[type="submit"]:hover { opacity: 0.88; }
   margin-bottom: 0.5rem;
 }
 .btn-social:hover { border-color: var(--accent); }
+
+.closed-banner {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-bottom: 1rem;
+  background: #fdf6e3;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+}
+.closed-banner p {
+  margin: 0.3rem 0;
+  color: var(--bg);
+  font-size: 0.92rem;
+}
+.closed-banner p:first-child { font-weight: 700; }
 {% endblock %}
 
 {% block content %}
@@ -132,6 +147,13 @@ button[type="submit"]:hover { opacity: 0.88; }
 
 <div class="card">
   <h1>{% trans "Create an account" %}</h1>
+
+  {% if registration_closed %}
+  <div class="closed-banner">
+    <p>{% trans "Registration is currently reserved for invited users." %}</p>
+    <p>{% trans "Ask an existing member to send you an invitation." %}</p>
+  </div>
+  {% else %}
   <p class="subtitle">{% trans "Join Biketory and start uploading your traces." %}</p>
 
   <form method="post" action="{% url 'register' %}">
@@ -168,6 +190,7 @@ button[type="submit"]:hover { opacity: 0.88; }
     <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right:.5rem"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" fill="#FC4C02"/></svg>
     {% trans "Sign up with Strava" %}
   </a>
+  {% endif %}
   {% endif %}
 
   <p class="footer-link">{% trans "Already have an account?" %} <a href="{% url 'account_login' %}">{% trans "Log in" %}</a></p>
