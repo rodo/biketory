@@ -144,8 +144,6 @@ public abstract class BaseSimulation extends Simulation {
                 .pause(1, 3)
                 .exec(http("À propos").get("/about/").check(status().is(200)))
                 .pause(1, 3)
-                .exec(http("Mentions légales").get("/legal/").check(status().is(200)))
-                .pause(1, 3)
                 .exec(http("Stats mensuelles").get("/stats/monthly/").check(status().is(200)))
                 .pause(1, 3)
                 .exec(http("Stats traces").get("/stats/traces/").check(status().is(200)))

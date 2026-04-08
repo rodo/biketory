@@ -55,10 +55,9 @@ séquentiellement tous les endpoints publics avec des pauses de 1 à 3 secondes.
 2. `GET /api/hexagons/` — API hexagons
 3. `GET /api/hexagons/?bbox=-2,46,4,49` — API hexagons avec bbox
 4. `GET /about/` — À propos
-5. `GET /legal/` — Mentions légales
-6. `GET /stats/monthly/` — Stats mensuelles
-7. `GET /stats/traces/` — Stats traces
-8. `GET /stats/badges/` — Stats badges
+5. `GET /stats/monthly/` — Stats mensuelles
+6. `GET /stats/traces/` — Stats traces
+7. `GET /stats/badges/` — Stats badges
 
 **Injection :** `atOnceUsers(1)`
 **Assertions :** p95 < 2s, succès > 95 %
