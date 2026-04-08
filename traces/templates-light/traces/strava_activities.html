@@ -161,11 +161,59 @@ tbody td {
   padding: 2rem 0;
   text-align: center;
 }
+
+.debug-panel {
+  background: #fdf6e3;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+}
+
+.debug-panel summary {
+  font-weight: 700;
+  color: var(--bg);
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.debug-panel dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+
+.debug-panel dt {
+  font-weight: 600;
+  color: var(--bg);
+  font-family: monospace;
+}
+
+.debug-panel dd {
+  margin: 0;
+  color: var(--muted);
+  font-family: monospace;
+  word-break: break-all;
+}
 {% endblock %}
 
 {% block content %}
 <h1>{% trans "Import from Strava" %}</h1>
 <p class="subtitle">{% trans "Select activities to import as Biketory traces." %}</p>
+
+{% if debug_info %}
+<details class="debug-panel" open>
+  <summary>Debug — Strava connection</summary>
+  <dl>
+    {% for key, value in debug_info.items %}
+    <dt>{{ key }}</dt>
+    <dd>{{ value }}</dd>
+    {% endfor %}
+  </dl>
+</details>
+{% endif %}
 
 <!-- Quota bar -->
 <div class="quota-bar-wrap">

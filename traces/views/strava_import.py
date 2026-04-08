@@ -42,6 +42,7 @@ def strava_activities(request):
     activities = []
     strava_error = None
     strava_connected = True
+    debug_info = _strava_debug_info(request.user) if settings.DEBUG else {}
 
     try:
         raw_activities = fetch_recent_activities(request.user)
@@ -53,10 +54,16 @@ def strava_activities(request):
             act["already_imported"] = act["id"] in imported_ids
             act["distance_km"] = act.get("distance", 0) / 1000
         activities = raw_activities
-    except StravaNotConnectedError:
+        if settings.DEBUG:
+            debug_info["activities_count"] = len(activities)
+    except StravaNotConnectedError as e:
         strava_connected = False
+        if settings.DEBUG:
+            debug_info["exception"] = f"StravaNotConnectedError: {e}"
     except StravaAPIError as e:
         strava_error = str(e)
+        if settings.DEBUG:
+            debug_info["exception"] = f"StravaAPIError: {e} (status={e.status_code})"
 
     return render(request, "traces/strava_activities.html", {
         "activities": activities,
@@ -66,7 +73,42 @@ def strava_activities(request):
         "daily_limit": daily_limit,
         "limit_reached": limit_reached,
         "next_slot": next_slot,
+        "debug_info": debug_info,
     })
+
+
+def _strava_debug_info(user):
+    """Gather Strava connection debug info (only used when DEBUG=True)."""
+    from allauth.socialaccount.models import SocialAccount
+
+    from django.utils import timezone as dj_timezone
+
+    info = {}
+
+    account = SocialAccount.objects.filter(user=user, provider="strava").first()
+    if account is None:
+        info["social_account"] = "None — no SocialAccount for provider=strava"
+        return info
+
+    info["social_account"] = f"uid={account.uid}, provider={account.provider}"
+    info["extra_data_keys"] = list(account.extra_data.keys()) if account.extra_data else []
+
+    token = account.socialtoken_set.first()
+    if token is None:
+        info["social_token"] = "None — no SocialToken found"
+        return info
+
+    now = dj_timezone.now()
+    token_preview = token.token[:8] + "…" if token.token else "empty"
+    info["social_token"] = f"token={token_preview}, expires_at={token.expires_at}"
+    if token.expires_at:
+        info["token_expired"] = token.expires_at <= now
+        info["token_expires_in"] = str(token.expires_at - now)
+    else:
+        info["token_expired"] = "expires_at is None"
+    info["refresh_token"] = "present" if token.token_secret else "missing"
+
+    return info
 
 
 @login_required
