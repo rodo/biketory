@@ -52,7 +52,7 @@ def strava_activities(request):
         for act in raw_activities:
             act["already_imported"] = act["id"] in imported_ids
             act["distance_km"] = act.get("distance", 0) / 1000
-            activities = raw_activities
+        activities = raw_activities
     except StravaNotConnectedError:
         strava_connected = False
     except StravaAPIError as e:
