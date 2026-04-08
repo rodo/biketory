@@ -250,7 +250,9 @@
   font-weight: 600;
   color: var(--bg);
   font-size: 0.9rem;
+  text-decoration: none;
 }
+.friend-row .friend-name:hover { color: var(--accent); }
 
 .friend-row .friend-date {
   font-size: 0.78rem;

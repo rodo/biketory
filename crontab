@@ -1,0 +1,2 @@
+MAILTO=rodolphe@quiedeville.org
+*/5 * * * * /home/rodo/dev/biketory/venv/bin/python manage.py compute_cluster_leaderboard

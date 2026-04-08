@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load static %}
+{% load i18n static compress %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% compress css %}
 <link rel="stylesheet" href="{% static 'css/base.css' %}" />
 <link rel="stylesheet" href="{% static 'css/trace-detail.css' %}" />
+{% endcompress %}
 {% endblock %}
 
 {% block content %}
@@ -121,6 +122,8 @@
 {{ surfaces_geojson|json_script:"surfaces-geojson" }}
 {{ hexagons_geojson|json_script:"hexagons-geojson" }}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% compress js %}
 <script src="{% static 'js/map-base.js' %}"></script>
 <script src="{% static 'js/map-trace-detail.js' %}"></script>
+{% endcompress %}
 {% endblock %}

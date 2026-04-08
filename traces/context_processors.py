@@ -11,6 +11,7 @@ def tile_server(request):
         "map_zoom_max": settings.MAP_ZOOM_MAX,
         "tiles_static_min_zoom": settings.TILES_STATIC_MIN_ZOOM,
         "tiles_static_max_zoom": settings.TILES_STATIC_MAX_ZOOM,
+        "tiles_score_min_zoom": settings.TILES_SCORE_MIN_ZOOM,
         "tiles_dynamic_min_zoom": settings.TILES_DYNAMIC_MIN_ZOOM,
         "tiles_dynamic_max_zoom": settings.TILES_DYNAMIC_MAX_ZOOM,
         "landing_show_own_static_tiles": getattr(settings, "LANDING_SHOW_OWN_STATIC_TILES", True),

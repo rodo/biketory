@@ -130,10 +130,10 @@ geozones/          Geographic zones application
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 | `MonthlyZoneRanking` | `zone` (FK GeoZone), `period` (Date, 1st of month), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, period, user_id) |
 | `ClusterLeaderboardEntry` | `user_id` (int, unique), `username`, `is_premium`, `largest_cluster_hex_count`, `largest_cluster_area_m2` (float), `largest_cluster_geom` (MultiPolygon 4326), `rank`, `computed_at` |
-| `Challenge` | `title`, `description`, `challenge_type` (capture_hexagon/max_points), `capture_mode` (any/all, nullable), `premium_only`, `geozone` (FK GeoZone, nullable), `start_date`, `end_date`, `created_by` (FK User), `created_at` |
+| `Challenge` | `title`, `description`, `challenge_type` (capture_hexagon/max_points/active_days/new_hexagons/distinct_zones), `capture_mode` (any/all, nullable), `premium_only`, `geozone` (FK GeoZone, nullable), `goal_threshold` (PositiveInt, nullable), `zone_admin_level` (PositiveSmallInt, nullable), `hexagons_per_zone` (PositiveInt, nullable), `start_date`, `end_date`, `created_by` (FK User), `created_at` |
 | `ChallengeHexagon` | `challenge` (FK), `hexagon` (FK) — unique (challenge, hexagon) |
 | `ChallengeParticipant` | `challenge` (FK), `user` (FK), `joined_at` — unique (challenge, user) |
-| `ChallengeLeaderboardEntry` | `challenge` (FK), `user_id`, `username`, `is_premium`, `score`, `rank`, `computed_at` — unique (challenge, user_id) |
+| `ChallengeLeaderboardEntry` | `challenge` (FK), `user_id`, `username`, `is_premium`, `score`, `goal_met` (bool, default True), `rank`, `computed_at` — unique (challenge, user_id) |
 | `ChallengeSponsor` | `challenge` (FK), `name`, `logo` (ImageField, nullable), `url` |
 | `ChallengeReward` | `challenge` (FK), `rank_threshold`, `reward_type` (badge/subscription_3m/subscription_6m/subscription_1y), `badge_id` — unique (challenge, rank_threshold, reward_type) |
 
@@ -153,6 +153,9 @@ python manage.py generate_hexagon_tiles [--zoom-min 0] [--zoom-max 10] [--clean]
 
 # Generate static tiles per premium user with recent uploads
 python manage.py generate_premium_user_tiles [--zoom-min 5] [--zoom-max 10] [--clean]
+
+# Generate static PNG tiles with score labels at hexagon centroids
+python manage.py generate_score_tiles [--zoom-min 5] [--zoom-max 10] [--clean]
 
 # Delete all surfaces, reset trace.extracted flags, clear user stats
 python manage.py purge_surfaces [--yes]

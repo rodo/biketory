@@ -2,25 +2,6 @@
 
 A Django application for uploading GPX traces and visualising closed geographic surfaces on a map.
 
-## Setup
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp biketory/settings.dist biketory/settings.py
-python manage.py migrate
-python manage.py runserver
-```
-
-PostgreSQL with PostGIS is required:
-
-```sql
-CREATE DATABASE biketory;
-\c biketory
-CREATE EXTENSION postgis;
-```
-
 ## Stack
 
 - **Python 3.12** / **Django 6.0**
@@ -36,6 +17,7 @@ CREATE EXTENSION postgis;
 | `create_daily_stats_partitions` | Create missing monthly sub-partitions on the `statistics_userdailystats` partitioned table for the current month and the next N months (`--months-ahead`, default 3). |
 | `generate_hexagon_tiles` | Generate static PNG tiles for all hexagons at configurable zoom levels (`--zoom-min`, `--zoom-max`). Use `--clean` to remove existing tiles first. |
 | `generate_premium_user_tiles` | Generate static PNG tiles per premium user who uploaded traces in the last 7 days (`--zoom-min`, `--zoom-max`, `--clean`). |
+| `generate_score_tiles` | Generate static PNG tiles with score labels at hexagon centroids (`--zoom-min`, `--zoom-max`, `--clean`). Stored in `tiles/scores/`. |
 | `purge_surfaces` | Delete all closed surfaces, reset `extracted` flags on traces, and clear user surface stats. Requires `--yes` to skip confirmation. |
 | `analyze_traces` | Defer analysis jobs for traces stuck in `not_analyzed` or `surface_extracted` status. |
 | `compute_leaderboard` | Compute the leaderboard (hexagons conquered & acquired). |
@@ -46,14 +28,6 @@ CREATE EXTENSION postgis;
 | `purge_jobs` | Delete all procrastinate jobs and events. Only works with `DEBUG=True`. |
 | `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
 
-## Background workers
-
-Surface extraction and badge analysis are processed asynchronously via [procrastinate](https://procrastinate.readthedocs.io/). Start workers with:
-
-```bash
-python manage.py procrastinate worker -q surface_extraction,badges,tiles,challenges
-```
-
 ## Challenges
 
 Temporary challenges linked to hexagons. An admin creates a challenge via the admin dashboard, selects target hexagons on a Leaflet map (with on-the-fly generation), and players explicitly register. A leaderboard is recomputed every 3h via procrastinate. The top 3 can earn a badge and/or a subscription.
@@ -62,3 +36,12 @@ Two challenge types:
 - **capture_hexagon**: count hexagons owned by the participant among the challenge hexagons
 - **max_points**: sum of HexagonScore.points earned during the challenge period on challenge hexagons
 
+## Deployment
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py compress
+python manage.py collectstatic --noinput
+```

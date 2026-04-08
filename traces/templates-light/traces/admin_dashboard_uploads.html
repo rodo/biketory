@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n static compress %}
 
-{% block title %}{% trans "Admin Dashboard" %} — {% trans "Premium" %} — Biketory{% endblock %}
+{% block title %}{% trans "Admin Dashboard" %} — {% trans "Uploads" %} — Biketory{% endblock %}
 
 {% block head %}
 {% compress css %}
@@ -13,7 +13,7 @@
 {% block content %}
 <div id="page-inner">
   <div class="main-content">
-    <h1>{% trans "Premium subscriptions" %}</h1>
+    <h1>{% trans "Uploads" %}</h1>
 
     <div class="card">
       <div class="granularity-bar">
@@ -34,8 +34,8 @@
     <h2>{% trans "Admin" %}</h2>
     <ul>
       <li><a href="{% url 'admin_dashboard' %}">{% trans "Users" %}</a></li>
-      <li><a href="{% url 'admin_dashboard_premium' %}" class="active">{% trans "Premium" %}</a></li>
-      <li><a href="{% url 'admin_dashboard_uploads' %}">{% trans "Uploads" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_premium' %}">{% trans "Premium" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_uploads' %}" class="active">{% trans "Uploads" %}</a></li>
       <li><a href="{% url 'admin_dashboard_traces' %}">{% trans "Pending traces" %}</a></li>
       <li><a href="{% url 'admin_dashboard_workers' %}">{% trans "Workers" %}</a></li>
       <li><a href="{% url 'admin_dashboard_geozones' %}">{% trans "Geozones" %}</a></li>
@@ -56,9 +56,9 @@
     canvasId: 'chart',
     emptyId: 'empty-msg',
     data: {{ chart_data|safe }},
-    barKey: 'new_subscriptions',
-    barLabel: '{% trans "New subscriptions" %}',
-    barColor: 'rgba(142,68,173,0.7)',
+    barKey: 'traces_uploaded',
+    barLabel: '{% trans "Traces uploaded" %}',
+    barColor: 'rgba(52,152,219,0.7)',
     cumulLabel: '{% trans "Cumulative" %}'
   });
 </script>

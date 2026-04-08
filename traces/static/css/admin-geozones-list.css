@@ -1,0 +1,41 @@
+.zone-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.zone-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 0 0.75rem 0.6rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.zone-table td {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.88rem;
+  color: var(--bg);
+  border-bottom: 1px solid #f0ede6;
+}
+
+.zone-table tr:last-child td { border-bottom: none; }
+
+.zone-table a {
+  text-decoration: none;
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.zone-table a:hover { color: var(--accent); }
+
+.badge-level {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #e0dcd5;
+  color: var(--bg);
+}

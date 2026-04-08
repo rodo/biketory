@@ -123,6 +123,11 @@ html, body { overflow: hidden; padding-top: 0; }
       {% trans "Other users" %}
     </label>
     {% endif %}
+    <label class="layer-item">
+      <input type="checkbox" id="toggle-scores" onchange="toggleScoreLayer(this.checked)">
+      <span class="layer-swatch" style="background:#fff;border:1px solid #999;font-size:7px;text-align:center;line-height:10px;">A</span>
+      {% trans "Scores" %}
+    </label>
     {% if user.is_authenticated %}
     <hr class="layers-separator">
     <div class="layer-sub-label">{% trans "Friends" %}</div>
@@ -205,6 +210,12 @@ html, body { overflow: hidden; padding-top: 0; }
   });
   {% endif %}
 
+  const scoreTileLayer = L.tileLayer('{{ media_url }}tiles/scores/{z}/{x}/{y}.png', {
+    minZoom: {{ tiles_score_min_zoom }}, maxZoom: {{ map_zoom_max }}, opacity: 1, errorTileUrl: '', zIndex: 20
+  });
+
+  let scoreLayerVisible = false;
+
   function updateOverlayVisibility() {
     {% if landing_show_other_static_tiles %}
     if ({% if landing_show_other_dynamic_hexagons %}map.getZoom() < MIN_HEX_ZOOM && {% endif %}!hiddenLayers.has('others')) {
@@ -220,6 +231,16 @@ html, body { overflow: hidden; padding-top: 0; }
       if (map.hasLayer(userTileLayer)) map.removeLayer(userTileLayer);
     }
     {% endif %}
+    if (scoreLayerVisible) {
+      if (!map.hasLayer(scoreTileLayer)) scoreTileLayer.addTo(map);
+    } else {
+      if (map.hasLayer(scoreTileLayer)) map.removeLayer(scoreTileLayer);
+    }
+  }
+
+  function toggleScoreLayer(visible) {
+    scoreLayerVisible = visible;
+    updateOverlayVisibility();
   }
 
   function clearHexagons() {

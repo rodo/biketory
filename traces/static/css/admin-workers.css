@@ -1,0 +1,97 @@
+.worker-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.worker-count .number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--bg);
+  line-height: 1;
+}
+
+.worker-count .label {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.status-pills {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: #f0ede6;
+  color: var(--bg);
+}
+
+.pill .count {
+  font-weight: 800;
+}
+
+.pill.doing   { background: #e8f4fd; color: #1a5276; }
+.pill.failed  { background: #fde8e8; color: #922b21; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 0 0.75rem 0.6rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.data-table td {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--bg);
+  border-bottom: 1px solid #f0ede6;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+
+.data-table .date {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-badge.active    { background: #d4edda; color: #155724; }
+.status-badge.inactive  { background: #f0ede6; color: #856404; }
+.status-badge.todo      { background: #fff3cd; color: #856404; }
+.status-badge.doing     { background: #e8f4fd; color: #1a5276; }
+.status-badge.succeeded { background: #d4edda; color: #155724; }
+.status-badge.failed    { background: #fde8e8; color: #922b21; }
+.status-badge.cancelled { background: #f0ede6; color: #6c757d; }
+.status-badge.aborted   { background: #f0ede6; color: #6c757d; }
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--bg);
+  margin-bottom: 1rem;
+}
