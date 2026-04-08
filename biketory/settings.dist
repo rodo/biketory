@@ -40,7 +40,7 @@ OSM_AUTH_ENABLED = os.environ.get("OSM_AUTH_ENABLED", "").lower() in ("1", "true
 
 # When True, only invited users (via referral link) can register.
 # Set to False to open registration to everyone.
-REGISTRATION_CLOSED = True
+REGISTRATION_CLOSED = False
 
 # Enable GPX trace validation at upload time (speed, acceleration, duration,
 # sampling regularity, etc.). Set to False to skip all validation checks,
