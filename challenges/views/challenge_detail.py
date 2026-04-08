@@ -85,6 +85,16 @@ def challenge_detail(request, pk):
     else:
         hexagons_geojson = {"type": "FeatureCollection", "features": []}
 
+    # Dataset GeoJSON for dataset_points challenges
+    has_dataset = (
+        challenge.challenge_type == Challenge.TYPE_DATASET_POINTS
+        and challenge.dataset_id is not None
+    )
+    if has_dataset:
+        dataset_geojson = _build_dataset_geojson(challenge)
+    else:
+        dataset_geojson = {"type": "FeatureCollection", "features": []}
+
     return render(request, "challenges/challenge_detail.html", {
         "challenge": challenge,
         "is_active": is_active,
@@ -100,6 +110,8 @@ def challenge_detail(request, pk):
         "rewards": rewards,
         "hexagons_geojson": hexagons_geojson,
         "has_hexagons": has_hexagons,
+        "has_dataset": has_dataset,
+        "dataset_geojson": dataset_geojson,
         "goal_threshold": challenge.goal_threshold,
     })
 
@@ -122,6 +134,27 @@ def _build_hexagons_geojson(challenge):
             "type": "Feature",
             "geometry": json.loads(geom.geojson),
             "properties": {"id": hex_pk, "owner_id": owner_id},
+        })
+
+    return {"type": "FeatureCollection", "features": features}
+
+
+def _build_dataset_geojson(challenge):
+    """Build a GeoJSON FeatureCollection of the dataset features for a challenge."""
+    import json
+
+    from challenges.models import DatasetFeature
+
+    features_qs = DatasetFeature.objects.filter(
+        dataset_id=challenge.dataset_id,
+    ).values_list("pk", "geom", "properties")
+
+    features = []
+    for feat_pk, geom, props in features_qs:
+        features.append({
+            "type": "Feature",
+            "geometry": json.loads(geom.geojson),
+            "properties": {"id": feat_pk, "name": props.get("name", "")},
         })
 
     return {"type": "FeatureCollection", "features": features}

@@ -1,0 +1,68 @@
+import logging
+from pathlib import Path
+
+from django.db import connection
+from django.utils import timezone
+
+from challenges.models import Challenge, ChallengeDatasetScore
+
+logger = logging.getLogger(__name__)
+
+_SQL_DIR = Path(__file__).resolve().parent / "sql"
+_SCORE_DATASET_ON_UPLOAD_SQL = (_SQL_DIR / "score_dataset_on_upload.sql").read_text()
+
+
+def score_dataset_challenges(trace, user):
+    """Score dataset_points challenges for a newly uploaded trace.
+
+    For each active dataset_points challenge the user participates in,
+    find dataset features that fall within hexagons intersected by the trace
+    route, and create ChallengeDatasetScore rows. The SQL trigger on that
+    table automatically increments ChallengeParticipant.score.
+    """
+    if not trace.route:
+        return
+
+    now = timezone.now()
+    participations = (
+        user.challenge_participations
+        .filter(
+            challenge__challenge_type=Challenge.TYPE_DATASET_POINTS,
+            challenge__start_date__lte=now,
+            challenge__end_date__gte=now,
+            challenge__dataset__isnull=False,
+        )
+        .select_related("challenge")
+    )
+
+    route_wkt = trace.route.wkt
+
+    for participation in participations:
+        challenge = participation.challenge
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                _SCORE_DATASET_ON_UPLOAD_SQL,
+                [challenge.pk, route_wkt, challenge.pk, user.pk],
+            )
+            rows = cursor.fetchall()
+
+        if not rows:
+            continue
+
+        scores = [
+            ChallengeDatasetScore(
+                challenge=challenge,
+                user=user,
+                dataset_feature_id=row[0],
+                trace=trace,
+            )
+            for row in rows
+        ]
+        created = ChallengeDatasetScore.objects.bulk_create(
+            scores, ignore_conflicts=True,
+        )
+        logger.info(
+            "Challenge %d: scored %d dataset features for user %d on trace %d",
+            challenge.pk, len(created), user.pk, trace.pk,
+        )

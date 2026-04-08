@@ -275,6 +275,10 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
     </div>
     {% endif %}
 
+    {% if has_dataset %}
+    <div id="challenge-map"></div>
+    {% endif %}
+
     <div class="card">
       <h2>{% trans "Leaderboard" %}</h2>
       {% if entries %}
@@ -394,6 +398,40 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
           return { color: '#e74c3c', weight: 1, fillColor: '#e74c3c', fillOpacity: 0.35 };
         }
         return { color: '#4f6814', weight: 1, fillColor: '#4f6814', fillOpacity: 0.25 };
+      }
+    }).addTo(map);
+    map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+  }
+})();
+</script>
+{% endif %}
+{% if has_dataset %}
+{{ dataset_geojson|json_script:"dataset-geojson" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  const geojson = JSON.parse(document.getElementById('dataset-geojson').textContent);
+
+  const map = L.map('challenge-map').setView([46.5, 2.5], 6);
+  L.tileLayer('{{ tile_server_url }}', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
+
+  if (geojson.features.length > 0) {
+    const layer = L.geoJSON(geojson, {
+      pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng, {
+          radius: 6,
+          color: '#f0a500',
+          weight: 2,
+          fillColor: '#f0a500',
+          fillOpacity: 0.7,
+        });
+      },
+      onEachFeature: function(feature, layer) {
+        const name = feature.properties.name;
+        if (name) layer.bindPopup(name);
       }
     }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [20, 20] });

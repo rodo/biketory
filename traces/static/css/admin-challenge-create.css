@@ -26,7 +26,7 @@
 
 .form-group input[type="text"],
 .form-group input[type="number"],
-.form-group input[type="datetime-local"],
+.form-group input[type="date"],
 .form-group textarea,
 .form-group select {
   width: 100%;

@@ -140,6 +140,7 @@ function initChallengeCreate(config) {
   var goalThresholdGroup = document.getElementById('goal-threshold-group');
   var geozoneGroup = document.getElementById('geozone-group');
   var distinctZonesGroup = document.getElementById('distinct-zones-group');
+  var datasetGroup = document.getElementById('dataset-group');
 
   function toggleTypeFields() {
     var t = typeSelect.value;
@@ -148,6 +149,7 @@ function initChallengeCreate(config) {
     goalThresholdGroup.style.display = (t === 'active_days' || t === 'new_hexagons' || t === 'distinct_zones') ? '' : 'none';
     geozoneGroup.style.display = (t === 'max_points' || t === 'new_hexagons') ? '' : 'none';
     distinctZonesGroup.style.display = t === 'distinct_zones' ? '' : 'none';
+    if (datasetGroup) datasetGroup.style.display = t === 'dataset_points' ? '' : 'none';
   }
   typeSelect.addEventListener('change', toggleTypeFields);
   toggleTypeFields();

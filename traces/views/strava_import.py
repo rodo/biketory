@@ -80,7 +80,6 @@ def strava_activities(request):
 def _strava_debug_info(user):
     """Gather Strava connection debug info (only used when DEBUG=True)."""
     from allauth.socialaccount.models import SocialAccount
-
     from django.utils import timezone as dj_timezone
 
     info = {}
@@ -187,6 +186,10 @@ def strava_import(request):
 
         if route:
             _create_trace_hexagons(route)
+
+            from challenges.scoring import score_dataset_challenges
+            score_dataset_challenges(trace, request.user)
+
             extent = route.extent
             buf = 0.01
             bbox = Polygon.from_bbox((

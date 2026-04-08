@@ -36,7 +36,8 @@ h1 {
   color: var(--bg);
 }
 
-#challenge-map {
+#challenge-map,
+#dataset-map {
   width: 100%;
   height: 350px;
   border-radius: 12px;

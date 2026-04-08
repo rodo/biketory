@@ -78,7 +78,7 @@ referrals/         Referral/invitation system
     test_models.py
     test_views.py
 challenges/        Challenges system
-  models.py        Challenge, ChallengeHexagon, ChallengeParticipant, ChallengeLeaderboardEntry, ChallengeSponsor, ChallengeReward
+  models.py        Challenge, ChallengeHexagon, ChallengeParticipant, ChallengeLeaderboardEntry, ChallengeSponsor, ChallengeReward, Dataset, DatasetFeature, ChallengeDatasetScore
   admin.py         Challenge admin with inlines
   urls.py
   views/
@@ -89,6 +89,9 @@ challenges/        Challenges system
   sql/
     challenge_score_capture.sql  Score for capture_hexagon challenges
     challenge_score_points.sql   Score for max_points challenges
+    challenge_score_dataset_points.sql  Score for dataset_points challenges
+    score_dataset_on_upload.sql  Spatial join: dataset features in trace hexagons
+  scoring.py                Score dataset_points challenges on trace upload
   tasks.py                  Procrastinate task: compute_challenge_leaderboards
   rewards.py                Award badges + subscriptions to challenge winners
   tests/
@@ -130,12 +133,15 @@ geozones/          Geographic zones application
 | `ZoneLeaderboardEntry` | `zone` (FK GeoZone), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, user_id) |
 | `MonthlyZoneRanking` | `zone` (FK GeoZone), `period` (Date, 1st of month), `user_id`, `username`, `is_premium`, `hexagons_conquered`, `hexagons_acquired`, `rank_conquered`, `rank_acquired`, `computed_at` — unique (zone, period, user_id) |
 | `ClusterLeaderboardEntry` | `user_id` (int, unique), `username`, `is_premium`, `largest_cluster_hex_count`, `largest_cluster_area_m2` (float), `largest_cluster_geom` (MultiPolygon 4326), `rank`, `computed_at` |
-| `Challenge` | `title`, `description`, `challenge_type` (capture_hexagon/max_points/active_days/new_hexagons/distinct_zones), `capture_mode` (any/all, nullable), `premium_only`, `geozone` (FK GeoZone, nullable), `goal_threshold` (PositiveInt, nullable), `zone_admin_level` (PositiveSmallInt, nullable), `hexagons_per_zone` (PositiveInt, nullable), `start_date`, `end_date`, `created_by` (FK User), `created_at` |
+| `Challenge` | `title`, `description`, `challenge_type` (capture_hexagon/max_points/active_days/new_hexagons/distinct_zones/dataset_points), `capture_mode` (any/all, nullable), `premium_only`, `geozone` (FK GeoZone, nullable), `dataset` (FK Dataset, nullable), `goal_threshold` (PositiveInt, nullable), `zone_admin_level` (PositiveSmallInt, nullable), `hexagons_per_zone` (PositiveInt, nullable), `start_date`, `end_date`, `created_by` (FK User), `created_at` |
 | `ChallengeHexagon` | `challenge` (FK), `hexagon` (FK) — unique (challenge, hexagon) |
-| `ChallengeParticipant` | `challenge` (FK), `user` (FK), `joined_at` — unique (challenge, user) |
+| `ChallengeParticipant` | `challenge` (FK), `user` (FK), `score` (IntegerField, default 0), `joined_at` — unique (challenge, user) |
 | `ChallengeLeaderboardEntry` | `challenge` (FK), `user_id`, `username`, `is_premium`, `score`, `goal_met` (bool, default True), `rank`, `computed_at` — unique (challenge, user_id) |
 | `ChallengeSponsor` | `challenge` (FK), `name`, `logo` (ImageField, nullable), `url` |
 | `ChallengeReward` | `challenge` (FK), `rank_threshold`, `reward_type` (badge/subscription_3m/subscription_6m/subscription_1y), `badge_id` — unique (challenge, rank_threshold, reward_type) |
+| `Dataset` | `name`, `source_file` (CharField 500), `md5_hash` (CharField 32, unique), `feature_count` (PositiveInt, default 0), `imported_at` |
+| `DatasetFeature` | `dataset` (FK Dataset), `geom` (PointField 4326), `properties` (JSONField), `created_at` — GIST index on `geom` |
+| `ChallengeDatasetScore` | `challenge` (FK Challenge), `user` (FK User), `dataset_feature` (FK DatasetFeature), `trace` (FK Trace), `earned_at` — unique (challenge, user, dataset_feature). SQL trigger auto-increments `ChallengeParticipant.score` on insert. |
 
 ## Management commands
 
@@ -187,6 +193,9 @@ python manage.py backfill_hexagon_owners
 
 # Reset all data: traces, surfaces, hexagons, badges, stats (DEBUG only)
 python manage.py reset_data [--yes]
+
+# Import GeoJSON Point datasets from data/ directory
+python manage.py load_dataset [--path <file>] [--name <name>]
 
 ```
 
