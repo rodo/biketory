@@ -1,118 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static compress %}
 
 {% block title %}{% trans "Admin — Challenges" %} — Biketory{% endblock %}
 
-{% block extra_css %}
-#page-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  display: flex;
-  gap: 2rem;
-}
-
-.main-content { flex: 1; min-width: 0; }
-
-.sidebar {
-  width: 200px;
-  flex-shrink: 0;
-}
-
-.sidebar h2 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  margin: 0 0 0.6rem;
-}
-
-.sidebar ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.sidebar li a {
-  display: block;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--bg);
-  border-radius: 6px;
-  transition: background 0.15s;
-}
-
-.sidebar li a:hover { background: #f0ede6; }
-
-.sidebar li a.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-h1 {
-  color: var(--bg);
-  font-size: 1.4rem;
-  margin-bottom: 1.5rem;
-}
-
-h2.section {
-  font-size: 1rem;
-  color: var(--bg);
-  margin: 1.5rem 0 0.75rem;
-}
-
-.btn-create {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  text-decoration: none;
-  margin-bottom: 1.5rem;
-}
-
-.btn-create:hover { opacity: 0.88; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-  background: var(--surface);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  margin-bottom: 1rem;
-}
-
-th {
-  text-align: left;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 2px solid #eee;
-}
-
-td {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #f0ede6;
-  color: var(--bg);
-}
-
-td a { color: var(--accent); text-decoration: none; font-weight: 600; }
-td a:hover { text-decoration: underline; }
-
-.empty-msg {
-  color: var(--muted);
-  font-size: 0.9rem;
-  padding: 1rem 0;
-}
+{% block head %}
+{% compress css %}
+<link rel="stylesheet" href="{% static 'css/admin-common.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin-challenges-list.css' %}">
+{% endcompress %}
 {% endblock %}
 
 {% block content %}
@@ -186,6 +81,7 @@ td a:hover { text-decoration: underline; }
     <ul>
       <li><a href="{% url 'admin_dashboard' %}">{% trans "Users" %}</a></li>
       <li><a href="{% url 'admin_dashboard_premium' %}">{% trans "Premium" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_uploads' %}">{% trans "Uploads" %}</a></li>
       <li><a href="{% url 'admin_dashboard_traces' %}">{% trans "Pending traces" %}</a></li>
       <li><a href="{% url 'admin_dashboard_workers' %}">{% trans "Workers" %}</a></li>
       <li><a href="{% url 'admin_dashboard_geozones' %}">{% trans "Geozones" %}</a></li>

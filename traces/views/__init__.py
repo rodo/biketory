@@ -7,6 +7,7 @@ from .admin_dashboard_geozones import (  # noqa: F401
 )
 from .admin_dashboard_premium import admin_dashboard_premium  # noqa: F401
 from .admin_dashboard_traces import admin_dashboard_traces  # noqa: F401
+from .admin_dashboard_uploads import admin_dashboard_uploads  # noqa: F401
 from .admin_dashboard_workers import admin_dashboard_workers  # noqa: F401
 from .api_stats import api_stats_monthly, api_stats_traces  # noqa: F401
 from .api_upload import api_upload_trace  # noqa: F401

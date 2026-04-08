@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -5,10 +6,20 @@ from django.utils import timezone
 from traces.forms import RegistrationForm
 
 
+def _has_valid_referral(token):
+    """Return True if the token matches a pending referral."""
+    if not token:
+        return False
+    from referrals.models import Referral
+
+    return Referral.objects.filter(token=token, status=Referral.PENDING).exists()
+
+
 def register(request):
     ref_token = request.POST.get("ref", "") or request.GET.get("ref", "")
+    registration_closed = settings.REGISTRATION_CLOSED and not _has_valid_referral(ref_token)
 
-    if request.method == "POST":
+    if request.method == "POST" and not registration_closed:
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
@@ -20,7 +31,7 @@ def register(request):
             return redirect("landing")
     else:
         initial = {}
-        if ref_token:
+        if ref_token and not registration_closed:
             from referrals.models import Referral
 
             referral = Referral.objects.filter(
@@ -33,6 +44,7 @@ def register(request):
     return render(request, "registration/register.html", {
         "form": form,
         "ref_token": ref_token,
+        "registration_closed": registration_closed,
     })
 
 

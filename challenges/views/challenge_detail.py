@@ -51,6 +51,7 @@ def challenge_detail(request, pk):
             "score": e.score,
             "is_premium": e.is_premium,
             "is_current_user": e.user_id == uid,
+            "goal_met": e.goal_met,
         }
         for e in entries
     ]
@@ -74,8 +75,15 @@ def challenge_detail(request, pk):
             "user_entry": user_entry,
         })
 
-    # Hexagons GeoJSON for map display
-    hexagons_geojson = _build_hexagons_geojson(challenge)
+    # Hexagons GeoJSON for map display (only for types that use hexagons)
+    has_hexagons = challenge.challenge_type in (
+        Challenge.TYPE_CAPTURE_HEXAGON,
+        Challenge.TYPE_MAX_POINTS,
+    )
+    if has_hexagons:
+        hexagons_geojson = _build_hexagons_geojson(challenge)
+    else:
+        hexagons_geojson = {"type": "FeatureCollection", "features": []}
 
     return render(request, "challenges/challenge_detail.html", {
         "challenge": challenge,
@@ -91,6 +99,8 @@ def challenge_detail(request, pk):
         "sponsors": sponsors,
         "rewards": rewards,
         "hexagons_geojson": hexagons_geojson,
+        "has_hexagons": has_hexagons,
+        "goal_threshold": challenge.goal_threshold,
     })
 
 

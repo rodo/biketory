@@ -125,9 +125,8 @@
   {% if friend_activity %}
     {% for friend in friend_activity %}
     <div class="friend-row">
-      <span class="friend-name">{{ friend.first_name|default:friend.username }}</span>
+      <a class="friend-name" href="{% url 'trace_detail' friend.trace_uuid %}">{{ friend.first_name|default:friend.username }}</a>
       <span class="friend-date">{{ friend.uploaded_at|date:"Y-m-d H:i" }}</span>
-      <a href="{% url 'trace_detail' friend.trace_uuid %}">{% trans "View trace" %} &rarr;</a>
     </div>
     {% endfor %}
     <a class="see-all" href="{% url 'friends' %}">{% trans "View all friends" %} &rarr;</a>
@@ -142,9 +141,8 @@
   <h2>{% trans "Active challenges" %}</h2>
   {% for c in active_challenges %}
   <div class="friend-row">
-    <span class="friend-name">{{ c.title }}</span>
+    <a class="friend-name" href="{% url 'challenge_detail' c.pk %}">{{ c.title }}</a>
     <span class="friend-date">{% trans "Ends" %} {{ c.end_date|date:"Y-m-d" }}</span>
-    <a href="{% url 'challenge_detail' c.pk %}">{% trans "View" %} &rarr;</a>
   </div>
   {% endfor %}
   <a class="see-all" href="{% url 'challenge_list' %}">{% trans "All challenges" %} &rarr;</a>

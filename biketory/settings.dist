@@ -23,6 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-foofi-chocolat-miam-oceanq-)^mk-w$8&"
 
+SECURE_HSTS_SECONDS = 31536000  # 1 year (recommended)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -33,6 +37,10 @@ STRAVA_AUTH_ENABLED = os.environ.get("STRAVA_AUTH_ENABLED", "").lower() in ("1",
 
 # OpenStreetMap OAuth toggle (disabled by default)
 OSM_AUTH_ENABLED = os.environ.get("OSM_AUTH_ENABLED", "").lower() in ("1", "true", "yes")
+
+# When True, only invited users (via referral link) can register.
+# Set to False to open registration to everyone.
+REGISTRATION_CLOSED = False
 
 # Enable GPX trace validation at upload time (speed, acceleration, duration,
 # sampling regularity, etc.). Set to False to skip all validation checks,
@@ -60,6 +68,7 @@ INSTALLED_APPS = [
     "geozones",
     "referrals",
     "challenges",
+    "compressor",
 ]
 
 if STRAVA_AUTH_ENABLED:
@@ -173,6 +182,15 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
+]
+
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = False
+
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
@@ -183,6 +201,9 @@ MAP_ZOOM_MAX = 14
 # Zoom range for serving static hexagon tiles from media/
 TILES_STATIC_MIN_ZOOM = 5
 TILES_STATIC_MAX_ZOOM = 10
+
+# Minimum zoom for score label tiles (scores/{z}/{x}/{y}.png)
+TILES_SCORE_MIN_ZOOM = 14
 
 # Zoom range for dynamic (GeoJSON) hexagon loading
 TILES_DYNAMIC_MIN_ZOOM = 11

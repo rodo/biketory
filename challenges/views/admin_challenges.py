@@ -33,6 +33,10 @@ def admin_challenge_create(request):
     geozones = GeoZone.objects.filter(active=True).order_by("name")
 
     if request.method == "POST":
+        goal_raw = request.POST.get("goal_threshold", "").strip()
+        zone_admin_raw = request.POST.get("zone_admin_level", "").strip()
+        hex_per_zone_raw = request.POST.get("hexagons_per_zone", "").strip()
+
         challenge = Challenge.objects.create(
             title=request.POST["title"],
             description=request.POST.get("description", ""),
@@ -40,14 +44,17 @@ def admin_challenge_create(request):
             capture_mode=request.POST.get("capture_mode") or None,
             premium_only=request.POST.get("premium_only") == "on",
             geozone_id=request.POST.get("geozone") or None,
+            goal_threshold=int(goal_raw) if goal_raw else None,
+            zone_admin_level=int(zone_admin_raw) if zone_admin_raw else None,
+            hexagons_per_zone=int(hex_per_zone_raw) if hex_per_zone_raw else None,
             start_date=request.POST["start_date"],
             end_date=request.POST["end_date"],
             created_by=request.user,
         )
 
-        # Hexagons from map selection
+        # Hexagons from map selection (only for types that use them)
         hexagon_ids_raw = request.POST.get("hexagon_ids", "")
-        if hexagon_ids_raw:
+        if hexagon_ids_raw and challenge.challenge_type in (Challenge.TYPE_CAPTURE_HEXAGON, Challenge.TYPE_MAX_POINTS):
             hexagon_ids = [int(h) for h in hexagon_ids_raw.split(",") if h.strip()]
             ChallengeHexagon.objects.bulk_create(
                 [ChallengeHexagon(challenge=challenge, hexagon_id=hid) for hid in hexagon_ids],
@@ -80,11 +87,19 @@ def admin_challenge_create(request):
 
         return redirect("admin_challenge_detail", pk=challenge.pk)
 
+    admin_levels = (
+        GeoZone.objects.filter(active=True)
+        .values_list("admin_level", flat=True)
+        .distinct()
+        .order_by("admin_level")
+    )
+
     return render(request, "challenges/admin_challenge_create.html", {
         "geozones": geozones,
         "challenge_types": Challenge.TYPE_CHOICES,
         "capture_modes": Challenge.CAPTURE_MODE_CHOICES,
         "reward_types": ChallengeReward.REWARD_TYPE_CHOICES,
+        "admin_levels": admin_levels,
     })
 
 
@@ -106,9 +121,11 @@ def admin_challenge_detail(request, pk):
     sponsors = list(challenge.sponsors.all())
     rewards = list(challenge.rewards.order_by("rank_threshold"))
 
-    # Hexagons GeoJSON
-    from challenges.views.challenge_detail import _build_hexagons_geojson
-    hexagons_geojson = _build_hexagons_geojson(challenge)
+    # Hexagons GeoJSON (only for types that use hexagons)
+    hexagons_geojson = {"type": "FeatureCollection", "features": []}
+    if challenge.challenge_type in (Challenge.TYPE_CAPTURE_HEXAGON, Challenge.TYPE_MAX_POINTS):
+        from challenges.views.challenge_detail import _build_hexagons_geojson
+        hexagons_geojson = _build_hexagons_geojson(challenge)
 
     return render(request, "challenges/admin_challenge_detail.html", {
         "challenge": challenge,

@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("geozones", "0004_merge_20260405_2319"),
+        ("geozones", "0003_monthlyzoneranking"),
         ("traces", "0045_strava_import"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

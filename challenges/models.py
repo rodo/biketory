@@ -5,9 +5,15 @@ from django.db import models
 class Challenge(models.Model):
     TYPE_CAPTURE_HEXAGON = "capture_hexagon"
     TYPE_MAX_POINTS = "max_points"
+    TYPE_ACTIVE_DAYS = "active_days"
+    TYPE_NEW_HEXAGONS = "new_hexagons"
+    TYPE_DISTINCT_ZONES = "distinct_zones"
     TYPE_CHOICES = [
         (TYPE_CAPTURE_HEXAGON, "Capture hexagon"),
         (TYPE_MAX_POINTS, "Max points"),
+        (TYPE_ACTIVE_DAYS, "Active days"),
+        (TYPE_NEW_HEXAGONS, "New hexagons"),
+        (TYPE_DISTINCT_ZONES, "Distinct zones"),
     ]
 
     CAPTURE_ANY = "any"
@@ -41,6 +47,9 @@ class Challenge(models.Model):
         on_delete=models.CASCADE,
         related_name="created_challenges",
     )
+    goal_threshold = models.PositiveIntegerField(null=True, blank=True)
+    zone_admin_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    hexagons_per_zone = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -112,6 +121,7 @@ class ChallengeLeaderboardEntry(models.Model):
     username = models.CharField(max_length=150)
     is_premium = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
+    goal_met = models.BooleanField(default=True)
     rank = models.PositiveIntegerField()
     computed_at = models.DateTimeField()
 

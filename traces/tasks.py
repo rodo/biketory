@@ -5,7 +5,11 @@ from procrastinate.exceptions import AlreadyEnqueued
 
 from traces.badge_award import award_badges
 from traces.models import Trace
-from traces.tile_generation import generate_tiles_for_bbox, generate_user_tiles_for_bbox
+from traces.tile_generation import (
+    generate_score_tiles_for_bbox,
+    generate_tiles_for_bbox,
+    generate_user_tiles_for_bbox,
+)
 from traces.trace_processing import _extract_surfaces
 
 logger = logging.getLogger(__name__)
@@ -138,6 +142,38 @@ def generate_tiles(trace_id: int, zoom: int):
     west, south, east, north = trace.bbox.extent
     count = generate_tiles_for_bbox(zoom, west, south, east, north)
     logger.info("Trace %d zoom %d: %d tiles generated.", trace_id, zoom, count)
+
+
+@app.task(queue="tiles")
+def generate_score_tiles(trace_id: int, zoom: int):
+    """Generate score label tiles for a trace's bounding box at a given zoom level."""
+    try:
+        trace = Trace.objects.get(pk=trace_id)
+    except Trace.DoesNotExist:
+        logger.warning("Trace %d does not exist, skipping score tile generation.", trace_id)
+        return
+
+    if trace.status == Trace.STATUS_NOT_ANALYZED:
+        logger.info(
+            "Trace %d not ready for score tiles (status=%s), rescheduling.",
+            trace_id, trace.status,
+        )
+        try:
+            generate_score_tiles.configure(
+                queueing_lock=f"generate_score_tiles_{trace_id}_{zoom}",
+                schedule_in={"seconds": 5},
+            ).defer(trace_id=trace_id, zoom=zoom)
+        except AlreadyEnqueued:
+            pass
+        return
+
+    if not trace.bbox:
+        logger.warning("Trace %d has no bbox, skipping score tile generation.", trace_id)
+        return
+
+    west, south, east, north = trace.bbox.extent
+    count = generate_score_tiles_for_bbox(zoom, west, south, east, north)
+    logger.info("Trace %d zoom %d: %d score tiles generated.", trace_id, zoom, count)
 
 
 @app.task(queue="tiles")

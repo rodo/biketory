@@ -236,6 +236,7 @@ def create_trace(gpx_file, user):
     from traces.tasks import (
         award_trace_badges,
         extract_surfaces,
+        generate_score_tiles,
         generate_tiles,
         generate_user_tiles,
     )
@@ -256,6 +257,13 @@ def create_trace(gpx_file, user):
             try:
                 generate_tiles.configure(
                     queueing_lock=f"generate_tiles_{trace.pk}_{zoom}",
+                ).defer(trace_id=trace.pk, zoom=zoom)
+            except AlreadyEnqueued:
+                pass
+        for zoom in range(settings.TILES_SCORE_MIN_ZOOM, settings.MAP_ZOOM_MAX + 1):
+            try:
+                generate_score_tiles.configure(
+                    queueing_lock=f"generate_score_tiles_{trace.pk}_{zoom}",
                 ).defer(trace_id=trace.pk, zoom=zoom)
             except AlreadyEnqueued:
                 pass

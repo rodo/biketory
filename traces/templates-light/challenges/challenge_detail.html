@@ -266,12 +266,14 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
       {% endif %}
     {% endif %}
 
+    {% if has_hexagons %}
     <div id="challenge-map"></div>
     <div class="map-legend">
       <span class="leg-mine">{% trans "Yours" %}</span>
       <span class="leg-other">{% trans "Conquered" %}</span>
       <span class="leg-free">{% trans "Free" %}</span>
     </div>
+    {% endif %}
 
     <div class="card">
       <h2>{% trans "Leaderboard" %}</h2>
@@ -286,7 +288,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
         </thead>
         <tbody id="lb-body">
           {% for e in entries %}
-          <tr{% if e.is_current_user %} class="current-user"{% endif %}>
+          <tr{% if e.is_current_user %} class="current-user"{% endif %}{% if not e.goal_met %} style="opacity:0.45"{% endif %}>
             <td>{{ e.rank }}</td>
             <td>
               {{ e.username }}
@@ -330,6 +332,12 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
         <span class="stat-value">{{ challenge.geozone.name }}</span>
       </div>
       {% endif %}
+      {% if goal_threshold %}
+      <div class="stat-row">
+        <span class="stat-label">{% trans "Goal" %}</span>
+        <span class="stat-value">{{ goal_threshold }}</span>
+      </div>
+      {% endif %}
     </div>
 
     {% if rewards %}
@@ -362,6 +370,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
 {% endblock %}
 
 {% block extra_js %}
+{% if has_hexagons %}
 {{ hexagons_geojson|json_script:"hexagons-geojson" }}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -389,8 +398,11 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
     }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [20, 20] });
   }
-
-  // Load more
+})();
+</script>
+{% endif %}
+<script>
+(function() {
   const btn = document.getElementById('load-more');
   if (btn) {
     btn.addEventListener('click', function() {
@@ -404,6 +416,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
         data.entries.forEach(e => {
           const tr = document.createElement('tr');
           if (e.is_current_user) tr.className = 'current-user';
+          if (!e.goal_met) tr.style.opacity = '0.45';
           tr.innerHTML =
             '<td>' + e.rank + '</td>' +
             '<td>' + e.username + (e.is_premium ? ' <span class="badge-premium">P</span>' : '') + '</td>' +

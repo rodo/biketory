@@ -151,6 +151,10 @@ class Friendship(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["from_user", "to_user"], name="unique_friendship")
         ]
+        indexes = [
+            models.Index(fields=["to_user", "status"], name="friendship_to_status"),
+            models.Index(fields=["from_user", "status"], name="friendship_from_status"),
+        ]
 
     def __str__(self):
         return f"{self.from_user} → {self.to_user} ({self.status})"

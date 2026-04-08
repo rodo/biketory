@@ -15,6 +15,7 @@ urlpatterns = [
     path("about/", views.about, name="about"),
     path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
     path("admin-dashboard/premium/", views.admin_dashboard_premium, name="admin_dashboard_premium"),
+    path("admin-dashboard/uploads/", views.admin_dashboard_uploads, name="admin_dashboard_uploads"),
     path("admin-dashboard/traces/", views.admin_dashboard_traces, name="admin_dashboard_traces"),
     path("admin-dashboard/workers/", views.admin_dashboard_workers, name="admin_dashboard_workers"),
     path("admin-dashboard/geozones/", views.admin_dashboard_geozones, name="admin_dashboard_geozones"),

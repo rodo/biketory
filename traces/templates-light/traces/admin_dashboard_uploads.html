@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n static compress %}
+
+{% block title %}{% trans "Admin Dashboard" %} — {% trans "Uploads" %} — Biketory{% endblock %}
+
+{% block head %}
+{% compress css %}
+<link rel="stylesheet" href="{% static 'css/admin-common.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin-chart.css' %}">
+{% endcompress %}
+{% endblock %}
+
+{% block content %}
+<div id="page-inner">
+  <div class="main-content">
+    <h1>{% trans "Uploads" %}</h1>
+
+    <div class="card">
+      <div class="granularity-bar">
+        <a href="?granularity=day"{% if granularity == "day" %} class="active"{% endif %}>{% trans "Day" %}</a>
+        <a href="?granularity=week"{% if granularity == "week" %} class="active"{% endif %}>{% trans "Week" %}</a>
+        <a href="?granularity=month"{% if granularity == "month" %} class="active"{% endif %}>{% trans "Month" %}</a>
+        <a href="?granularity=year"{% if granularity == "year" %} class="active"{% endif %}>{% trans "Year" %}</a>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="chart"></canvas>
+        <div class="empty" id="empty-msg" style="display:none;">{% trans "No data." %}</div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <h2>{% trans "Admin" %}</h2>
+    <ul>
+      <li><a href="{% url 'admin_dashboard' %}">{% trans "Users" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_premium' %}">{% trans "Premium" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_uploads' %}" class="active">{% trans "Uploads" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_traces' %}">{% trans "Pending traces" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_workers' %}">{% trans "Workers" %}</a></li>
+      <li><a href="{% url 'admin_dashboard_geozones' %}">{% trans "Geozones" %}</a></li>
+      <li><a href="{% url 'admin_challenges' %}">{% trans "Challenges" %}</a></li>
+      <li><a href="{% url 'trace_create' %}">{% trans "Create" %}</a></li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{% compress js %}
+<script src="{% static 'js/admin-chart.js' %}"></script>
+{% endcompress %}
+<script>
+  initAdminChart({
+    canvasId: 'chart',
+    emptyId: 'empty-msg',
+    data: {{ chart_data|safe }},
+    barKey: 'traces_uploaded',
+    barLabel: '{% trans "Traces uploaded" %}',
+    barColor: 'rgba(52,152,219,0.7)',
+    cumulLabel: '{% trans "Cumulative" %}'
+  });
+</script>
+{% endblock %}

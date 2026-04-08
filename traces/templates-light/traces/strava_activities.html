@@ -189,7 +189,7 @@ tbody td {
 {% if not strava_connected %}
   <div class="alert alert-warning">
     {% trans "Your Strava account is not connected." %}
-    <a href="{% url 'strava_login' %}">{% trans "Connect Strava" %}</a>
+    <a href="{% url 'strava_login' %}?process=connect&next={% url 'strava_activities' %}">{% trans "Connect Strava" %}</a>
   </div>
 {% elif strava_error %}
   <div class="alert alert-error">{{ strava_error }}</div>

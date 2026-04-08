@@ -35,7 +35,7 @@ def award_challenge_rewards(challenge):
     user_model = get_user_model()
 
     for reward in rewards:
-        winners = [e for e in entries if e.rank <= reward.rank_threshold]
+        winners = [e for e in entries if e.rank <= reward.rank_threshold and e.goal_met]
 
         for entry in winners:
             try:

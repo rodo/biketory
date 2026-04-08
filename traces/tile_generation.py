@@ -6,7 +6,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.db import connection
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from traces.tiles import (
     TILE_SIZE,
@@ -165,4 +165,101 @@ def generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, nor
         "User %d (%s) zoom %d: %d tiles in %.2fs",
         user_id, hexagram, zoom, count, elapsed,
     )
+    return count
+
+
+# Score tiles: font size interpolated linearly from zoom 14→12px to zoom 18→20px
+_SCORE_FONT_SIZE_MIN_ZOOM = 14
+_SCORE_FONT_SIZE_MIN = 12
+_SCORE_FONT_SIZE_MAX_ZOOM = 18
+_SCORE_FONT_SIZE_MAX = 20
+_SCORE_FONT_PATH = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
+
+# 8 directions for dark outline around text
+_OUTLINE_OFFSETS = [
+    (-1, -1), (-1, 0), (-1, 1),
+    (0, -1),           (0, 1),
+    (1, -1),  (1, 0),  (1, 1),
+]
+
+
+def _score_font(zoom):
+    """Return a Noto Sans Bold font sized for the given zoom level."""
+    if zoom <= _SCORE_FONT_SIZE_MIN_ZOOM:
+        size = _SCORE_FONT_SIZE_MIN
+    elif zoom >= _SCORE_FONT_SIZE_MAX_ZOOM:
+        size = _SCORE_FONT_SIZE_MAX
+    else:
+        t = (zoom - _SCORE_FONT_SIZE_MIN_ZOOM) / (_SCORE_FONT_SIZE_MAX_ZOOM - _SCORE_FONT_SIZE_MIN_ZOOM)
+        size = int(_SCORE_FONT_SIZE_MIN + t * (_SCORE_FONT_SIZE_MAX - _SCORE_FONT_SIZE_MIN))
+    return ImageFont.truetype(_SCORE_FONT_PATH, size)
+
+
+def generate_score_tiles_for_bbox(zoom, west, south, east, north):
+    """Generate PNG tiles with score labels at hexagon centroids.
+
+    Returns the number of tiles generated.
+    """
+    if zoom < settings.TILES_SCORE_MIN_ZOOM:
+        return 0
+
+    tiles_dir = Path(settings.MEDIA_ROOT) / "tiles" / "scores"
+
+    clamped_south = max(south, -85.05)
+    clamped_north = min(north, 85.05)
+
+    tx_min = lng_to_tile_x(west, zoom)
+    tx_max = lng_to_tile_x(east, zoom)
+    ty_min = lat_to_tile_y(clamped_north, zoom)
+    ty_max = lat_to_tile_y(clamped_south, zoom)
+
+    font = _score_font(zoom)
+
+    count = 0
+
+    for tx in range(tx_min, tx_max + 1):
+        for ty in range(ty_min, ty_max + 1):
+            tile_west, tile_south, tile_east, tile_north = tile_to_bbox(tx, ty, zoom)
+
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    _HEXAGONS_FOR_TILE_SQL,
+                    [tile_west, tile_south, tile_east, tile_north],
+                )
+                hexagons = cursor.fetchall()
+
+            if not hexagons:
+                continue
+
+            img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (0, 0, 0, 0))
+            draw = ImageDraw.Draw(img)
+
+            for _hex_id, geom_wkt, max_points in hexagons:
+                coords = parse_wkt_polygon(geom_wkt)
+                pixels = [
+                    lnglat_to_pixel(lng, lat, tile_west, tile_south, tile_east, tile_north)
+                    for lng, lat in coords
+                ]
+                # Centroid: average of coords (skip last closing point)
+                cx = sum(p[0] for p in pixels[:-1]) / (len(pixels) - 1)
+                cy = sum(p[1] for p in pixels[:-1]) / (len(pixels) - 1)
+
+                label = str(max_points)
+                bbox = font.getbbox(label)
+                tw = bbox[2] - bbox[0]
+                th = bbox[3] - bbox[1]
+                x = cx - tw / 2
+                y = cy - th / 2
+
+                # Dark outline (black in 8 directions)
+                for dx, dy in _OUTLINE_OFFSETS:
+                    draw.text((x + dx, y + dy), label, fill=(0, 0, 0, 255), font=font)
+                # White text on top
+                draw.text((x, y), label, fill=(255, 255, 255, 255), font=font)
+
+            tile_path = tiles_dir / str(zoom) / str(tx) / f"{ty}.png"
+            tile_path.parent.mkdir(parents=True, exist_ok=True)
+            img.save(tile_path, "PNG")
+            count += 1
+
     return count

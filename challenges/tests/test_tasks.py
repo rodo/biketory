@@ -1,7 +1,11 @@
+import tempfile
 from datetime import timedelta
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.contrib.gis.geos import MultiPolygon, Polygon
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from challenges.models import (
@@ -11,9 +15,38 @@ from challenges.models import (
     ChallengeParticipant,
 )
 from challenges.tasks import _build_leaderboard
-from traces.models import Hexagon, HexagonScore, UserProfile
+from geozones.models import GeoZone
+from traces.models import Hexagon, HexagonScore, Trace, UserProfile
+from traces.trace_processing import _create_trace_hexagons, _extract_surfaces, _parse_route
 
 user_model = get_user_model()
+
+_GPX_FIXTURE = (
+    Path(__file__).resolve().parent.parent.parent
+    / "trace_samples"
+    / "closed_surface_1_hexagon_20.gpx"
+)
+
+
+def _upload_trace(gpx_path, user, first_point_date):
+    """Parse GPX and run the full trace pipeline (hexagons + surface extraction)."""
+    with gpx_path.open("rb") as f:
+        route, _, length_km = _parse_route(f)
+    gpx_file = SimpleUploadedFile(
+        gpx_path.name,
+        gpx_path.read_bytes(),
+        content_type="application/gpx+xml",
+    )
+    trace = Trace.objects.create(
+        gpx_file=gpx_file,
+        route=route,
+        length_km=length_km,
+        first_point_date=first_point_date,
+        uploaded_by=user,
+    )
+    _create_trace_hexagons(route)
+    _extract_surfaces(trace)
+    return trace
 
 
 class BuildLeaderboardCaptureTest(TestCase):
@@ -155,4 +188,181 @@ class BuildLeaderboardPointsTest(TestCase):
             challenge=self.challenge, user_id=self.player2.pk
         )
         assert p2.score == 3
+        assert p2.rank == 2
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BuildLeaderboardActiveDaysTest(TestCase):
+    """Test leaderboard computation for active_days challenges.
+
+    Player1 uploads traces on 3 distinct days, player2 on 1 day.
+    Score = number of distinct upload days during the challenge period.
+    """
+
+    def setUp(self):
+        self.admin = user_model.objects.create_user(
+            username="admin", password="test1234", email="admin@test.com"
+        )
+        self.player1 = user_model.objects.create_user(
+            username="player1", password="test1234", email="p1@test.com"
+        )
+        self.player2 = user_model.objects.create_user(
+            username="player2", password="test1234", email="p2@test.com"
+        )
+        UserProfile.objects.get_or_create(user=self.player1)
+        UserProfile.objects.get_or_create(user=self.player2)
+
+        self.now = timezone.now()
+        self.challenge = Challenge.objects.create(
+            title="Active Days Challenge",
+            challenge_type=Challenge.TYPE_ACTIVE_DAYS,
+            start_date=self.now - timedelta(days=7),
+            end_date=self.now + timedelta(days=7),
+            created_by=self.admin,
+        )
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player1)
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player2)
+
+        # Player1: upload on 3 distinct days (full pipeline each time)
+        for day_offset in range(3):
+            _upload_trace(
+                _GPX_FIXTURE, self.player1, self.now - timedelta(days=day_offset)
+            )
+
+        # Player2: upload on 1 day
+        _upload_trace(_GPX_FIXTURE, self.player2, self.now)
+
+    def test_build_leaderboard(self):
+        entries = _build_leaderboard(self.challenge)
+        assert len(entries) == 2
+
+        p1 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player1.pk
+        )
+        assert p1.score == 3
+        assert p1.rank == 1
+
+        p2 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player2.pk
+        )
+        assert p2.score == 1
+        assert p2.rank == 2
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BuildLeaderboardNewHexagonsTest(TestCase):
+    """Test leaderboard computation for new_hexagons challenges.
+
+    Player1 uploads a trace and acquires new hexagons.
+    Player2 participates but does not upload — score stays 0.
+    Score = number of hexagons acquired for the first time during the period.
+    """
+
+    def setUp(self):
+        self.admin = user_model.objects.create_user(
+            username="admin", password="test1234", email="admin@test.com"
+        )
+        self.player1 = user_model.objects.create_user(
+            username="player1", password="test1234", email="p1@test.com"
+        )
+        self.player2 = user_model.objects.create_user(
+            username="player2", password="test1234", email="p2@test.com"
+        )
+        UserProfile.objects.get_or_create(user=self.player1)
+        UserProfile.objects.get_or_create(user=self.player2)
+
+        self.now = timezone.now()
+        self.challenge = Challenge.objects.create(
+            title="New Hexagons Challenge",
+            challenge_type=Challenge.TYPE_NEW_HEXAGONS,
+            start_date=self.now - timedelta(days=1),
+            end_date=self.now + timedelta(days=6),
+            created_by=self.admin,
+        )
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player1)
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player2)
+
+        # Player1 uploads → acquires new hexagons via the full pipeline
+        _upload_trace(_GPX_FIXTURE, self.player1, self.now)
+
+    def test_build_leaderboard(self):
+        entries = _build_leaderboard(self.challenge)
+        assert len(entries) == 2
+
+        p1 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player1.pk
+        )
+        assert p1.score == 20
+        assert p1.rank == 1
+
+        p2 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player2.pk
+        )
+        assert p2.score == 0
+        assert p2.rank == 2
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BuildLeaderboardDistinctZonesTest(TestCase):
+    """Test leaderboard computation for distinct_zones challenges.
+
+    Player1 uploads a trace inside a GeoZone → acquires hexagons → score = 1 zone.
+    Player2 participates but does not upload → score = 0.
+    Score = number of zones where the participant acquired >= hexagons_per_zone
+    new hexagons during the challenge period.
+    """
+
+    def setUp(self):
+        self.admin = user_model.objects.create_user(
+            username="admin", password="test1234", email="admin@test.com"
+        )
+        self.player1 = user_model.objects.create_user(
+            username="player1", password="test1234", email="p1@test.com"
+        )
+        self.player2 = user_model.objects.create_user(
+            username="player2", password="test1234", email="p2@test.com"
+        )
+        UserProfile.objects.get_or_create(user=self.player1)
+        UserProfile.objects.get_or_create(user=self.player2)
+
+        # GeoZone large enough to contain all hexagons from the fixture
+        zone_geom = MultiPolygon(Polygon.from_bbox((-10, 40, 15, 55)))
+        self.zone = GeoZone.objects.create(
+            code="TEST-ZONE",
+            name="Test Zone",
+            admin_level=8,
+            active=True,
+            geom=zone_geom,
+        )
+
+        self.now = timezone.now()
+        self.challenge = Challenge.objects.create(
+            title="Distinct Zones Challenge",
+            challenge_type=Challenge.TYPE_DISTINCT_ZONES,
+            zone_admin_level=8,
+            hexagons_per_zone=1,
+            start_date=self.now - timedelta(days=1),
+            end_date=self.now + timedelta(days=6),
+            created_by=self.admin,
+        )
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player1)
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player2)
+
+        # Player1 uploads → acquires hexagons inside the zone
+        _upload_trace(_GPX_FIXTURE, self.player1, self.now)
+
+    def test_build_leaderboard(self):
+        entries = _build_leaderboard(self.challenge)
+        assert len(entries) == 2
+
+        p1 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player1.pk
+        )
+        assert p1.score == 1
+        assert p1.rank == 1
+
+        p2 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player2.pk
+        )
+        assert p2.score == 0
         assert p2.rank == 2

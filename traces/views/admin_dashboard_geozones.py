@@ -9,7 +9,7 @@ from geozones.models import GeoZone
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_dashboard_geozones(request):
-    zones = GeoZone.objects.select_related("parent").order_by("admin_level", "name")
+    zones = GeoZone.objects.filter(admin_level=2).order_by("name").values('pk','name','admin_level','active')
 
     return render(
         request,

@@ -53,7 +53,7 @@ public class AllSimulation extends BaseSimulation {
                 .protocols(httpProtocol)
                 .assertions(
                         global().responseTime().percentile(95.0).lt(5000),
-                        global().successfulRequests().percent().gt(95.0)
+                        global().successfulRequests().percent().eq(100.0)
                 );
     }
 }

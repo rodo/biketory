@@ -1,0 +1,33 @@
+.trace-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.trace-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 0 0.75rem 0.6rem;
+  border-bottom: 2px solid #e0dcd5;
+}
+
+.trace-table td {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.88rem;
+  color: var(--bg);
+  border-bottom: 1px solid #f0ede6;
+}
+
+.trace-table tr:last-child td { border-bottom: none; }
+
+.trace-table .filename {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.trace-table .date {
+  white-space: nowrap;
+  color: var(--muted);
+}
