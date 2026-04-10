@@ -175,9 +175,45 @@ def join_challenge(request, pk):
         if not hasattr(request.user, "profile") or not request.user.profile.is_premium:
             return redirect("challenge_detail", pk=pk)
 
-    ChallengeParticipant.objects.get_or_create(
+    _, created = ChallengeParticipant.objects.get_or_create(
         challenge=challenge,
         user=request.user,
     )
 
+    if created:
+        _defer_single_challenge_leaderboard(challenge.pk)
+
     return redirect("challenge_detail", pk=pk)
+
+
+@require_POST
+@login_required
+def leave_challenge(request, pk):
+    challenge = get_object_or_404(Challenge, pk=pk)
+
+    deleted, _ = ChallengeParticipant.objects.filter(
+        challenge=challenge,
+        user=request.user,
+    ).delete()
+
+    if deleted:
+        _defer_single_challenge_leaderboard(challenge.pk)
+
+    return redirect("challenge_detail", pk=pk)
+
+
+def _defer_single_challenge_leaderboard(challenge_id):
+    from django.db import transaction
+    from procrastinate.exceptions import AlreadyEnqueued
+
+    from challenges.tasks import compute_single_challenge_leaderboard
+
+    def _do_defer():
+        try:
+            compute_single_challenge_leaderboard.configure(
+                queueing_lock=f"challenge_leaderboard_{challenge_id}",
+            ).defer(challenge_id=challenge_id, award=False)
+        except AlreadyEnqueued:
+            pass
+
+    transaction.on_commit(_do_defer)
