@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Leaderboard" %} — {{ zone.name }} — Biketory{% endblock %}
 
@@ -170,7 +170,7 @@ tr.separator td {
         <tbody id="leaderboard-body">
           {% for e in entries %}
           <tr{% if e.is_current_user %} class="current-user"{% endif %}>
-            <td class="rank-col">{{ e.rank }}</td>
+            <td class="rank-col">{% include "includes/rank_medal.html" with rank=e.rank %}</td>
             <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
             <td class="count-col">{{ e.count }}</td>
           </tr>
@@ -179,7 +179,7 @@ tr.separator td {
           <tr class="separator" id="neighborhood-separator"><td colspan="3">&#8942;</td></tr>
           {% for e in user_neighborhood %}
           <tr class="neighborhood-row{% if e.is_current_user %} current-user{% endif %}">
-            <td class="rank-col">{{ e.rank }}</td>
+            <td class="rank-col">{% include "includes/rank_medal.html" with rank=e.rank %}</td>
             <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
             <td class="count-col">{{ e.count }}</td>
           </tr>
@@ -228,6 +228,7 @@ tr.separator td {
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/rank-medal.js' %}"></script>
 <script>
 (function() {
   const btn = document.getElementById('btn-more');
@@ -263,7 +264,7 @@ tr.separator td {
       data.entries.forEach(e => {
         const tr = document.createElement('tr');
         if (e.is_current_user) tr.className = 'current-user';
-        tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
+        tr.innerHTML = `<td class="rank-col">${rankMedalHtml(e.rank)}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
         tbody.appendChild(tr);
       });
       offset += data.entries.length;
@@ -278,7 +279,7 @@ tr.separator td {
           const tr = document.createElement('tr');
           tr.className = 'neighborhood-row';
           if (e.is_current_user) tr.className += ' current-user';
-          tr.innerHTML = `<td class="rank-col">${e.rank}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
+          tr.innerHTML = `<td class="rank-col">${rankMedalHtml(e.rank)}</td><td>${e.username}${premiumBadge(e.is_premium)}</td><td class="count-col">${e.count}</td>`;
           tbody.appendChild(tr);
         });
       }
