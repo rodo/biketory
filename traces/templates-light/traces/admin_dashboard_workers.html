@@ -22,6 +22,30 @@
       <span class="pill failed"><span class="count">{{ job_counts.failed }}</span> {% trans "failed" %}</span>
     </div>
 
+    {% if pending_by_queue %}
+    <div class="card">
+      <div class="section-title">{% trans "Pending by queue" %}</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans "Queue" %}</th>
+            <th>{% trans "Queued" %}</th>
+            <th>{% trans "Running" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for q in pending_by_queue %}
+          <tr>
+            <td>{{ q.queue_name }}</td>
+            <td><span class="count">{{ q.todo }}</span></td>
+            <td><span class="count">{{ q.doing }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
     <div class="card">
       <div class="section-title">{% trans "Workers" %}</div>
       {% if workers %}
@@ -61,6 +85,7 @@
         <thead>
           <tr>
             <th>ID</th>
+            <th>{% trans "Queue" %}</th>
             <th>{% trans "Task" %}</th>
             <th>{% trans "Status" %}</th>
             <th>{% trans "Attempts" %}</th>
@@ -70,6 +95,7 @@
           {% for job in recent_jobs %}
           <tr>
             <td>{{ job.id }}</td>
+            <td>{{ job.queue_name }}</td>
             <td>{{ job.task_name }}</td>
             <td><span class="status-badge {{ job.status }}">{{ job.status }}</span></td>
             <td>{{ job.attempts }}</td>
