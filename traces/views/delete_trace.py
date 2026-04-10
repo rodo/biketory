@@ -13,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 _SQL_DIR = Path(__file__).resolve().parent.parent / "sql"
 _REVOKE_HEXAGON_POINTS_SQL = (_SQL_DIR / "revoke_hexagon_points.sql").read_text()
+_REFRESH_HEXAGON_OWNERS_BBOX_SQL = (_SQL_DIR / "refresh_hexagon_owners_bbox.sql").read_text()
+
+_CHALLENGES_SQL_DIR = Path(__file__).resolve().parent.parent.parent / "challenges" / "sql"
+_REVOKE_DATASET_SCORES_SQL = (_CHALLENGES_SQL_DIR / "revoke_dataset_scores_for_trace.sql").read_text()
 
 
 @login_required
@@ -27,12 +31,35 @@ def delete_trace(request, pk):
                 with connection.cursor() as cursor:
                     cursor.execute(_REVOKE_HEXAGON_POINTS_SQL, (surface.polygon.wkt, user.pk))
 
+        with connection.cursor() as cursor:
+            cursor.execute(_REVOKE_DATASET_SCORES_SQL, [trace.pk])
+
         trace.delete()
 
         if bbox:
+            west, south, east, north = bbox.extent
+            with connection.cursor() as cursor:
+                cursor.execute(_REFRESH_HEXAGON_OWNERS_BBOX_SQL, [west, south, east, north])
             _defer_tile_regeneration(bbox, user)
 
+        _defer_leaderboard_recomputation()
+
     return redirect("trace_list")
+
+
+def _defer_leaderboard_recomputation():
+    """Queue leaderboard recomputation after trace deletion."""
+    from django.db import transaction
+
+    from traces.tasks import recompute_leaderboard
+
+    def _do_defer():
+        try:
+            recompute_leaderboard.defer()
+        except AlreadyEnqueued:
+            pass
+
+    transaction.on_commit(_do_defer)
 
 
 def _defer_tile_regeneration(bbox, user):
