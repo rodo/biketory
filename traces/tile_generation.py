@@ -39,6 +39,21 @@ _KNEE_ZOOM = 8
 _OUTLINE_OPACITY = 240
 
 
+_OUTLINE_WIDTH_LOW_ZOOM = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+_OUTLINE_WIDTH_HIGH_ZOOM = {1: 1, 2: 1, 3: 2, 4: 2, 5: 2}
+
+
+def _outline_width(owner_points, zoom):
+    """Return outline width in pixels based on owner_points and zoom level."""
+    if owner_points is None:
+        return 0
+    if zoom <= 9:
+        table = _OUTLINE_WIDTH_LOW_ZOOM
+    else:
+        table = _OUTLINE_WIDTH_HIGH_ZOOM
+    return table.get(owner_points, table[5])
+
+
 def _get_opacity(zoom):
     zoom_min = settings.TILES_STATIC_MIN_ZOOM
     zoom_max = settings.TILES_STATIC_MAX_ZOOM
@@ -93,15 +108,19 @@ def generate_tiles_for_bbox(zoom, west, south, east, north):
 
             opacity = _get_opacity(zoom)
             fill = _GLOBAL_RGB + (opacity,)
-            outline = _GLOBAL_RGB + (_OUTLINE_OPACITY,)
+            outline_color = _GLOBAL_RGB + (_OUTLINE_OPACITY,)
 
-            for _hex_id, geom_wkt, _max_points in hexagons:
+            for _hex_id, geom_wkt, max_points in hexagons:
                 coords = parse_wkt_polygon(geom_wkt)
                 pixels = [
                     lnglat_to_pixel(lng, lat, tile_west, tile_south, tile_east, tile_north)
                     for lng, lat in coords
                 ]
-                draw.polygon(pixels, fill=fill, outline=outline)
+                width = _outline_width(max_points, zoom)
+                if width:
+                    draw.polygon(pixels, fill=fill, outline=outline_color, width=width)
+                else:
+                    draw.polygon(pixels, fill=fill)
 
             tile_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(tile_path, "PNG")
@@ -150,15 +169,19 @@ def generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, nor
 
             opacity = _get_opacity(zoom)
             fill = _USER_RGB + (opacity,)
-            outline = _USER_RGB + (_OUTLINE_OPACITY,)
+            outline_color = _USER_RGB + (_OUTLINE_OPACITY,)
 
-            for _hex_id, geom_wkt, _points in hexagons:
+            for _hex_id, geom_wkt, points in hexagons:
                 coords = parse_wkt_polygon(geom_wkt)
                 pixels = [
                     lnglat_to_pixel(lng, lat, tile_west, tile_south, tile_east, tile_north)
                     for lng, lat in coords
                 ]
-                draw.polygon(pixels, fill=fill, outline=outline)
+                width = _outline_width(points, zoom)
+                if width:
+                    draw.polygon(pixels, fill=fill, outline=outline_color, width=width)
+                else:
+                    draw.polygon(pixels, fill=fill)
 
             tile_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(tile_path, "PNG")
