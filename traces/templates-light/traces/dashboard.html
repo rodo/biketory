@@ -5,12 +5,13 @@
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'css/challenge-sidebar.css' %}" />
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 {% endblock %}
 
 {% block content %}
 
-<div class="dashboard-layout">
+<div class="dashboard-layout{% if best_zone_rankings %} has-left{% endif %}{% if active_challenges %} has-right{% endif %}">
 
 {% if best_zone_rankings %}
 {# ── Left sidebar: zone rankings ── #}
@@ -135,21 +136,36 @@
   {% endif %}
 </div>
 
-{# ── Active challenges ── #}
+</div>{# .dashboard-main #}
+
 {% if active_challenges %}
-<div class="card-block">
-  <h2>{% trans "Active challenges" %}</h2>
+{# ── Right sidebar: challenges ── #}
+<aside class="challenge-sidebar">
+  <h2>{% trans "My challenges" %}</h2>
   {% for c in active_challenges %}
-  <div class="friend-row">
-    <a class="friend-name" href="{% url 'challenge_detail' c.pk %}">{{ c.title }}</a>
-    <span class="friend-date">{% trans "Ends" %} {{ c.end_date|date:"Y-m-d" }}</span>
-  </div>
+  <a class="challenge-card" href="{% url 'challenge_detail' c.pk %}">
+    <div class="challenge-title">{{ c.title }}</div>
+    <div class="challenge-ranks">
+      {% if c.user_rank %}<span class="challenge-rank-current">#{{ c.user_rank }}{% if c.user_rank == 1 %} <img class="medal" src="{% static 'img/medal-gold.svg' %}" alt="" width="16" height="16">{% elif c.user_rank == 2 %} <img class="medal" src="{% static 'img/medal-silver.svg' %}" alt="" width="16" height="16">{% elif c.user_rank == 3 %} <img class="medal" src="{% static 'img/medal-bronze.svg' %}" alt="" width="16" height="16">{% endif %}</span>{% endif %}
+      {% if c.best_rank and c.user_rank and c.best_rank < c.user_rank %}
+        <span class="challenge-rank-best">{% trans "Best" %} #{{ c.best_rank }}</span>
+      {% endif %}
+    </div>
+    <div class="challenge-meta">
+      <span class="challenge-score">{% trans "Score" %}: {{ c.user_score }}</span>
+      <span class="challenge-ends">{% trans "Ends" %} {{ c.end_date|date:"d M" }}</span>
+    </div>
+    {% if c.goal_threshold %}
+    <div class="challenge-progress-track">
+      <div class="challenge-progress-fill" style="width:{% widthratio c.user_score c.goal_threshold 100 %}%"></div>
+    </div>
+    {% endif %}
+  </a>
   {% endfor %}
   <a class="see-all" href="{% url 'challenge_list' %}">{% trans "All challenges" %} &rarr;</a>
-</div>
+</aside>
 {% endif %}
 
-</div>{# .dashboard-main #}
 </div>{# .dashboard-layout #}
 {% endblock %}
 

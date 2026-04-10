@@ -5,11 +5,16 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% compress css %}
 <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'css/challenge-sidebar.css' %}" />
 <link rel="stylesheet" href="{% static 'css/trace-detail.css' %}" />
 {% endcompress %}
 {% endblock %}
 
 {% block content %}
+
+<div class="trace-layout{% if active_challenges %} has-right{% endif %}">
+
+<div class="trace-main">
 
 <h1>{{ trace.gpx_file.name|cut:"gpx/" }}</h1>
 
@@ -100,6 +105,48 @@
     <span class="btn-nav disabled">{% trans "Next" %}</span>
   {% endif %}
 </div>
+
+</div>{# .trace-main #}
+
+{% if active_challenges %}
+<aside class="challenge-sidebar">
+  <h2>{% trans "My challenges" %}</h2>
+  {% for c in active_challenges %}
+  <a class="challenge-card" href="{% url 'challenge_detail' c.pk %}">
+    <div class="challenge-title">{{ c.title }}</div>
+    <div class="challenge-trace-points">
+      <span class="trace-points-value">+{{ c.trace_points }}</span>
+      <span class="trace-points-label">{% blocktrans count counter=c.trace_points %}point earned with this trace{% plural %}points earned with this trace{% endblocktrans %}</span>
+    </div>
+    <div class="challenge-detail-row">
+      <span class="challenge-detail-label">{% trans "Rank" %}</span>
+      <span class="challenge-detail-value">
+        {% if c.user_rank %}#{{ c.user_rank }}{% if c.user_rank == 1 %} <img class="medal" src="{% static 'img/medal-gold.svg' %}" alt="" width="16" height="16">{% elif c.user_rank == 2 %} <img class="medal" src="{% static 'img/medal-silver.svg' %}" alt="" width="16" height="16">{% elif c.user_rank == 3 %} <img class="medal" src="{% static 'img/medal-bronze.svg' %}" alt="" width="16" height="16">{% endif %}{% else %}—{% endif %}
+        {% if c.best_rank and c.user_rank and c.best_rank < c.user_rank %}
+          <span class="challenge-rank-best">{% trans "Best" %} #{{ c.best_rank }}</span>
+        {% endif %}
+      </span>
+    </div>
+    <div class="challenge-detail-row">
+      <span class="challenge-detail-label">{% trans "Total score" %}</span>
+      <span class="challenge-detail-value">{{ c.user_score }}{% if c.goal_threshold %} / {{ c.goal_threshold }}{% endif %}</span>
+    </div>
+    {% if c.goal_threshold %}
+    <div class="challenge-progress-track">
+      <div class="challenge-progress-fill" style="width:{% widthratio c.user_score c.goal_threshold 100 %}%"></div>
+    </div>
+    {% endif %}
+    <div class="challenge-detail-row challenge-ends-row">
+      <span class="challenge-detail-label">{% trans "Ends" %}</span>
+      <span class="challenge-detail-value">{{ c.end_date|date:"d M Y" }}</span>
+    </div>
+  </a>
+  {% endfor %}
+  <a class="see-all" href="{% url 'challenge_list' %}">{% trans "All challenges" %} &rarr;</a>
+</aside>
+{% endif %}
+
+</div>{# .trace-layout #}
 
 <div id="confirm-modal">
   <div class="modal-card">

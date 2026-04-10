@@ -3,9 +3,16 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db.models import Union
+from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 
+from challenges.models import (
+    Challenge,
+    ChallengeDatasetScore,
+    ChallengeLeaderboardEntry,
+    ChallengeParticipant,
+)
 from traces.badges import BADGE_CATALOGUE
 from traces.models import Hexagon, HexagonScore, Trace, UserBadge
 
@@ -79,6 +86,60 @@ def trace_detail(request, trace_uuid):
             uploaded_at__lt=trace.uploaded_at,
         ).count()
 
+    # Challenges impacted by this trace (via ChallengeDatasetScore)
+    uid = request.user.pk
+    trace_points_by_challenge = dict(
+        ChallengeDatasetScore.objects
+        .filter(trace=trace, user_id=uid)
+        .values("challenge_id")
+        .annotate(pts=models.Count("id"))
+        .values_list("challenge_id", "pts")
+    )
+    active_challenges = list(
+        Challenge.objects.filter(pk__in=trace_points_by_challenge.keys())
+        .order_by("end_date")
+    )
+
+    if active_challenges:
+        participant_scores = dict(
+            ChallengeParticipant.objects.filter(
+                user_id=uid,
+                challenge__in=active_challenges,
+            ).values_list("challenge_id", "score")
+        )
+        best_ranks = dict(
+            ChallengeLeaderboardEntry.objects.filter(
+                user_id=uid,
+                challenge__in=active_challenges,
+            ).values_list("challenge_id", "rank")
+        )
+        challenge_ids = [c.pk for c in active_challenges]
+        live_ranks = {}
+        if challenge_ids:
+            from django.db import connection
+
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT cp.challenge_id,
+                           1 + COUNT(*) FILTER (WHERE cp2.score > cp.score)
+                    FROM challenges_challengeparticipant cp
+                    JOIN challenges_challengeparticipant cp2
+                      ON cp2.challenge_id = cp.challenge_id
+                    WHERE cp.user_id = %s
+                      AND cp.challenge_id = ANY(%s)
+                    GROUP BY cp.challenge_id, cp.score
+                    """,
+                    [uid, challenge_ids],
+                )
+                live_ranks = dict(cursor.fetchall())
+
+        for c in active_challenges:
+            c.user_score = participant_scores.get(c.pk, 0)
+            c.user_rank = live_ranks.get(c.pk)
+            c.best_rank = best_ranks.get(c.pk)
+            c.trace_points = trace_points_by_challenge.get(c.pk, 0)
+
     return render(request, "traces/trace_detail.html", {
         "trace": trace,
         "map_config": map_config,
@@ -92,6 +153,7 @@ def trace_detail(request, trace_uuid):
         "next_trace": next_trace,
         "earned_badges": earned_badges,
         "pending_before": pending_before,
+        "active_challenges": active_challenges,
     })
 
 

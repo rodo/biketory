@@ -1,15 +1,23 @@
 /* dashboard.css — dashboard-specific styles */
 
-/* ── Widen #page when sidebar is present ── */
-#page:has(.zone-sidebar) {
-  max-width: calc(1100px + 220px + 1.5rem);
+/* ── Override #page to let the dashboard use full width ── */
+#page:has(.dashboard-layout) {
+  max-width: none;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
-/* ── Dashboard layout with optional sidebar ── */
+/* ── Three-column layout ── */
 .dashboard-layout {
   display: flex;
   gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
+
+.dashboard-layout.has-left  { max-width: calc(1100px + 220px + 1.5rem); }
+.dashboard-layout.has-right { max-width: calc(1100px + 220px + 1.5rem); }
+.dashboard-layout.has-left.has-right { max-width: calc(1100px + 440px + 3rem); }
 
 .dashboard-main {
   flex: 1;
@@ -17,7 +25,7 @@
   max-width: 1100px;
 }
 
-/* ── Zone sidebar ── */
+/* ── Zone sidebar (left) ── */
 .zone-sidebar {
   width: 220px;
   flex-shrink: 0;
@@ -268,6 +276,28 @@
 .friend-row a:hover { text-decoration: underline; }
 
 /* ── Responsive ── */
+@media (max-width: 1200px) {
+  .dashboard-layout.has-left.has-right {
+    flex-wrap: wrap;
+  }
+  .dashboard-layout.has-left.has-right .challenge-sidebar {
+    width: 100%;
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    order: 3;
+  }
+  .dashboard-layout.has-left.has-right .challenge-sidebar h2 {
+    width: 100%;
+  }
+  .dashboard-layout.has-left.has-right .challenge-card {
+    flex: 1;
+    min-width: 180px;
+    margin-bottom: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-layout {
     flex-direction: column;
