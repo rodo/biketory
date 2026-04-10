@@ -93,20 +93,27 @@ def award_trace_badges(trace_id: int):
     except AlreadyEnqueued:
         pass
 
+    try:
+        recompute_user_challenges.configure(
+            queueing_lock=f"recompute_user_challenges_{trace_id}",
+        ).defer(trace_id=trace_id)
+    except AlreadyEnqueued:
+        pass
+
 
 @app.task(queue="challenges")
 def score_dataset_challenges_task(trace_id: int):
     """Score dataset_points challenges after trace analysis."""
     try:
-        trace = Trace.objects.select_related("uploaded_by").get(pk=trace_id)
+        status, user_id = Trace.objects.values_list("status", "uploaded_by").get(pk=trace_id)
     except Trace.DoesNotExist:
         logger.warning("Trace %d does not exist, skipping dataset scoring.", trace_id)
         return
 
-    if trace.status != Trace.STATUS_ANALYZED:
+    if status != Trace.STATUS_ANALYZED:
         logger.info(
             "Trace %d not yet analyzed (status=%s), rescheduling dataset scoring.",
-            trace_id, trace.status,
+            trace_id, status,
         )
         try:
             score_dataset_challenges_task.configure(
@@ -117,12 +124,68 @@ def score_dataset_challenges_task(trace_id: int):
             pass
         return
 
-    if trace.uploaded_by is None:
+    if user_id is None:
         logger.warning("Trace %d has no owner, skipping dataset scoring.", trace_id)
         return
 
     from challenges.scoring import score_dataset_challenges
-    score_dataset_challenges(trace, trace.uploaded_by)
+    score_dataset_challenges(trace_id, user_id)
+
+
+@app.task(queue="challenges")
+def recompute_user_challenges(trace_id: int):
+    """Recompute leaderboards for active challenges the trace owner participates in."""
+    try:
+        trace = Trace.objects.select_related("uploaded_by").get(pk=trace_id)
+    except Trace.DoesNotExist:
+        logger.warning("Trace %d does not exist, skipping challenge recompute.", trace_id)
+        return
+
+    if trace.status != Trace.STATUS_ANALYZED:
+        logger.info(
+            "Trace %d not yet analyzed (status=%s), rescheduling challenge recompute.",
+            trace_id, trace.status,
+        )
+        try:
+            recompute_user_challenges.configure(
+                queueing_lock=f"recompute_user_challenges_{trace_id}",
+                schedule_in={"seconds": 5},
+            ).defer(trace_id=trace_id)
+        except AlreadyEnqueued:
+            pass
+        return
+
+    if trace.uploaded_by is None:
+        logger.warning("Trace %d has no owner, skipping challenge recompute.", trace_id)
+        return
+
+    from django.utils import timezone as tz
+    from challenges.models import Challenge, ChallengeParticipant
+    from challenges.tasks import compute_single_challenge_leaderboard
+
+    now = tz.now()
+    challenge_ids = list(
+        ChallengeParticipant.objects.filter(
+            user=trace.uploaded_by,
+            challenge__start_date__lte=now,
+            challenge__end_date__gte=now,
+        ).exclude(
+            challenge__challenge_type=Challenge.TYPE_DATASET_POINTS,
+        ).values_list("challenge_id", flat=True)
+    )
+
+    for pk in challenge_ids:
+        try:
+            compute_single_challenge_leaderboard.configure(
+                queueing_lock=f"challenge_leaderboard_{pk}",
+            ).defer(challenge_id=pk)
+        except AlreadyEnqueued:
+            pass
+
+    logger.info(
+        "Trace %d: dispatched leaderboard recompute for %d challenges (user %s).",
+        trace_id, len(challenge_ids), trace.uploaded_by.username,
+    )
 
 
 @app.task(queue="tiles", queueing_lock="recompute_leaderboard")
