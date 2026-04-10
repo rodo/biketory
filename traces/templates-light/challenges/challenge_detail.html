@@ -1,10 +1,14 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{{ challenge.title }} — Biketory{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% if has_dataset %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+{% endif %}
 {% endblock %}
 
 {% block extra_css %}
@@ -69,31 +73,54 @@ h1 {
 .badge-status.ended { background: #f0ede6; color: var(--muted); }
 
 .btn-join {
-  display: inline-block;
+  display: block;
+  width: 100%;
   background: var(--accent);
   color: #fff;
-  padding: 0.5rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   border: none;
   border-radius: 6px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
   text-decoration: none;
-  margin-bottom: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 .btn-join:hover { opacity: 0.88; }
 .btn-join:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.btn-leave {
+  display: block;
+  width: 100%;
+  background: none;
+  color: var(--muted);
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0dcd5;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: center;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.btn-leave:hover {
+  color: #c0392b;
+  border-color: #c0392b;
+}
+
 .joined-msg {
-  display: inline-block;
+  display: block;
   font-size: 0.85rem;
   font-weight: 600;
   color: #155724;
   background: #d4edda;
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1rem;
   border-radius: 6px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 #challenge-map {
@@ -253,19 +280,6 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
     <div class="challenge-description">{{ challenge.description|linebreaksbr }}</div>
     {% endif %}
 
-    {% if is_participant %}
-      <div class="joined-msg">{% trans "You are participating in this challenge" %}</div>
-    {% elif not is_ended %}
-      {% if can_join %}
-      <form method="post" action="{% url 'join_challenge' challenge.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="btn-join">{% trans "Join challenge" %}</button>
-      </form>
-      {% else %}
-      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">{% trans "This challenge is reserved for premium members." %}</div>
-      {% endif %}
-    {% endif %}
-
     {% if has_hexagons %}
     <div id="challenge-map"></div>
     <div class="map-legend">
@@ -293,7 +307,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
         <tbody id="lb-body">
           {% for e in entries %}
           <tr{% if e.is_current_user %} class="current-user"{% endif %}{% if not e.goal_met %} style="opacity:0.45"{% endif %}>
-            <td>{{ e.rank }}</td>
+            <td>{% include "includes/rank_medal.html" with rank=e.rank %}</td>
             <td>
               {{ e.username }}
               {% if e.is_premium %}<span class="badge-premium">P</span>{% endif %}
@@ -344,6 +358,19 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
       {% endif %}
     </div>
 
+    {% if is_participant %}
+      <div class="joined-msg">{% trans "You are participating in this challenge" %}</div>
+    {% elif not is_ended %}
+      {% if can_join %}
+      <form method="post" action="{% url 'join_challenge' challenge.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-join">{% trans "Join challenge" %}</button>
+      </form>
+      {% else %}
+      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">{% trans "This challenge is reserved for premium members." %}</div>
+      {% endif %}
+    {% endif %}
+
     {% if rewards %}
     <div class="card">
       <h2>{% trans "Rewards" %}</h2>
@@ -368,6 +395,13 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
       </div>
       {% endfor %}
     </div>
+    {% endif %}
+
+    {% if is_participant and not is_ended %}
+    <form method="post" action="{% url 'leave_challenge' challenge.pk %}" onsubmit="return confirm('{% trans "Are you sure you want to leave this challenge?" %}');">
+      {% csrf_token %}
+      <button type="submit" class="btn-leave">{% trans "Leave challenge" %}</button>
+    </form>
     {% endif %}
   </aside>
 </div>
@@ -408,6 +442,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
 {% if has_dataset %}
 {{ dataset_geojson|json_script:"dataset-geojson" }}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
 (function() {
   const geojson = JSON.parse(document.getElementById('dataset-geojson').textContent);
@@ -419,6 +454,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
   }).addTo(map);
 
   if (geojson.features.length > 0) {
+    const clusters = L.markerClusterGroup();
     const layer = L.geoJSON(geojson, {
       pointToLayer: function(feature, latlng) {
         return L.circleMarker(latlng, {
@@ -433,12 +469,15 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
         const name = feature.properties.name;
         if (name) layer.bindPopup(name);
       }
-    }).addTo(map);
-    map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+    });
+    clusters.addLayer(layer);
+    map.addLayer(clusters);
+    map.fitBounds(clusters.getBounds(), { padding: [20, 20] });
   }
 })();
 </script>
 {% endif %}
+<script src="{% static 'js/rank-medal.js' %}"></script>
 <script>
 (function() {
   const btn = document.getElementById('load-more');
@@ -456,7 +495,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
           if (e.is_current_user) tr.className = 'current-user';
           if (!e.goal_met) tr.style.opacity = '0.45';
           tr.innerHTML =
-            '<td>' + e.rank + '</td>' +
+            '<td>' + rankMedalHtml(e.rank) + '</td>' +
             '<td>' + e.username + (e.is_premium ? ' <span class="badge-premium">P</span>' : '') + '</td>' +
             '<td>' + e.score + '</td>';
           tbody.appendChild(tr);
