@@ -16,13 +16,11 @@ def score_dataset_challenges(trace, user):
     """Score dataset_points challenges for a newly uploaded trace.
 
     For each active dataset_points challenge the user participates in,
-    find dataset features that fall within hexagons intersected by the trace
-    route, and create ChallengeDatasetScore rows. The SQL trigger on that
-    table automatically increments ChallengeParticipant.score.
+    find dataset features that fall within hexagons acquired by the trace
+    (i.e. hexagons contained in the trace's ClosedSurfaces), and create
+    ChallengeDatasetScore rows. The SQL trigger on that table automatically
+    increments ChallengeParticipant.score.
     """
-    if not trace.route:
-        return
-
     now = timezone.now()
     participations = (
         user.challenge_participations
@@ -35,15 +33,13 @@ def score_dataset_challenges(trace, user):
         .select_related("challenge")
     )
 
-    route_wkt = trace.route.wkt
-
     for participation in participations:
         challenge = participation.challenge
 
         with connection.cursor() as cursor:
             cursor.execute(
                 _SCORE_DATASET_ON_UPLOAD_SQL,
-                [challenge.pk, route_wkt, challenge.pk, user.pk],
+                [challenge.pk, trace.pk, challenge.pk, user.pk, trace.pk],
             )
             rows = cursor.fetchall()
 

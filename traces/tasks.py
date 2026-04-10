@@ -82,9 +82,47 @@ def award_trace_badges(trace_id: int):
     logger.info("Trace %d analyzed.", trace_id)
 
     try:
+        score_dataset_challenges_task.configure(
+            queueing_lock=f"score_dataset_{trace_id}",
+        ).defer(trace_id=trace_id)
+    except AlreadyEnqueued:
+        pass
+
+    try:
         recompute_leaderboard.defer()
     except AlreadyEnqueued:
         pass
+
+
+@app.task(queue="challenges")
+def score_dataset_challenges_task(trace_id: int):
+    """Score dataset_points challenges after trace analysis."""
+    try:
+        trace = Trace.objects.select_related("uploaded_by").get(pk=trace_id)
+    except Trace.DoesNotExist:
+        logger.warning("Trace %d does not exist, skipping dataset scoring.", trace_id)
+        return
+
+    if trace.status != Trace.STATUS_ANALYZED:
+        logger.info(
+            "Trace %d not yet analyzed (status=%s), rescheduling dataset scoring.",
+            trace_id, trace.status,
+        )
+        try:
+            score_dataset_challenges_task.configure(
+                queueing_lock=f"score_dataset_{trace_id}",
+                schedule_in={"seconds": 5},
+            ).defer(trace_id=trace_id)
+        except AlreadyEnqueued:
+            pass
+        return
+
+    if trace.uploaded_by is None:
+        logger.warning("Trace %d has no owner, skipping dataset scoring.", trace_id)
+        return
+
+    from challenges.scoring import score_dataset_challenges
+    score_dataset_challenges(trace, trace.uploaded_by)
 
 
 @app.task(queue="tiles", queueing_lock="recompute_leaderboard")
