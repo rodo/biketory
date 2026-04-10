@@ -328,7 +328,8 @@ def generate_user_tiles(trace_id: int, user_id: int, zoom: int):
 
     west, south, east, north = trace.bbox.extent
     count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
-    logger.info("Trace %d user %d zoom %d: %d user tiles generated in %.2fs.", trace_id, user_id, zoom, count, time.monotonic() - t0)
+    elapsed = time.monotonic() - t0
+    logger.info("Trace %d user %d zoom %d: %d user tiles generated in %.2fs.", trace_id, user_id, zoom, count, elapsed)
 
 
 @app.task(queue="tiles")
@@ -359,4 +360,5 @@ def regenerate_user_tiles_for_bbox(user_id: int, west: float, south: float, east
 
     t0 = time.monotonic()
     count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
-    logger.info("Regenerated %d user tiles at zoom %d for user %d in %.2fs.", count, zoom, user_id, time.monotonic() - t0)
+    elapsed = time.monotonic() - t0
+    logger.info("Regenerated %d user tiles at zoom %d for user %d in %.2fs.", count, zoom, user_id, elapsed)
