@@ -40,6 +40,7 @@ class Challenge(models.Model):
     TYPE_NEW_HEXAGONS = "new_hexagons"
     TYPE_DISTINCT_ZONES = "distinct_zones"
     TYPE_DATASET_POINTS = "dataset_points"
+    TYPE_VISIT_HEXAGONS = "visit_hexagons"
     TYPE_CHOICES = [
         (TYPE_CAPTURE_HEXAGON, "Capture hexagon"),
         (TYPE_MAX_POINTS, "Max points"),
@@ -47,6 +48,7 @@ class Challenge(models.Model):
         (TYPE_NEW_HEXAGONS, "New hexagons"),
         (TYPE_DISTINCT_ZONES, "Distinct zones"),
         (TYPE_DATASET_POINTS, "Dataset points"),
+        (TYPE_VISIT_HEXAGONS, "Visit hexagons"),
     ]
 
     CAPTURE_ANY = "any"
