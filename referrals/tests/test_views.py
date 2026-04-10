@@ -1,7 +1,7 @@
 import datetime
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -155,7 +155,9 @@ class RegisterWithRefTokenTest(TestCase):
             ).exists()
         )
 
+    @override_settings(REGISTRATION_CLOSED=False)
     def test_register_with_invalid_ref_works_normally(self):
+        # With registration open, an invalid token still allows signup
         url = reverse("register") + "?ref=invalid_token"
         resp = self.client.post(url, {
             "email": "other@test.local",

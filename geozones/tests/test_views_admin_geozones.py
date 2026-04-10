@@ -32,8 +32,10 @@ class AdminGeozonesListTest(TestCase):
         self.client.force_login(self.admin)
 
     def test_zones_in_context(self):
+        # The view returns .values() dicts, so check by pk
         resp = self.client.get(reverse("admin_dashboard_geozones"))
-        self.assertIn(self.zone, resp.context["zones"])
+        zone_pks = [z["pk"] for z in resp.context["zones"]]
+        self.assertIn(self.zone.pk, zone_pks)
 
 
 class AdminGeozoneDetailTest(TestCase):
