@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from ._helpers import make_user
@@ -66,7 +66,9 @@ class RegisterViewTest(TestCase):
         resp = self.client.get(reverse("register"))
         self.assertEqual(resp.status_code, 200)
 
+    @override_settings(REGISTRATION_CLOSED=False)
     def test_post_creates_user(self):
+        # Registration must be open for the form to accept submissions
         self.client.post(reverse("register"), {
             "email": "newuser@example.com",
             "password1": "Str0ngPass!",

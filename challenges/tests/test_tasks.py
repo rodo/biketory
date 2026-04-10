@@ -303,6 +303,68 @@ class BuildLeaderboardNewHexagonsTest(TestCase):
 
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BuildLeaderboardVisitHexagonsTest(TestCase):
+    """Test leaderboard computation for visit_hexagons challenges.
+
+    Player1 uploads the same trace twice → score = 40 (20 hex × 2 uploads).
+    Player2 participates but does not upload → score = 0.
+    Score = total hexagons traversed (duplicates count).
+    goal_threshold = 30 → player1 meets goal, player2 does not.
+    """
+
+    def setUp(self):
+        self.admin = user_model.objects.create_user(
+            username="admin", password="test1234", email="admin@test.com"
+        )
+        self.player1 = user_model.objects.create_user(
+            username="player1", password="test1234", email="p1@test.com"
+        )
+        self.player2 = user_model.objects.create_user(
+            username="player2", password="test1234", email="p2@test.com"
+        )
+        UserProfile.objects.get_or_create(user=self.player1)
+        UserProfile.objects.get_or_create(user=self.player2)
+
+        self.now = timezone.now()
+        self.challenge = Challenge.objects.create(
+            title="Visit Hexagons Challenge",
+            challenge_type=Challenge.TYPE_VISIT_HEXAGONS,
+            goal_threshold=30,
+            start_date=self.now - timedelta(days=1),
+            end_date=self.now + timedelta(days=6),
+            created_by=self.admin,
+        )
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player1)
+        ChallengeParticipant.objects.create(challenge=self.challenge, user=self.player2)
+
+        # Player1 uploads the same trace twice on different days
+        _upload_trace(_GPX_FIXTURE, self.player1, self.now)
+        _upload_trace(_GPX_FIXTURE, self.player1, self.now - timedelta(hours=12))
+
+    def test_build_leaderboard(self):
+        entries = _build_leaderboard(self.challenge)
+        assert len(entries) == 2
+
+        # Player1: 20 hexagons × 2 uploads = 40
+        p1 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player1.pk
+        )
+        assert p1.score == 40
+        assert p1.rank == 1
+        # 40 >= goal_threshold 30 → goal met
+        assert p1.goal_met is True
+
+        # Player2: no uploads → score 0
+        p2 = ChallengeLeaderboardEntry.objects.get(
+            challenge=self.challenge, user_id=self.player2.pk
+        )
+        assert p2.score == 0
+        assert p2.rank == 2
+        # 0 < goal_threshold 30 → goal not met
+        assert p2.goal_met is False
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class BuildLeaderboardDistinctZonesTest(TestCase):
     """Test leaderboard computation for distinct_zones challenges.
 

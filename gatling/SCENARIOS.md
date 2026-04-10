@@ -15,7 +15,8 @@ BaseSimulation (abstraite)
 ├── UploadAndStatsApiSimulation         — upload GPX + vérification cohérence API stats
 ├── AllSimulation                       — enchaîne les 6 scénarios ci-dessus
 ├── MassUploadSimulation               — 100 utilisateurs upload GPX (indépendant)
-└── ReferralSimulation                 — flow complet de parrainage (indépendant)
+├── ReferralSimulation                 — flow complet de parrainage (indépendant)
+└── FullUserJourneySimulation          — parcours utilisateur complet (indépendant)
 ```
 
 `BaseSimulation` centralise toute la logique partagée : configuration HTTP,
@@ -273,4 +274,44 @@ Les tokens de parrainage sont partagés entre les phases via une
 
 ```bash
 mvn gatling:test -Dgatling.simulationClass=biketory.ReferralSimulation -DbaseUrl=http://localhost:8000
+```
+
+---
+
+### FullUserJourneySimulation
+
+**Fichier :** `src/main/java/biketory/FullUserJourneySimulation.java`
+
+Parcours utilisateur complet : inscription, challenges, upload GPX, leaderboard,
+dashboard et landing page. Chaque utilisateur virtuel exécute le parcours entier
+de bout en bout. Totalement indépendant de AllSimulation.
+
+Le nombre d'utilisateurs et la durée de montée sont configurables via `-Dusers=N`
+(défaut : 5) et `-DrampSeconds=N` (défaut : 10).
+
+**Étapes (par utilisateur) :**
+
+1. `GET /register/` + `POST /register/` — Création de compte
+2. `GET /accounts/login/` + `POST /accounts/login/` — Connexion
+3. `GET /challenges/` — Liste des challenges actifs
+4. Pour chaque challenge : `GET /challenges/<pk>/` + `POST /challenges/<pk>/join/` — Inscription
+5. `GET /upload/` + `POST /upload/` — Upload du fichier GPX (multipart)
+6. `GET /traces/<uuid>/` — Consultation du détail de la trace
+7. `GET /leaderboard/` — Leaderboard global
+8. `GET /leaderboard/surface/` — Cluster leaderboard
+9. `GET /dashboard/` — Dashboard utilisateur
+10. `GET /` — Landing page
+11. `GET /api/hexagons/` — API hexagons
+
+**Injection :** `rampUsers(N).during(rampSeconds)` — montée progressive
+**Assertions :** p95 < 5s, succès > 95 %
+
+**Exemples :**
+
+```bash
+# 5 utilisateurs, montée sur 10s (défaut)
+mvn gatling:test -Dgatling.simulationClass=biketory.FullUserJourneySimulation -DbaseUrl=http://localhost:8000
+
+# 10 utilisateurs, montée sur 20s
+mvn gatling:test -Dgatling.simulationClass=biketory.FullUserJourneySimulation -DbaseUrl=http://localhost:8000 -Dusers=10 -DrampSeconds=20
 ```

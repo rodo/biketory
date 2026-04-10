@@ -12,7 +12,7 @@ _SQL_DIR = Path(__file__).resolve().parent / "sql"
 _SCORE_DATASET_ON_UPLOAD_SQL = (_SQL_DIR / "score_dataset_on_upload.sql").read_text()
 
 
-def score_dataset_challenges(trace, user):
+def score_dataset_challenges(trace_id, user_id):
     """Score dataset_points challenges for a newly uploaded trace.
 
     For each active dataset_points challenge the user participates in,
@@ -21,10 +21,13 @@ def score_dataset_challenges(trace, user):
     ChallengeDatasetScore rows. The SQL trigger on that table automatically
     increments ChallengeParticipant.score.
     """
+    from challenges.models import ChallengeParticipant
+
     now = timezone.now()
     participations = (
-        user.challenge_participations
+        ChallengeParticipant.objects
         .filter(
+            user_id=user_id,
             challenge__challenge_type=Challenge.TYPE_DATASET_POINTS,
             challenge__start_date__lte=now,
             challenge__end_date__gte=now,
@@ -39,7 +42,7 @@ def score_dataset_challenges(trace, user):
         with connection.cursor() as cursor:
             cursor.execute(
                 _SCORE_DATASET_ON_UPLOAD_SQL,
-                [challenge.pk, trace.pk, challenge.pk, user.pk, trace.pk],
+                [challenge.pk, trace_id, challenge.pk, user_id, trace_id],
             )
             rows = cursor.fetchall()
 
@@ -49,9 +52,9 @@ def score_dataset_challenges(trace, user):
         scores = [
             ChallengeDatasetScore(
                 challenge=challenge,
-                user=user,
+                user_id=user_id,
                 dataset_feature_id=row[0],
-                trace=trace,
+                trace_id=trace_id,
             )
             for row in rows
         ]
@@ -60,5 +63,5 @@ def score_dataset_challenges(trace, user):
         )
         logger.info(
             "Challenge %d: scored %d dataset features for user %d on trace %d",
-            challenge.pk, len(created), user.pk, trace.pk,
+            challenge.pk, len(created), user_id, trace_id,
         )

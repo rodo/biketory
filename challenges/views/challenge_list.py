@@ -25,26 +25,27 @@ def challenge_list(request):
         .order_by("-end_date")[:20]
     )
 
-    # Fetch user's participations with scores
-    participant_scores = dict(
+    # Fetch user's participations
+    user_challenge_ids = set(
         ChallengeParticipant.objects.filter(user=user)
-        .values_list("challenge_id", "score")
+        .values_list("challenge_id", flat=True)
     )
-    user_challenge_ids = set(participant_scores.keys())
 
-    # Fetch user's ranks from leaderboard entries
-    user_ranks = dict(
-        ChallengeLeaderboardEntry.objects.filter(user_id=user.pk)
-        .values_list("challenge_id", "rank")
-    )
+    # Fetch user's scores and ranks from leaderboard entries
+    leaderboard_data = {
+        row[0]: {"score": row[1], "rank": row[2]}
+        for row in ChallengeLeaderboardEntry.objects.filter(user_id=user.pk)
+        .values_list("challenge_id", "score", "rank")
+    }
 
     # Split active challenges into joined / not joined
     my_challenges = []
     other_challenges = []
     for c in active_challenges:
         if c.pk in user_challenge_ids:
-            c.user_score = participant_scores.get(c.pk, 0)
-            c.user_rank = user_ranks.get(c.pk)
+            entry = leaderboard_data.get(c.pk, {})
+            c.user_score = entry.get("score", 0)
+            c.user_rank = entry.get("rank")
             my_challenges.append(c)
         else:
             other_challenges.append(c)

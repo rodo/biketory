@@ -146,7 +146,7 @@ function initChallengeCreate(config) {
     var t = typeSelect.value;
     captureModeGroup.style.display = t === 'capture_hexagon' ? '' : 'none';
     hexagonsCard.style.display = (t === 'capture_hexagon' || t === 'max_points') ? '' : 'none';
-    goalThresholdGroup.style.display = (t === 'active_days' || t === 'new_hexagons' || t === 'distinct_zones') ? '' : 'none';
+    goalThresholdGroup.style.display = (t === 'active_days' || t === 'new_hexagons' || t === 'distinct_zones' || t === 'visit_hexagons') ? '' : 'none';
     geozoneGroup.style.display = (t === 'max_points' || t === 'new_hexagons') ? '' : 'none';
     distinctZonesGroup.style.display = t === 'distinct_zones' ? '' : 'none';
     if (datasetGroup) datasetGroup.style.display = t === 'dataset_points' ? '' : 'none';
