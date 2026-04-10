@@ -257,7 +257,7 @@ class ChallengeDatasetScore(models.Model):
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["challenge", "user", "dataset_feature"],
+                fields=["challenge", "user", "dataset_feature", "trace"],
                 name="challenge_dataset_score_unique",
             ),
         ]

@@ -84,7 +84,10 @@ class Command(BaseCommand):
                 continue
 
             name = custom_name or filepath.stem
-            source_file = str(filepath.relative_to(Path.cwd())) if filepath.is_relative_to(Path.cwd()) else str(filepath)
+            if filepath.is_relative_to(Path.cwd()):
+                source_file = str(filepath.relative_to(Path.cwd()))
+            else:
+                source_file = str(filepath)
 
             dataset = Dataset.objects.create(
                 name=name,
