@@ -28,6 +28,7 @@ A Django application for uploading GPX traces and visualising closed geographic 
 | `purge_jobs` | Delete all procrastinate jobs and events. Only works with `DEBUG=True`. |
 | `reset_data` | Delete all traces, surfaces, hexagons, badges, and stats. Only works with `DEBUG=True`. Requires `--yes` to skip confirmation. |
 | `load_dataset` | Import GeoJSON Point datasets from `data/` directory. Accepts `--path` for a specific file and `--name` for a custom name. Skips files already imported (MD5 check). |
+| `compute_challenge_leaderboards` | Defer the procrastinate task that recomputes all active challenge leaderboards. |
 
 ## Challenges
 

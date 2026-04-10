@@ -1,6 +1,5 @@
 from django.db import migrations, models
 
-
 CREATE_MATVIEW = """
 CREATE MATERIALIZED VIEW hexagon_monthly_stats AS
 SELECT

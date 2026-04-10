@@ -198,7 +198,7 @@ tr.current-user td {
           <tbody>
             {% for e in item.leaders %}
             <tr{% if e.is_current_user %} class="current-user"{% endif %}>
-              <td class="rank-col">{{ e.rank }}</td>
+              <td class="rank-col">{% include "includes/rank_medal.html" with rank=e.rank %}</td>
               <td>{{ e.username }}{% if e.is_premium %}<svg class="premium-badge" viewBox="0 0 100 115" aria-label="Premium"><polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="currentColor"/></svg>{% endif %}</td>
               <td class="count-col">{{ e.count }}</td>
             </tr>
