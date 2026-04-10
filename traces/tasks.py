@@ -1,4 +1,5 @@
 import logging
+import time
 
 from procrastinate.contrib.django import app
 from procrastinate.exceptions import AlreadyEnqueued
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 @app.task(queue="surface_extraction")
 def extract_surfaces(trace_id: int):
     """Extract closed surfaces from a trace and mark it as surface_extracted."""
+    t0 = time.monotonic()
     try:
         trace = Trace.objects.select_related("uploaded_by").get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -28,15 +30,16 @@ def extract_surfaces(trace_id: int):
         logger.info("Trace %d already past extraction (status=%s), skipping.", trace_id, trace.status)
         return
 
-    logger.info("Extracting surfaces for trace %d", trace_id)
+    logger.info("Trace %d: Extracting surfaces", trace_id)
     _extract_surfaces(trace)
     Trace.objects.filter(pk=trace_id).update(status=Trace.STATUS_SURFACE_EXTRACTED)
-    logger.info("Trace %d surfaces extracted.", trace_id)
+    logger.info("Trace %d: surfaces extracted in %.2fs.", trace_id, time.monotonic() - t0)
 
 
 @app.task(queue="badges")
 def award_trace_badges(trace_id: int):
     """Award badges for a trace and mark it as analyzed."""
+    t0 = time.monotonic()
     try:
         trace = Trace.objects.select_related("uploaded_by").get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -66,7 +69,7 @@ def award_trace_badges(trace_id: int):
         Trace.objects.filter(pk=trace_id).update(status=Trace.STATUS_ANALYZED)
         return
 
-    logger.info("Awarding badges for trace %d (user %s)", trace_id, trace.uploaded_by.username)
+    logger.info("Trace %d: Awarding badges (user %s)", trace_id, trace.uploaded_by.username)
     award_badges(trace.uploaded_by, trace)
     Trace.objects.filter(pk=trace_id).update(status=Trace.STATUS_ANALYZED)
 
@@ -79,7 +82,7 @@ def award_trace_badges(trace_id: int):
     #     "Your trace has been analyzed",
     #     f"/traces/{trace.uuid}/",
     # )
-    logger.info("Trace %d analyzed.", trace_id)
+    logger.info("Trace %d: analyzed in %.2fs.", trace_id, time.monotonic() - t0)
 
     try:
         score_dataset_challenges_task.configure(
@@ -104,6 +107,7 @@ def award_trace_badges(trace_id: int):
 @app.task(queue="challenges")
 def score_dataset_challenges_task(trace_id: int):
     """Score dataset_points challenges after trace analysis."""
+    t0 = time.monotonic()
     try:
         status, user_id = Trace.objects.values_list("status", "uploaded_by").get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -130,11 +134,13 @@ def score_dataset_challenges_task(trace_id: int):
 
     from challenges.scoring import score_dataset_challenges
     score_dataset_challenges(trace_id, user_id)
+    logger.info("Trace %d: dataset scoring done in %.2fs.", trace_id, time.monotonic() - t0)
 
 
 @app.task(queue="challenges")
 def recompute_user_challenges(trace_id: int):
     """Recompute leaderboards for active challenges the trace owner participates in."""
+    t0 = time.monotonic()
     try:
         trace = Trace.objects.select_related("uploaded_by").get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -160,6 +166,7 @@ def recompute_user_challenges(trace_id: int):
         return
 
     from django.utils import timezone as tz
+
     from challenges.models import Challenge, ChallengeParticipant
     from challenges.tasks import compute_single_challenge_leaderboard
 
@@ -183,14 +190,15 @@ def recompute_user_challenges(trace_id: int):
             pass
 
     logger.info(
-        "Trace %d: dispatched leaderboard recompute for %d challenges (user %s).",
-        trace_id, len(challenge_ids), trace.uploaded_by.username,
+        "Trace %d: dispatched leaderboard recompute for %d challenges (user %s) in %.2fs.",
+        trace_id, len(challenge_ids), trace.uploaded_by.username, time.monotonic() - t0,
     )
 
 
 @app.task(queue="tiles", queueing_lock="recompute_leaderboard")
 def recompute_leaderboard():
     """Recompute the leaderboard after trace analysis."""
+    t0 = time.monotonic()
     from django.core.management import call_command
     call_command("compute_leaderboard")
 
@@ -205,17 +213,22 @@ def recompute_leaderboard():
     except AlreadyEnqueued:
         pass
 
+    logger.info("Leaderboard recomputed in %.2fs.", time.monotonic() - t0)
+
 
 @app.task(queue="tiles", queueing_lock="recompute_zone_leaderboard")
 def recompute_zone_leaderboard():
     """Recompute per-zone leaderboards."""
+    t0 = time.monotonic()
     from django.core.management import call_command
     call_command("compute_zone_leaderboard")
+    logger.info("Zone leaderboard recomputed in %.2fs.", time.monotonic() - t0)
 
 
 @app.task(queue="tiles")
 def generate_tiles(trace_id: int, zoom: int):
     """Generate hexagon tiles for a trace's bounding box at a given zoom level."""
+    t0 = time.monotonic()
     try:
         trace = Trace.objects.get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -242,12 +255,13 @@ def generate_tiles(trace_id: int, zoom: int):
 
     west, south, east, north = trace.bbox.extent
     count = generate_tiles_for_bbox(zoom, west, south, east, north)
-    logger.info("Trace %d zoom %d: %d tiles generated.", trace_id, zoom, count)
+    logger.info("Trace %d zoom %d: %d tiles generated in %.2fs.", trace_id, zoom, count, time.monotonic() - t0)
 
 
 @app.task(queue="tiles")
 def generate_score_tiles(trace_id: int, zoom: int):
     """Generate score label tiles for a trace's bounding box at a given zoom level."""
+    t0 = time.monotonic()
     try:
         trace = Trace.objects.get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -274,12 +288,13 @@ def generate_score_tiles(trace_id: int, zoom: int):
 
     west, south, east, north = trace.bbox.extent
     count = generate_score_tiles_for_bbox(zoom, west, south, east, north)
-    logger.info("Trace %d zoom %d: %d score tiles generated.", trace_id, zoom, count)
+    logger.info("Trace %d zoom %d: %d score tiles generated in %.2fs.", trace_id, zoom, count, time.monotonic() - t0)
 
 
 @app.task(queue="tiles")
 def generate_user_tiles(trace_id: int, user_id: int, zoom: int):
     """Generate per-user hexagon tiles for a trace's bounding box at a given zoom level."""
+    t0 = time.monotonic()
     try:
         trace = Trace.objects.get(pk=trace_id)
     except Trace.DoesNotExist:
@@ -313,21 +328,23 @@ def generate_user_tiles(trace_id: int, user_id: int, zoom: int):
 
     west, south, east, north = trace.bbox.extent
     count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
-    logger.info("Trace %d user %d zoom %d: %d user tiles generated.", trace_id, user_id, zoom, count)
+    logger.info("Trace %d user %d zoom %d: %d user tiles generated in %.2fs.", trace_id, user_id, zoom, count, time.monotonic() - t0)
 
 
 @app.task(queue="tiles")
 def regenerate_tiles_for_bbox(west: float, south: float, east: float, north: float, zoom: int):
     """Regenerate hexagon tiles for a bounding box (used after trace deletion)."""
+    t0 = time.monotonic()
     count = generate_tiles_for_bbox(zoom, west, south, east, north)
-    logger.info("Regenerated %d tiles at zoom %d for bbox.", count, zoom)
+    logger.info("Regenerated %d tiles at zoom %d for bbox in %.2fs.", count, zoom, time.monotonic() - t0)
 
 
 @app.task(queue="tiles")
 def regenerate_score_tiles_for_bbox(west: float, south: float, east: float, north: float, zoom: int):
     """Regenerate score tiles for a bounding box (used after trace deletion)."""
+    t0 = time.monotonic()
     count = generate_score_tiles_for_bbox(zoom, west, south, east, north)
-    logger.info("Regenerated %d score tiles at zoom %d for bbox.", count, zoom)
+    logger.info("Regenerated %d score tiles at zoom %d for bbox in %.2fs.", count, zoom, time.monotonic() - t0)
 
 
 @app.task(queue="tiles")
@@ -340,5 +357,6 @@ def regenerate_user_tiles_for_bbox(user_id: int, west: float, south: float, east
         logger.warning("User %d has no profile, skipping user tile regeneration.", user_id)
         return
 
+    t0 = time.monotonic()
     count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
-    logger.info("Regenerated %d user tiles at zoom %d for user %d.", count, zoom, user_id)
+    logger.info("Regenerated %d user tiles at zoom %d for user %d in %.2fs.", count, zoom, user_id, time.monotonic() - t0)

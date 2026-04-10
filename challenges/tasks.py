@@ -1,4 +1,5 @@
 import logging
+import time
 from pathlib import Path
 
 from django.db import connection, transaction
@@ -18,6 +19,7 @@ _SCORE_NEW_HEXAGONS_SQL = (_SQL_DIR / "challenge_score_new_hexagons.sql").read_t
 _SCORE_NEW_HEXAGONS_GEOZONE_SQL = (_SQL_DIR / "challenge_score_new_hexagons_geozone.sql").read_text()
 _SCORE_DISTINCT_ZONES_SQL = (_SQL_DIR / "challenge_score_distinct_zones.sql").read_text()
 _SCORE_DATASET_POINTS_SQL = (_SQL_DIR / "challenge_score_dataset_points.sql").read_text()
+_SCORE_VISIT_HEXAGONS_SQL = (_SQL_DIR / "challenge_score_visit_hexagons.sql").read_text()
 
 
 def _compute_scores(challenge):
@@ -65,6 +67,11 @@ def _compute_scores(challenge):
             )
         elif challenge.challenge_type == Challenge.TYPE_DATASET_POINTS:
             cursor.execute(_SCORE_DATASET_POINTS_SQL, [challenge.pk])
+        elif challenge.challenge_type == Challenge.TYPE_VISIT_HEXAGONS:
+            cursor.execute(
+                _SCORE_VISIT_HEXAGONS_SQL,
+                [challenge.start_date, challenge.end_date, challenge.pk],
+            )
         return cursor.fetchall()
 
 
@@ -132,6 +139,7 @@ def _build_leaderboard(challenge):
 @app.task(queue="challenges", queueing_lock="compute_challenge_leaderboards")
 def compute_challenge_leaderboards():
     """Dispatch one task per active or recently ended challenge."""
+    t0 = time.monotonic()
     now = timezone.now()
 
     active_ids = list(
@@ -176,8 +184,8 @@ def compute_challenge_leaderboards():
             pass
 
     logger.info(
-        "Dispatched %d active + %d ended challenge tasks.",
-        len(active_ids), len(ended_ids),
+        "Dispatched %d active + %d ended challenge tasks in %.2fs.",
+        len(active_ids), len(ended_ids), time.monotonic() - t0,
     )
 
 
@@ -186,6 +194,7 @@ def compute_single_challenge_leaderboard(
     challenge_id: int, compute: bool = True, award: bool = False,
 ):
     """Compute leaderboard for a single challenge, optionally awarding rewards."""
+    t0 = time.monotonic()
     try:
         challenge = Challenge.objects.get(pk=challenge_id)
     except Challenge.DoesNotExist:
@@ -193,11 +202,11 @@ def compute_single_challenge_leaderboard(
         return
 
     if compute:
-        logger.info("Computing leaderboard for challenge %d: %s", challenge.pk, challenge.title)
+        logger.info("Challenge %d: Computing leaderboard for : %s", challenge.pk, challenge.title)
         _build_leaderboard(challenge)
 
     if award:
         from challenges.rewards import award_challenge_rewards
         award_challenge_rewards(challenge)
 
-    logger.info("Challenge %d leaderboard done.", challenge.pk)
+    logger.info("Challenge %d: leaderboard done in %.2fs.", challenge.pk, time.monotonic() - t0)
