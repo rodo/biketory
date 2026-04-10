@@ -5,6 +5,10 @@
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% if has_dataset %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+{% endif %}
 {% compress css %}
 <link rel="stylesheet" href="{% static 'css/admin-common.css' %}">
 <link rel="stylesheet" href="{% static 'css/admin-challenge-detail.css' %}">
@@ -62,7 +66,7 @@
         <tbody>
           {% for e in entries %}
           <tr>
-            <td>{{ e.rank }}</td>
+            <td>{% include "includes/rank_medal.html" with rank=e.rank %}</td>
             <td>{{ e.username }}</td>
             <td>{{ e.score }}</td>
           </tr>
@@ -136,6 +140,7 @@
 {% if not hexagons_geojson.features %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {% endif %}
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
   (function() {
     var geojson = JSON.parse(document.getElementById('dataset-geojson').textContent);
@@ -145,6 +150,7 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
     if (geojson.features.length > 0) {
+      var clusters = L.markerClusterGroup();
       var layer = L.geoJSON(geojson, {
         pointToLayer: function(feature, latlng) {
           return L.circleMarker(latlng, {
@@ -156,8 +162,10 @@
           var name = feature.properties.name;
           if (name) layer.bindPopup(name);
         }
-      }).addTo(map);
-      map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+      });
+      clusters.addLayer(layer);
+      map.addLayer(clusters);
+      map.fitBounds(clusters.getBounds(), { padding: [20, 20] });
     }
   })();
 </script>

@@ -22,33 +22,87 @@ h2 {
   margin: 2rem 0 1rem;
 }
 
+.challenge-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .challenge-card {
   background: var(--surface);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+  text-decoration: none;
+  display: block;
+  transition: box-shadow 0.15s;
 }
 
-.challenge-info { flex: 1; min-width: 0; }
+.challenge-card:hover {
+  box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+}
 
 .challenge-title {
   font-weight: 700;
   font-size: 1rem;
   color: var(--bg);
-  text-decoration: none;
+  margin-bottom: 0.3rem;
+  line-height: 1.3;
 }
 
-.challenge-title:hover { color: var(--accent); }
+.challenge-card:hover .challenge-title { color: var(--accent); }
 
 .challenge-meta {
   font-size: 0.82rem;
   color: var(--muted);
-  margin-top: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.challenge-user-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #f0ede6;
+}
+
+.challenge-user-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.challenge-user-stat .stat-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.1rem;
+}
+
+.challenge-user-stat .stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+.challenge-user-stat .stat-value.accent {
+  color: var(--accent);
+}
+
+.challenge-progress-track {
+  height: 4px;
+  background: #e0dcd5;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.6rem;
+}
+
+.challenge-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  min-width: 2px;
+  max-width: 100%;
 }
 
 .badge-premium {
@@ -64,16 +118,6 @@ h2 {
   margin-left: 0.3rem;
 }
 
-.badge-joined {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background: #d4edda;
-  color: #155724;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-}
-
 .badge-ended {
   display: inline-block;
   font-size: 0.7rem;
@@ -82,6 +126,7 @@ h2 {
   color: var(--muted);
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
+  margin-top: 0.3rem;
 }
 
 .empty-msg {
@@ -89,70 +134,110 @@ h2 {
   font-size: 0.9rem;
   padding: 1rem 0;
 }
+
+@media (max-width: 700px) {
+  .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+}
 {% endblock %}
 
 {% block content %}
 <div id="page-inner">
   <h1>{% trans "Challenges" %}</h1>
 
-  {% if active_challenges %}
-  <h2>{% trans "Active" %}</h2>
-  {% for c in active_challenges %}
-  <div class="challenge-card">
-    <div class="challenge-info">
-      <a href="{% url 'challenge_detail' c.pk %}" class="challenge-title">
+  {% if my_challenges %}
+  <h2>{% trans "My challenges" %}</h2>
+  <div class="challenge-grid">
+    {% for c in my_challenges %}
+    <a href="{% url 'challenge_detail' c.pk %}" class="challenge-card">
+      <div class="challenge-title">
         {{ c.title }}
         {% if c.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
-      </a>
+      </div>
       <div class="challenge-meta">
         {{ c.get_challenge_type_display }} &middot;
-        {% trans "Ends" %} {{ c.end_date|date:"Y-m-d H:i" }}
+        {% trans "Ends" %} {{ c.end_date|date:"d M Y" }}
       </div>
-    </div>
-    {% if c.pk in user_challenge_ids %}
-      <span class="badge-joined">{% trans "Joined" %}</span>
-    {% endif %}
+      <div class="challenge-user-stats">
+        <div class="challenge-user-stat">
+          <span class="stat-label">{% trans "Score" %}</span>
+          <span class="stat-value accent">{{ c.user_score }}</span>
+        </div>
+        <div class="challenge-user-stat">
+          <span class="stat-label">{% trans "Rank" %}</span>
+          <span class="stat-value">{% if c.user_rank %}#{{ c.user_rank }}{% else %}—{% endif %}</span>
+        </div>
+        {% if c.goal_threshold %}
+        <div class="challenge-user-stat">
+          <span class="stat-label">{% trans "Goal" %}</span>
+          <span class="stat-value">{{ c.goal_threshold }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% if c.goal_threshold %}
+      <div class="challenge-progress-track">
+        <div class="challenge-progress-fill" style="width:{% widthratio c.user_score c.goal_threshold 100 %}%"></div>
+      </div>
+      {% endif %}
+    </a>
+    {% endfor %}
   </div>
-  {% endfor %}
+  {% endif %}
+
+  {% if other_challenges %}
+  <h2>{% trans "Active" %}</h2>
+  <div class="challenge-grid">
+    {% for c in other_challenges %}
+    <a href="{% url 'challenge_detail' c.pk %}" class="challenge-card">
+      <div class="challenge-title">
+        {{ c.title }}
+        {% if c.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
+      </div>
+      <div class="challenge-meta">
+        {{ c.get_challenge_type_display }} &middot;
+        {% trans "Ends" %} {{ c.end_date|date:"d M Y" }}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
   {% endif %}
 
   {% if upcoming_challenges %}
   <h2>{% trans "Upcoming" %}</h2>
-  {% for c in upcoming_challenges %}
-  <div class="challenge-card">
-    <div class="challenge-info">
-      <a href="{% url 'challenge_detail' c.pk %}" class="challenge-title">
+  <div class="challenge-grid">
+    {% for c in upcoming_challenges %}
+    <a href="{% url 'challenge_detail' c.pk %}" class="challenge-card">
+      <div class="challenge-title">
         {{ c.title }}
         {% if c.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
-      </a>
+      </div>
       <div class="challenge-meta">
         {{ c.get_challenge_type_display }} &middot;
-        {% trans "Starts" %} {{ c.start_date|date:"Y-m-d H:i" }}
+        {% trans "Starts" %} {{ c.start_date|date:"d M Y" }}
       </div>
-    </div>
+    </a>
+    {% endfor %}
   </div>
-  {% endfor %}
   {% endif %}
 
   {% if ended_challenges %}
   <h2>{% trans "Ended" %}</h2>
-  {% for c in ended_challenges %}
-  <div class="challenge-card">
-    <div class="challenge-info">
-      <a href="{% url 'challenge_detail' c.pk %}" class="challenge-title">
-        {{ c.title }}
-      </a>
+  <div class="challenge-grid">
+    {% for c in ended_challenges %}
+    <a href="{% url 'challenge_detail' c.pk %}" class="challenge-card">
+      <div class="challenge-title">{{ c.title }}</div>
       <div class="challenge-meta">
         {{ c.get_challenge_type_display }} &middot;
-        {% trans "Ended" %} {{ c.end_date|date:"Y-m-d H:i" }}
+        {% trans "Ended" %} {{ c.end_date|date:"d M Y" }}
       </div>
-    </div>
-    <span class="badge-ended">{% trans "Ended" %}</span>
+      <span class="badge-ended">{% trans "Ended" %}</span>
+    </a>
+    {% endfor %}
   </div>
-  {% endfor %}
   {% endif %}
 
-  {% if not active_challenges and not upcoming_challenges and not ended_challenges %}
+  {% if not my_challenges and not other_challenges and not upcoming_challenges and not ended_challenges %}
     <p class="empty-msg">{% trans "No challenges yet." %}</p>
   {% endif %}
 </div>
