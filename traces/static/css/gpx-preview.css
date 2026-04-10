@@ -1,0 +1,56 @@
+.upload-col-dropzone {
+  flex: 1;
+  min-width: 0;
+}
+
+#gpx-preview {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #e0ddd5;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #faf9f4;
+}
+
+#preview-map {
+  width: 100%;
+  height: 200px;
+}
+
+.preview-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.preview-stats .stat {
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 0.85rem;
+  border-top: 1px solid #e0ddd5;
+  border-right: 1px solid #e0ddd5;
+}
+
+.preview-stats .stat:nth-child(2n) {
+  border-right: none;
+}
+
+/* Last row: if odd number of stats, last item spans full width */
+.preview-stats .stat:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  border-right: none;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7a8570;
+  margin-bottom: 0.15rem;
+}
+
+.stat-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d3a2e;
+}
