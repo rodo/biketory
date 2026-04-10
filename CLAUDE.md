@@ -197,6 +197,9 @@ python manage.py reset_data [--yes]
 # Import GeoJSON Point datasets from data/ directory
 python manage.py load_dataset [--path <file>] [--name <name>]
 
+# Defer challenge leaderboard recomputation task
+python manage.py compute_challenge_leaderboards
+
 ```
 
 ## Authentication
