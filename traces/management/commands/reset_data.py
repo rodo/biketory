@@ -43,6 +43,7 @@ class Command(BaseCommand):
             "referrals": Referral.objects.count(),
             "notifs": Notification.objects.count(),
             "challenge_dataset_scores": ChallengeDatasetScore.objects.count(),
+            "challenge_participant": ChallengeParticipant.objects.count(),
             "challenge_leaderboard": ChallengeLeaderboardEntry.objects.count(),
         }
 
@@ -65,7 +66,7 @@ class Command(BaseCommand):
         ChallengeLeaderboardEntry.objects.all().delete()
 
         self.stdout.write("Resetting challenge participant scores...")
-        ChallengeParticipant.objects.filter(score__gt=0).update(score=0)
+        ChallengeParticipant.objects.all().delete()
 
         self.stdout.write("Deleting notifications...")
         Notification.objects.all().delete()

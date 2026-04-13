@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -159,3 +160,68 @@ def admin_challenge_detail(request, pk):
         "has_dataset": has_dataset,
         "dataset_geojson": dataset_geojson,
     })
+
+
+@staff_member_required
+def admin_challenge_duplicate(request, pk):
+    """Duplicate a challenge with dates set to the entire next month."""
+    source = get_object_or_404(Challenge, pk=pk)
+
+    today = timezone.now().date()
+    first_of_next_month = (today.replace(day=1) + relativedelta(months=1))
+    last_of_next_month = first_of_next_month + relativedelta(months=1, days=-1)
+
+    start = timezone.make_aware(datetime.combine(first_of_next_month, datetime.min.time()))
+    end = timezone.make_aware(datetime.combine(last_of_next_month, datetime.max.time()))
+
+    clone = Challenge.objects.create(
+        title=source.title,
+        description=source.description,
+        challenge_type=source.challenge_type,
+        capture_mode=source.capture_mode,
+        premium_only=source.premium_only,
+        is_visible=False,
+        geozone=source.geozone,
+        dataset=source.dataset,
+        goal_threshold=source.goal_threshold,
+        zone_admin_level=source.zone_admin_level,
+        hexagons_per_zone=source.hexagons_per_zone,
+        start_date=start,
+        end_date=end,
+        created_by=request.user,
+    )
+
+    # Copy hexagons
+    source_hexagons = ChallengeHexagon.objects.filter(challenge=source)
+    if source_hexagons.exists():
+        ChallengeHexagon.objects.bulk_create([
+            ChallengeHexagon(challenge=clone, hexagon_id=ch.hexagon_id)
+            for ch in source_hexagons
+        ])
+
+    # Copy rewards
+    source_rewards = ChallengeReward.objects.filter(challenge=source)
+    if source_rewards.exists():
+        ChallengeReward.objects.bulk_create([
+            ChallengeReward(
+                challenge=clone,
+                rank_threshold=r.rank_threshold,
+                reward_type=r.reward_type,
+                badge_id=r.badge_id,
+            )
+            for r in source_rewards
+        ])
+
+    # Copy sponsors (without logo)
+    source_sponsors = ChallengeSponsor.objects.filter(challenge=source)
+    if source_sponsors.exists():
+        ChallengeSponsor.objects.bulk_create([
+            ChallengeSponsor(
+                challenge=clone,
+                name=s.name,
+                url=s.url,
+            )
+            for s in source_sponsors
+        ])
+
+    return redirect("admin_challenge_detail", pk=clone.pk)

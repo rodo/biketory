@@ -8,6 +8,7 @@ class Notification(models.Model):
     FRIEND_ACCEPTED = "friend_accepted"
     TRACE_ANALYZED = "trace_analyzed"
     REFERRAL_SIGNUP = "referral_signup"
+    CHALLENGE_WON = "challenge_won"
 
     TYPE_CHOICES = [
         (BADGE_AWARDED, "Badge awarded"),
@@ -15,6 +16,7 @@ class Notification(models.Model):
         (FRIEND_ACCEPTED, "Friend accepted"),
         (TRACE_ANALYZED, "Trace analyzed"),
         (REFERRAL_SIGNUP, "Referral signup"),
+        (CHALLENGE_WON, "Challenge won"),
     ]
 
     user = models.ForeignKey(

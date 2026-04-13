@@ -75,6 +75,20 @@ def settings(request):
                     request.success_field = "username"
             request.username_error = username_error
 
+        if action == "update_email_preferences":
+            profile, _created = UserProfile.objects.get_or_create(user=request.user)
+            profile.email_on_badge = "email_on_badge" in request.POST
+            profile.email_on_friend = "email_on_friend" in request.POST
+            profile.email_on_trace_analyzed = "email_on_trace_analyzed" in request.POST
+            profile.email_on_referral = "email_on_referral" in request.POST
+            profile.email_on_challenge = "email_on_challenge" in request.POST
+            profile.save(update_fields=[
+                "email_on_badge", "email_on_friend",
+                "email_on_trace_analyzed", "email_on_referral",
+                "email_on_challenge",
+            ])
+            request.success_field = "email_preferences"
+
         if action == "update_email":
             new_email = request.POST.get("email", "").strip()
             email_error = None
@@ -116,4 +130,9 @@ def settings(request):
         "email_error": email_error,
         "home_location": home_location,
         "success_field": success_field,
+        "email_on_badge": user_profile.email_on_badge,
+        "email_on_friend": user_profile.email_on_friend,
+        "email_on_trace_analyzed": user_profile.email_on_trace_analyzed,
+        "email_on_referral": user_profile.email_on_referral,
+        "email_on_challenge": user_profile.email_on_challenge,
     })
