@@ -135,7 +135,7 @@ geozones/          Geographic zones application
 | `ClusterLeaderboardEntry` | `user_id` (int, unique), `username`, `is_premium`, `largest_cluster_hex_count`, `largest_cluster_area_m2` (float), `largest_cluster_geom` (MultiPolygon 4326), `rank`, `computed_at` |
 | `Challenge` | `title`, `description`, `challenge_type` (capture_hexagon/max_points/active_days/new_hexagons/distinct_zones/dataset_points/visit_hexagons), `capture_mode` (any/all, nullable), `premium_only`, `is_visible` (bool, default False), `geozone` (FK GeoZone, nullable), `dataset` (FK Dataset, nullable), `goal_threshold` (PositiveInt, nullable), `zone_admin_level` (PositiveSmallInt, nullable), `hexagons_per_zone` (PositiveInt, nullable), `rewards_awarded_at` (datetime, nullable), `start_date`, `end_date`, `created_by` (FK User), `created_at` |
 | `ChallengeHexagon` | `challenge` (FK), `hexagon` (FK) — unique (challenge, hexagon) |
-| `ChallengeParticipant` | `challenge` (FK), `user` (FK), `score` (IntegerField, default 0), `joined_at` — unique (challenge, user) |
+| `ChallengeParticipant` | `challenge` (FK), `user` (FK), `score` (IntegerField, default 0), `goal_met_at` (datetime, nullable), `joined_at` — unique (challenge, user) |
 | `ChallengeLeaderboardEntry` | `challenge` (FK), `user_id`, `username`, `is_premium`, `score`, `goal_met` (bool, default True), `rank`, `computed_at` — unique (challenge, user_id) |
 | `ChallengeSponsor` | `challenge` (FK), `name`, `logo` (ImageField, nullable), `url` |
 | `ChallengeReward` | `challenge` (FK), `rank_threshold`, `reward_type` (badge/subscription_3m/subscription_6m/subscription_1y), `badge_id` — unique (challenge, rank_threshold, reward_type) |

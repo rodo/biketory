@@ -22,9 +22,11 @@ def challenge_detail(request, pk):
     is_upcoming = challenge.start_date > now
     is_ended = challenge.end_date < now
 
-    is_participant = ChallengeParticipant.objects.filter(
+    participation = ChallengeParticipant.objects.filter(
         challenge=challenge, user=request.user
-    ).exists()
+    ).first()
+    is_participant = participation is not None
+    user_goal_met = participation is not None and participation.goal_met_at is not None
 
     # Premium gate
     can_join = True
@@ -113,6 +115,7 @@ def challenge_detail(request, pk):
         "has_dataset": has_dataset,
         "dataset_geojson": dataset_geojson,
         "goal_threshold": challenge.goal_threshold,
+        "user_goal_met": user_goal_met,
     })
 
 
