@@ -135,6 +135,21 @@ h1 {
   text-align: center;
 }
 
+.goal-met-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #8a6d00;
+  background: #fef3d1;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 #challenge-map {
   width: 100%;
   height: 350px;
@@ -370,7 +385,9 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
       {% endif %}
     </div>
 
-    {% if is_participant %}
+    {% if user_goal_met %}
+      <div class="goal-met-msg"><img src="{% static 'img/laurel-wreath.svg' %}" alt="" width="20" height="20"> {% trans "Challenge completed! You reached the goal." %}</div>
+    {% elif is_participant %}
       <div class="joined-msg">{% trans "You are participating in this challenge" %}</div>
     {% elif not is_ended %}
       {% if can_join %}

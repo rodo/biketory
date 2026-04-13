@@ -133,7 +133,57 @@ def _build_leaderboard(challenge):
         ChallengeLeaderboardEntry.objects.filter(challenge=challenge).delete()
         ChallengeLeaderboardEntry.objects.bulk_create(entries)
 
+    if threshold is not None:
+        _notify_goal_met(challenge, entries)
+
     return entries
+
+
+def _notify_goal_met(challenge, entries):
+    """Notify participants who just reached the challenge goal threshold."""
+    from challenges.models import ChallengeParticipant
+
+    # Find users who met the goal in this leaderboard computation
+    met_user_ids = [e.user_id for e in entries if e.goal_met]
+    if not met_user_ids:
+        return
+
+    # Only notify those who haven't been notified yet (goal_met_at is null)
+    newly_met = list(
+        ChallengeParticipant.objects.filter(
+            challenge=challenge,
+            user_id__in=met_user_ids,
+            goal_met_at__isnull=True,
+        ).values_list("user_id", flat=True)
+    )
+    if not newly_met:
+        return
+
+    now = timezone.now()
+    ChallengeParticipant.objects.filter(
+        challenge=challenge,
+        user_id__in=newly_met,
+    ).update(goal_met_at=now)
+
+    from django.contrib.auth import get_user_model
+
+    from notifs.helpers import notify
+    from notifs.models import Notification
+
+    user_model = get_user_model()
+    users = user_model.objects.filter(pk__in=newly_met)
+
+    for user in users:
+        notify(
+            user,
+            Notification.CHALLENGE_WON,
+            f"You reached the goal for '{challenge.title}'!",
+            f"/challenges/{challenge.pk}/",
+        )
+        logger.info(
+            "Challenge %d: user %s reached goal threshold (%d).",
+            challenge.pk, user.username, challenge.goal_threshold,
+        )
 
 
 @app.task(queue="challenges", queueing_lock="compute_challenge_leaderboards")
@@ -205,9 +255,16 @@ def compute_single_challenge_leaderboard(
         logger.info("Challenge %d: Computing leaderboard for : %s", challenge.pk, challenge.title)
         _build_leaderboard(challenge)
 
-    if award:
+    # Award rewards if explicitly requested OR if the challenge just ended
+    # and rewards haven't been awarded yet
+    should_award = award or (
+        challenge.end_date < timezone.now()
+        and challenge.rewards_awarded_at is None
+    )
+    if should_award:
         from challenges.rewards import award_challenge_rewards
         award_challenge_rewards(challenge)
         Challenge.objects.filter(pk=challenge_id).update(rewards_awarded_at=timezone.now())
+        logger.info("Challenge %d: rewards awarded.", challenge.pk)
 
     logger.info("Challenge %d: leaderboard done in %.2fs.", challenge.pk, time.monotonic() - t0)

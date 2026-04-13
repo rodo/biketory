@@ -142,6 +142,7 @@ class ChallengeParticipant(models.Model):
         related_name="challenge_participations",
     )
     score = models.IntegerField(default=0)
+    goal_met_at = models.DateTimeField(null=True, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
