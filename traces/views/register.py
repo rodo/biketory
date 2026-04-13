@@ -28,6 +28,14 @@ def register(request):
             if ref_token:
                 _accept_referral(ref_token, user)
 
+            if settings.REGISTRATION_NOTIFY_ENABLED:
+                from traces.tasks_emails import notify_new_registration
+                notify_new_registration.defer(
+                    user_id=user.pk,
+                    username=user.username,
+                    email=user.email,
+                )
+
             return redirect("landing")
     else:
         initial = {}
