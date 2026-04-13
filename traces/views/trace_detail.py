@@ -1,20 +1,22 @@
 import json
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db.models import Union
-from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 
 from challenges.models import (
-    Challenge,
-    ChallengeDatasetScore,
     ChallengeLeaderboardEntry,
     ChallengeParticipant,
+    TraceChallengeContribution,
 )
 from traces.badges import BADGE_CATALOGUE
 from traces.models import Hexagon, HexagonScore, Trace, UserBadge
+
+_SQL_DIR = Path(__file__).resolve().parent.parent / "sql"
+_CHALLENGE_LIVE_RANK_SQL = (_SQL_DIR / "challenge_live_rank.sql").read_text()
 
 
 @login_required
@@ -86,32 +88,34 @@ def trace_detail(request, trace_uuid):
             uploaded_at__lt=trace.uploaded_at,
         ).count()
 
-    # Challenges impacted by this trace (via ChallengeDatasetScore)
+    # Challenges impacted by this trace (pre-computed during trace processing)
     uid = request.user.pk
-    trace_points_by_challenge = dict(
-        ChallengeDatasetScore.objects
-        .filter(trace=trace, user_id=uid)
-        .values("challenge_id")
-        .annotate(pts=models.Count("id"))
-        .values_list("challenge_id", "pts")
-    )
-    active_challenges = list(
-        Challenge.objects.filter(pk__in=trace_points_by_challenge.keys())
-        .order_by("end_date")
+    contributions = TraceChallengeContribution.objects.filter(
+        trace=trace,
+    ).select_related("challenge")
+
+    trace_points_by_challenge = {c.challenge_id: c.points for c in contributions}
+    active_challenges = sorted(
+        [c.challenge for c in contributions],
+        key=lambda c: c.end_date,
     )
 
     if active_challenges:
+        # Leaderboard entries hold the authoritative score + rank
+        leaderboard_data = {
+            row["challenge_id"]: (row["score"], row["rank"])
+            for row in ChallengeLeaderboardEntry.objects.filter(
+                user_id=uid,
+                challenge__in=active_challenges,
+            ).values("challenge_id", "score", "rank")
+        }
+        # Fallback to ChallengeParticipant.score (kept live by SQL trigger
+        # for dataset_points challenges before leaderboard recompute)
         participant_scores = dict(
             ChallengeParticipant.objects.filter(
                 user_id=uid,
                 challenge__in=active_challenges,
             ).values_list("challenge_id", "score")
-        )
-        best_ranks = dict(
-            ChallengeLeaderboardEntry.objects.filter(
-                user_id=uid,
-                challenge__in=active_challenges,
-            ).values_list("challenge_id", "rank")
         )
         challenge_ids = [c.pk for c in active_challenges]
         live_ranks = {}
@@ -119,25 +123,14 @@ def trace_detail(request, trace_uuid):
             from django.db import connection
 
             with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    SELECT cp.challenge_id,
-                           1 + COUNT(*) FILTER (WHERE cp2.score > cp.score)
-                    FROM challenges_challengeparticipant cp
-                    JOIN challenges_challengeparticipant cp2
-                      ON cp2.challenge_id = cp.challenge_id
-                    WHERE cp.user_id = %s
-                      AND cp.challenge_id = ANY(%s)
-                    GROUP BY cp.challenge_id, cp.score
-                    """,
-                    [uid, challenge_ids],
-                )
+                cursor.execute(_CHALLENGE_LIVE_RANK_SQL, [uid, challenge_ids])
                 live_ranks = dict(cursor.fetchall())
 
         for c in active_challenges:
-            c.user_score = participant_scores.get(c.pk, 0)
+            lb_score, lb_rank = leaderboard_data.get(c.pk, (None, None))
+            c.user_score = lb_score if lb_score is not None else participant_scores.get(c.pk, 0)
             c.user_rank = live_ranks.get(c.pk)
-            c.best_rank = best_ranks.get(c.pk)
+            c.best_rank = lb_rank
             c.trace_points = trace_points_by_challenge.get(c.pk, 0)
 
     return render(request, "traces/trace_detail.html", {

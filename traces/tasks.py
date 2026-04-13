@@ -16,7 +16,7 @@ from traces.trace_processing import _extract_surfaces
 logger = logging.getLogger(__name__)
 
 
-@app.task(queue="surface_extraction")
+@app.task(queue="analyze")
 def extract_surfaces(trace_id: int):
     """Extract closed surfaces from a trace and mark it as surface_extracted."""
     t0 = time.monotonic()
@@ -134,6 +134,36 @@ def score_dataset_challenges_task(trace_id: int):
 
     from challenges.scoring import score_dataset_challenges
     score_dataset_challenges(trace_id, user_id)
+
+    # Record dataset contributions per challenge for this trace
+    from django.db import models as db_models
+
+    from challenges.models import ChallengeDatasetScore, TraceChallengeContribution
+
+    ds_counts = (
+        ChallengeDatasetScore.objects
+        .filter(trace_id=trace_id, user_id=user_id)
+        .values("challenge_id")
+        .annotate(pts=db_models.Count("id"))
+    )
+    ds_contributions = [
+        TraceChallengeContribution(
+            trace_id=trace_id,
+            challenge_id=row["challenge_id"],
+            points=row["pts"],
+        )
+        for row in ds_counts
+        if row["pts"] > 0
+    ]
+    if ds_contributions:
+        TraceChallengeContribution.objects.bulk_create(
+            ds_contributions, ignore_conflicts=True,
+        )
+        logger.info(
+            "Trace %d: recorded %d dataset challenge contributions.",
+            trace_id, len(ds_contributions),
+        )
+
     logger.info("Trace %d: dataset scoring done in %.2fs.", trace_id, time.monotonic() - t0)
 
 
@@ -189,10 +219,93 @@ def recompute_user_challenges(trace_id: int):
         except AlreadyEnqueued:
             pass
 
+    _record_trace_contributions(trace, challenge_ids)
+
     logger.info(
         "Trace %d: dispatched leaderboard recompute for %d challenges (user %s) in %.2fs.",
         trace_id, len(challenge_ids), trace.uploaded_by.username, time.monotonic() - t0,
     )
+
+
+def _record_trace_contributions(trace, challenge_ids):
+    """Record how many points a trace contributed to each non-dataset challenge."""
+    if not challenge_ids:
+        return
+
+    from django.contrib.gis.db.models import Union as GisUnion
+
+    from challenges.models import (
+        Challenge,
+        ChallengeHexagon,
+        TraceChallengeContribution,
+    )
+    from traces.models import ClosedSurface, Hexagon, HexagonGainEvent
+
+    # Compute hexagons covered by this trace's surfaces
+    surface_union = (
+        ClosedSurface.objects.filter(trace=trace)
+        .aggregate(u=GisUnion("polygon"))["u"]
+    )
+    trace_hexagon_ids = []
+    if surface_union:
+        trace_hexagon_ids = list(
+            Hexagon.objects.filter(geom__within=surface_union)
+            .values_list("pk", flat=True)
+        )
+
+    challenges = {
+        c.pk: c
+        for c in Challenge.objects.filter(pk__in=challenge_ids)
+    }
+
+    trace_date = trace.first_point_date or trace.uploaded_at
+    contributions = []
+
+    for cid, challenge in challenges.items():
+        ctype = challenge.challenge_type
+        points = 0
+
+        if ctype in (Challenge.TYPE_CAPTURE_HEXAGON, Challenge.TYPE_MAX_POINTS):
+            # Count trace hexagons that are in the challenge's hexagon set
+            if trace_hexagon_ids:
+                points = ChallengeHexagon.objects.filter(
+                    challenge_id=cid,
+                    hexagon_id__in=trace_hexagon_ids,
+                ).count()
+
+        elif ctype == Challenge.TYPE_ACTIVE_DAYS:
+            points = 1
+
+        elif ctype in (
+            Challenge.TYPE_NEW_HEXAGONS,
+            Challenge.TYPE_VISIT_HEXAGONS,
+            Challenge.TYPE_DISTINCT_ZONES,
+        ):
+            # Count HexagonGainEvents earned on this trace date for trace hexagons
+            if trace_hexagon_ids:
+                points = HexagonGainEvent.objects.filter(
+                    user=trace.uploaded_by,
+                    hexagon_id__in=trace_hexagon_ids,
+                    earned_at=trace_date,
+                ).count()
+
+        if points > 0:
+            contributions.append(
+                TraceChallengeContribution(
+                    trace=trace,
+                    challenge_id=cid,
+                    points=points,
+                )
+            )
+
+    if contributions:
+        TraceChallengeContribution.objects.bulk_create(
+            contributions, ignore_conflicts=True,
+        )
+        logger.info(
+            "Trace %d: recorded %d challenge contributions.",
+            trace.pk, len(contributions),
+        )
 
 
 @app.task(queue="tiles", queueing_lock="recompute_leaderboard")
@@ -362,3 +475,22 @@ def regenerate_user_tiles_for_bbox(user_id: int, west: float, south: float, east
     count = generate_user_tiles_for_bbox(user_id, hexagram, zoom, west, south, east, north)
     elapsed = time.monotonic() - t0
     logger.info("Regenerated %d user tiles at zoom %d for user %d in %.2fs.", count, zoom, user_id, elapsed)
+
+
+@app.periodic(cron="0 3 * * *")
+@app.task(queue="analyze")
+def purge_completed_jobs(timestamp: int):
+    """Delete successful Procrastinate jobs older than 7 days."""
+    from django.db import connection
+
+    t0 = time.monotonic()
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "DELETE FROM procrastinate_jobs"
+            " WHERE status = 'succeeded'"
+            "   AND attempts >= 1"
+            "   AND scheduled_at < now() - interval '7 days'"
+        )
+        count = cursor.rowcount
+    elapsed = time.monotonic() - t0
+    logger.info("Purged %d completed jobs older than 7 days in %.2fs.", count, elapsed)

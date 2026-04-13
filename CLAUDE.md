@@ -78,7 +78,7 @@ referrals/         Referral/invitation system
     test_models.py
     test_views.py
 challenges/        Challenges system
-  models.py        Challenge, ChallengeHexagon, ChallengeParticipant, ChallengeLeaderboardEntry, ChallengeSponsor, ChallengeReward, Dataset, DatasetFeature, ChallengeDatasetScore
+  models.py        Challenge, ChallengeHexagon, ChallengeParticipant, ChallengeLeaderboardEntry, ChallengeSponsor, ChallengeReward, Dataset, DatasetFeature, ChallengeDatasetScore, TraceChallengeContribution
   admin.py         Challenge admin with inlines
   urls.py
   views/
@@ -122,10 +122,10 @@ geozones/          Geographic zones application
 | `ClosedSurface` | `trace` (FK), `owner` (FK User), `segment_index`, `polygon` (Polygon), `detected_at` |
 | `Hexagon` | `geom` (Polygon, unique), `owner` (FK User, nullable), `owner_points` (int, nullable), `owner_claimed_at` (datetime, nullable), `created_at` |
 | `HexagonScore` | `hexagon` (FK), `user` (FK), `points`, `last_earned_at` — unique (hexagon, user) |
-| `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5), `is_premium` (bool, default False) |
+| `UserProfile` | `user` (OneToOne), `daily_upload_limit` (default 5), `is_premium` (bool, default False), `email_on_badge` (bool, default True), `email_on_friend` (bool, default True), `email_on_trace_analyzed` (bool, default True), `email_on_referral` (bool, default True), `email_on_challenge` (bool, default True) |
 | `Friendship` | `from_user` (FK), `to_user` (FK), `status` (pending/accepted), `created_at` — unique (from_user, to_user) |
 | `UserSurfaceStats` | `user` (OneToOne), `total_area` (float, deg²), `union` (MultiPolygon), `secret_uuid`, `updated_at` |
-| `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed/referral_signup), `message`, `link`, `is_read`, `created_at` |
+| `Notification` | `user` (FK User), `notification_type` (badge_awarded/friend_request/friend_accepted/trace_analyzed/referral_signup/challenge_won), `message`, `link`, `is_read`, `created_at` |
 | `Referral` | `sponsor` (FK User), `email`, `token` (unique), `status` (pending/accepted), `referee` (FK User, null), `created_at`, `accepted_at`, `rewarded` — unique (sponsor, email) |
 | `StravaImport` | `user` (FK User), `strava_activity_id` (BigInt), `trace` (OneToOne Trace, null), `imported_at` — unique (user, strava_activity_id) |
 | `Subscription` | `user` (FK User), `start_date`, `end_date`, `created_at` — ordered by `-start_date` |
@@ -142,6 +142,7 @@ geozones/          Geographic zones application
 | `Dataset` | `name`, `source_file` (CharField 500), `md5_hash` (CharField 32, unique), `feature_count` (PositiveInt, default 0), `imported_at` |
 | `DatasetFeature` | `dataset` (FK Dataset), `geom` (PointField 4326), `properties` (JSONField), `created_at` — GIST index on `geom` |
 | `ChallengeDatasetScore` | `challenge` (FK Challenge), `user` (FK User), `dataset_feature` (FK DatasetFeature), `trace` (FK Trace), `earned_at` — unique (challenge, user, dataset_feature). SQL trigger auto-increments `ChallengeParticipant.score` on insert. |
+| `TraceChallengeContribution` | `trace` (FK Trace), `challenge` (FK Challenge), `points` (PositiveInt, default 0), `recorded_at` — unique (trace, challenge). Materialized at trace processing time; records how many hexagons/features/days a trace contributed to a challenge. |
 
 ## Management commands
 
@@ -240,6 +241,7 @@ python manage.py compute_challenge_leaderboards
 | `/admin-dashboard/challenges/` | `admin_challenges` | superuser |
 | `/admin-dashboard/challenges/create/` | `admin_challenge_create` | superuser |
 | `/admin-dashboard/challenges/<pk>/` | `admin_challenge_detail` | superuser |
+| `/admin-dashboard/challenges/<pk>/duplicate/` | `admin_challenge_duplicate` (POST) | superuser |
 | `/api/challenges/hexagons/` | `api_challenge_hexagons` | superuser |
 
 ## Landing page map

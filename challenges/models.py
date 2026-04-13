@@ -232,6 +232,35 @@ class ChallengeReward(models.Model):
         return f"Challenge #{self.challenge_id} — rank≤{self.rank_threshold} → {self.reward_type}"
 
 
+class TraceChallengeContribution(models.Model):
+    trace = models.ForeignKey(
+        "traces.Trace",
+        on_delete=models.CASCADE,
+        related_name="challenge_contributions",
+    )
+    challenge = models.ForeignKey(
+        Challenge,
+        on_delete=models.CASCADE,
+        related_name="trace_contributions",
+    )
+    points = models.PositiveIntegerField(default=0)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["trace", "challenge"],
+                name="unique_trace_challenge_contribution",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["trace"]),
+        ]
+
+    def __str__(self):
+        return f"Trace #{self.trace_id} → Challenge #{self.challenge_id} ({self.points} pts)"
+
+
 class ChallengeDatasetScore(models.Model):
     challenge = models.ForeignKey(
         Challenge,
