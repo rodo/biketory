@@ -29,7 +29,7 @@ def register(request):
                 _accept_referral(ref_token, user)
 
             if settings.REGISTRATION_NOTIFY_ENABLED:
-                from traces.tasks_notifications import notify_new_registration
+                from traces.tasks_emails import notify_new_registration
                 notify_new_registration.defer(
                     user_id=user.pk,
                     username=user.username,

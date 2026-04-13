@@ -4,7 +4,7 @@ from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from traces.tasks_notifications import notify_new_registration
+from traces.tasks_emails import notify_new_registration
 
 
 class NotifyNewRegistrationTaskTest(TestCase):
@@ -56,7 +56,7 @@ class RegisterViewNotifyTest(TestCase):
         REGISTRATION_CLOSED=False,
         REGISTRATION_NOTIFY_ENABLED=True,
     )
-    @patch("traces.tasks_notifications.notify_new_registration")
+    @patch("traces.tasks_emails.notify_new_registration")
     def test_registration_defers_notification(self, mock_task):
         # When REGISTRATION_NOTIFY_ENABLED=True, the task is deferred after signup
         resp = self.client.post(reverse("register"), {
@@ -76,7 +76,7 @@ class RegisterViewNotifyTest(TestCase):
         REGISTRATION_CLOSED=False,
         REGISTRATION_NOTIFY_ENABLED=False,
     )
-    @patch("traces.tasks_notifications.notify_new_registration")
+    @patch("traces.tasks_emails.notify_new_registration")
     def test_registration_does_not_notify_when_disabled(self, mock_task):
         # When REGISTRATION_NOTIFY_ENABLED=False, no task is deferred
         resp = self.client.post(reverse("register"), {
@@ -90,7 +90,7 @@ class RegisterViewNotifyTest(TestCase):
     @override_settings(
         REGISTRATION_CLOSED=True,
     )
-    @patch("traces.tasks_notifications.notify_new_registration")
+    @patch("traces.tasks_emails.notify_new_registration")
     def test_closed_registration_does_not_notify(self, mock_task):
         # When registration is closed (no referral), signup is rejected, no task
         resp = self.client.post(reverse("register"), {

@@ -7,7 +7,7 @@ from procrastinate.contrib.django import app
 logger = logging.getLogger(__name__)
 
 
-@app.task(queue="notifications")
+@app.task(queue="emails")
 def notify_new_registration(user_id: int, username: str, email: str):
     """Send an email notification when a new user registers."""
     notify_email = settings.REGISTRATION_NOTIFY_EMAIL
