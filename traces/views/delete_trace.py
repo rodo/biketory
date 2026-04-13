@@ -7,6 +7,7 @@ from django.db import connection
 from django.shortcuts import get_object_or_404, redirect
 from procrastinate.exceptions import AlreadyEnqueued
 
+from challenges.models import TraceChallengeContribution
 from traces.models import Trace
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,12 @@ def delete_trace(request, pk):
         with connection.cursor() as cursor:
             cursor.execute(_REVOKE_DATASET_SCORES_SQL, [trace.pk])
 
+        # Collect impacted challenge IDs before cascade deletes contributions
+        impacted_challenge_ids = list(
+            TraceChallengeContribution.objects.filter(trace=trace)
+            .values_list("challenge_id", flat=True)
+        )
+
         trace.delete()
 
         if bbox:
@@ -43,6 +50,8 @@ def delete_trace(request, pk):
             _defer_tile_regeneration(bbox, user)
 
         _defer_leaderboard_recomputation()
+        if impacted_challenge_ids:
+            _defer_challenge_recomputation(impacted_challenge_ids)
 
     return redirect("trace_list")
 
@@ -58,6 +67,24 @@ def _defer_leaderboard_recomputation():
             recompute_leaderboard.defer()
         except AlreadyEnqueued:
             pass
+
+    transaction.on_commit(_do_defer)
+
+
+def _defer_challenge_recomputation(challenge_ids):
+    """Queue leaderboard recomputation for challenges impacted by trace deletion."""
+    from django.db import transaction
+
+    from challenges.tasks import compute_single_challenge_leaderboard
+
+    def _do_defer():
+        for pk in challenge_ids:
+            try:
+                compute_single_challenge_leaderboard.configure(
+                    queueing_lock=f"challenge_leaderboard_{pk}",
+                ).defer(challenge_id=pk)
+            except AlreadyEnqueued:
+                pass
 
     transaction.on_commit(_do_defer)
 

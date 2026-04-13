@@ -72,6 +72,18 @@ h1 {
 .badge-status.upcoming { background: #cce5ff; color: #004085; }
 .badge-status.ended { background: #f0ede6; color: var(--muted); }
 
+.badge-status.completed {
+  background: #fef3d1;
+  color: #8a6d00;
+  gap: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge-status.completed img {
+  vertical-align: middle;
+}
+
 .btn-join {
   display: block;
   width: 100%;
@@ -267,7 +279,7 @@ tr.current-user td { background: #f5f9ec; font-weight: 700; }
       {% if challenge.premium_only %}<span class="badge-premium">PREMIUM</span>{% endif %}
       {% if is_active %}<span class="badge-status active">{% trans "Active" %}</span>{% endif %}
       {% if is_upcoming %}<span class="badge-status upcoming">{% trans "Upcoming" %}</span>{% endif %}
-      {% if is_ended %}<span class="badge-status ended">{% trans "Ended" %}</span>{% endif %}
+      {% if is_ended and challenge.rewards_awarded_at %}<span class="badge-status completed"><img src="{% static 'img/laurel-wreath.svg' %}" alt="" width="18" height="18">{% trans "Completed" %}</span>{% elif is_ended %}<span class="badge-status ended">{% trans "Ended" %}</span>{% endif %}
     </h1>
 
     <div class="challenge-meta">
