@@ -15,7 +15,7 @@ PAGE_SIZE = 20
 
 @login_required
 def challenge_detail(request, pk):
-    challenge = get_object_or_404(Challenge, pk=pk)
+    challenge = get_object_or_404(Challenge, pk=pk, is_visible=True)
     now = timezone.now()
 
     is_active = challenge.start_date <= now <= challenge.end_date
@@ -163,7 +163,7 @@ def _build_dataset_geojson(challenge):
 @require_POST
 @login_required
 def join_challenge(request, pk):
-    challenge = get_object_or_404(Challenge, pk=pk)
+    challenge = get_object_or_404(Challenge, pk=pk, is_visible=True)
     now = timezone.now()
 
     # Can only join active or upcoming challenges
@@ -189,7 +189,7 @@ def join_challenge(request, pk):
 @require_POST
 @login_required
 def leave_challenge(request, pk):
-    challenge = get_object_or_404(Challenge, pk=pk)
+    challenge = get_object_or_404(Challenge, pk=pk, is_visible=True)
 
     deleted, _ = ChallengeParticipant.objects.filter(
         challenge=challenge,

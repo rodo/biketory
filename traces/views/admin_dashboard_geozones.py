@@ -23,7 +23,7 @@ def admin_dashboard_geozone_detail(request, pk):
     zone = get_object_or_404(GeoZone.objects.select_related("parent"), pk=pk)
     children = zone.children.order_by("name")
 
-    zone_geojson = json.dumps(json.loads(zone.geom.geojson))
+    zone_geojson = json.loads(zone.geom.geojson)
 
     # Previous / next siblings (same parent + admin_level, ordered by name)
     siblings = GeoZone.objects.filter(

@@ -47,6 +47,7 @@ def admin_challenge_create(request):
             challenge_type=request.POST["challenge_type"],
             capture_mode=request.POST.get("capture_mode") or None,
             premium_only=request.POST.get("premium_only") == "on",
+            is_visible=request.POST.get("is_visible") == "on",
             geozone_id=request.POST.get("geozone") or None,
             dataset_id=int(dataset_raw) if dataset_raw else None,
             goal_threshold=int(goal_raw) if goal_raw else None,

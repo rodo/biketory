@@ -208,5 +208,6 @@ def compute_single_challenge_leaderboard(
     if award:
         from challenges.rewards import award_challenge_rewards
         award_challenge_rewards(challenge)
+        Challenge.objects.filter(pk=challenge_id).update(rewards_awarded_at=timezone.now())
 
     logger.info("Challenge %d: leaderboard done in %.2fs.", challenge.pk, time.monotonic() - t0)

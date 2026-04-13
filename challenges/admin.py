@@ -28,8 +28,11 @@ class ChallengeSponsorInline(admin.TabularInline):
 
 @admin.register(Challenge)
 class ChallengeAdmin(admin.ModelAdmin):
-    list_display = ["title", "challenge_type", "start_date", "end_date", "premium_only"]
-    list_filter = ["challenge_type", "premium_only"]
+    list_display = [
+        "title", "challenge_type", "start_date", "end_date",
+        "premium_only", "is_visible", "rewards_awarded_at",
+    ]
+    list_filter = ["challenge_type", "premium_only", "is_visible"]
     inlines = [ChallengeHexagonInline, ChallengeRewardInline, ChallengeSponsorInline]
 
 

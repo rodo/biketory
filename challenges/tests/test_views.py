@@ -26,6 +26,7 @@ class ChallengeListViewTest(TestCase):
             start_date=self.now - timedelta(days=1),
             end_date=self.now + timedelta(days=6),
             created_by=self.admin,
+            is_visible=True,
         )
 
     def test_requires_login(self):
@@ -55,6 +56,7 @@ class ChallengeDetailViewTest(TestCase):
             start_date=self.now - timedelta(days=1),
             end_date=self.now + timedelta(days=6),
             created_by=self.admin,
+            is_visible=True,
         )
 
     def test_requires_login(self):
@@ -94,6 +96,7 @@ class JoinChallengeViewTest(TestCase):
             start_date=self.now - timedelta(days=1),
             end_date=self.now + timedelta(days=6),
             created_by=self.admin,
+            is_visible=True,
         )
 
     def test_join_requires_post(self):
