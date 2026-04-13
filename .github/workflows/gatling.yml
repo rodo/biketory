@@ -63,7 +63,7 @@ jobs:
         run: python manage.py migrate --no-input
 
       - name: Start procrastinate worker
-        run: python manage.py procrastinate worker -q surface_extraction,badges,tiles &
+        run: python manage.py procrastinate worker -q analyze,badges,tiles &
 
       - name: Start Django server
         run: |

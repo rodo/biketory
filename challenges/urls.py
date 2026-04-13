@@ -3,6 +3,7 @@ from django.urls import path
 from challenges.views.admin_challenges import (
     admin_challenge_create,
     admin_challenge_detail,
+    admin_challenge_duplicate,
     admin_challenges,
 )
 from challenges.views.api_hexagons import api_challenge_hexagons
@@ -19,6 +20,7 @@ urlpatterns = [
     path("admin-dashboard/challenges/", admin_challenges, name="admin_challenges"),
     path("admin-dashboard/challenges/create/", admin_challenge_create, name="admin_challenge_create"),
     path("admin-dashboard/challenges/<int:pk>/", admin_challenge_detail, name="admin_challenge_detail"),
+    path("admin-dashboard/challenges/<int:pk>/duplicate/", admin_challenge_duplicate, name="admin_challenge_duplicate"),
     # API
     path("api/challenges/hexagons/", api_challenge_hexagons, name="api_challenge_hexagons"),
 ]

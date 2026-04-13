@@ -223,6 +223,40 @@ h2 {
   </form>
 </div>
 
+<!-- ── Email notifications ── -->
+<h2>{% trans "Email notifications" %}</h2>
+
+<div class="stat-card">
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_email_preferences">
+    <label style="display:block;margin-bottom:0.5rem;">
+      <input type="checkbox" name="email_on_badge" {% if email_on_badge %}checked{% endif %}>
+      {% trans "Badge awarded" %}
+    </label>
+    <label style="display:block;margin-bottom:0.5rem;">
+      <input type="checkbox" name="email_on_friend" {% if email_on_friend %}checked{% endif %}>
+      {% trans "Friend requests" %}
+    </label>
+    <label style="display:block;margin-bottom:0.5rem;">
+      <input type="checkbox" name="email_on_trace_analyzed" {% if email_on_trace_analyzed %}checked{% endif %}>
+      {% trans "Trace analyzed" %}
+    </label>
+    <label style="display:block;margin-bottom:0.5rem;">
+      <input type="checkbox" name="email_on_referral" {% if email_on_referral %}checked{% endif %}>
+      {% trans "Referral signup" %}
+    </label>
+    <label style="display:block;margin-bottom:0.5rem;">
+      <input type="checkbox" name="email_on_challenge" {% if email_on_challenge %}checked{% endif %}>
+      {% trans "Challenge won" %}
+    </label>
+    <button type="submit" class="btn-accent" {% if success_field == "email_preferences" %}disabled{% endif %}>{% trans "Save" %}</button>
+    {% if success_field == "email_preferences" %}
+      <span class="success" style="margin-left:0.5rem;">{% trans "Saved." %}</span>
+    {% endif %}
+  </form>
+</div>
+
 <!-- ── Sharing ── -->
 <h2>{% trans "Sharing" %}</h2>
 

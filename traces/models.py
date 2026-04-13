@@ -128,6 +128,11 @@ class UserProfile(models.Model):
     home_location = models.PointField(null=True, blank=True, srid=4326)
     hexagram = models.CharField(max_length=6, unique=True, editable=False)
     is_premium = models.BooleanField(default=False)
+    email_on_badge = models.BooleanField(default=True)
+    email_on_friend = models.BooleanField(default=True)
+    email_on_trace_analyzed = models.BooleanField(default=True)
+    email_on_referral = models.BooleanField(default=True)
+    email_on_challenge = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.user.username} (limit: {self.daily_upload_limit}/day)"

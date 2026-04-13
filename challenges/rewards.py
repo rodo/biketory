@@ -33,6 +33,7 @@ def award_challenge_rewards(challenge):
         return
 
     user_model = get_user_model()
+    notified_user_ids = set()
 
     for reward in rewards:
         winners = [e for e in entries if e.rank <= reward.rank_threshold and e.goal_met]
@@ -47,6 +48,10 @@ def award_challenge_rewards(challenge):
                 _award_badge(user, reward.badge_id, challenge)
             elif reward.reward_type in _DURATION_MAP:
                 _award_subscription(user, reward.reward_type, challenge)
+
+            if user.pk not in notified_user_ids:
+                _notify_challenge_won(user, challenge, entry.rank)
+                notified_user_ids.add(user.pk)
 
 
 def _award_badge(user, badge_id, challenge):
@@ -104,4 +109,17 @@ def _award_subscription(user, reward_type, challenge):
     logger.info(
         "Subscription %s awarded to user %s for challenge %d",
         reward_type, user.username, challenge.pk,
+    )
+
+
+def _notify_challenge_won(user, challenge, rank):
+    """Send a challenge_won notification to the user."""
+    from notifs.helpers import notify
+    from notifs.models import Notification
+
+    notify(
+        user,
+        Notification.CHALLENGE_WON,
+        f"Challenge '{challenge.title}': you finished #{rank}!",
+        f"/challenges/{challenge.pk}/",
     )

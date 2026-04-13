@@ -38,5 +38,5 @@ python manage.py load_geozones
 Surface extraction and badge analysis are processed asynchronously via [procrastinate](https://procrastinate.readthedocs.io/). Start workers with:
 
 ```bash
-python manage.py procrastinate worker -q surface_extraction,badges,tiles,challenges
+python manage.py procrastinate worker -q analyze,badges,tiles,challenges
 ```

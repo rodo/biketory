@@ -7,7 +7,7 @@ via `procrastinate.contrib.django`.
 
 | Queue | Description |
 |---|---|
-| `surface_extraction` | Extraction des surfaces fermées après upload |
+| `analyze` | Extraction des surfaces fermées après upload |
 | `badges` | Analyse de trace et attribution des badges |
 | `challenges` | Scoring dataset, recalcul des leaderboards challenge |
 | `tiles` | Génération de tuiles PNG (hexagons, scores, premium, par bbox) et recalcul des leaderboards globaux/zones |
@@ -15,11 +15,12 @@ via `procrastinate.contrib.django`.
 
 ## Tâches par queue
 
-### `surface_extraction`
+### `analyze`
 
 | Tâche | Fichier | Description |
 |---|---|---|
 | `extract_surfaces` | `traces/tasks.py` | Extrait les surfaces fermées d'une trace |
+| `purge_completed_jobs` | `traces/tasks.py` | **Périodique (3h00 UTC)** — supprime les jobs réussis de plus de 7 jours |
 
 ### `badges`
 

@@ -31,6 +31,11 @@
       {% if is_ended %} &middot; <strong style="color:var(--muted);">{% trans "Ended" %}</strong>{% endif %}
     </div>
 
+    <form method="post" action="{% url 'admin_challenge_duplicate' pk=challenge.pk %}" style="margin:1rem 0;">
+      {% csrf_token %}
+      <button type="submit" style="background:var(--accent);color:#fff;padding:0.5rem 1.5rem;border:none;border-radius:6px;font-weight:700;font-size:0.85rem;cursor:pointer;">{% trans "Duplicate for next month" %}</button>
+    </form>
+
     <div class="stat-grid">
       <div class="stat-box">
         <div class="label">{% trans "Participants" %}</div>
