@@ -11,17 +11,17 @@ def challenge_list(request):
     user = request.user
 
     active_challenges = (
-        Challenge.objects.filter(start_date__lte=now, end_date__gte=now)
+        Challenge.objects.filter(start_date__lte=now, end_date__gte=now, is_visible=True)
         .order_by("end_date")
     )
 
     upcoming_challenges = (
-        Challenge.objects.filter(start_date__gt=now)
+        Challenge.objects.filter(start_date__gt=now, is_visible=True)
         .order_by("start_date")
     )
 
     ended_challenges = (
-        Challenge.objects.filter(end_date__lt=now)
+        Challenge.objects.filter(end_date__lt=now, is_visible=True)
         .order_by("-end_date")[:20]
     )
 

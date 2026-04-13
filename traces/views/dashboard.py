@@ -165,48 +165,31 @@ def dashboard(request):
     )
 
     now = timezone.now()
-    participant_scores = dict(
-        ChallengeParticipant.objects.filter(user=user).values_list("challenge_id", "score")
+    user_challenge_ids = set(
+        ChallengeParticipant.objects.filter(user=user)
+        .values_list("challenge_id", flat=True)
     )
     active_challenge_qs = (
         Challenge.objects.filter(
             start_date__lte=now,
             end_date__gte=now,
-            pk__in=participant_scores.keys(),
+            is_visible=True,
+            pk__in=user_challenge_ids,
         ).order_by("end_date")[:5]
     )
 
-    # Leaderboard rank (last computed snapshot)
-    leaderboard_ranks = dict(
-        ChallengeLeaderboardEntry.objects.filter(user_id=uid)
-        .values_list("challenge_id", "rank")
-    )
-
-    # Live rank: count participants with strictly higher score per challenge
-    challenge_ids = [c.pk for c in active_challenge_qs]
-    live_ranks = {}
-    if challenge_ids:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT cp.challenge_id,
-                       1 + COUNT(*) FILTER (WHERE cp2.score > cp.score)
-                FROM challenges_challengeparticipant cp
-                JOIN challenges_challengeparticipant cp2
-                  ON cp2.challenge_id = cp.challenge_id
-                WHERE cp.user_id = %s
-                  AND cp.challenge_id = ANY(%s)
-                GROUP BY cp.challenge_id, cp.score
-                """,
-                [uid, challenge_ids],
-            )
-            live_ranks = dict(cursor.fetchall())
+    # Scores and ranks from leaderboard entries
+    leaderboard_data = {
+        row[0]: {"score": row[1], "rank": row[2]}
+        for row in ChallengeLeaderboardEntry.objects.filter(user_id=uid)
+        .values_list("challenge_id", "score", "rank")
+    }
 
     active_challenges = []
     for c in active_challenge_qs:
-        c.user_score = participant_scores.get(c.pk, 0)
-        c.user_rank = live_ranks.get(c.pk)
-        c.best_rank = leaderboard_ranks.get(c.pk)
+        entry = leaderboard_data.get(c.pk, {})
+        c.user_score = entry.get("score", 0)
+        c.user_rank = entry.get("rank")
         active_challenges.append(c)
 
     return render(request, "traces/dashboard.html", {

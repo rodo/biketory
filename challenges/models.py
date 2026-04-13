@@ -92,6 +92,8 @@ class Challenge(models.Model):
     goal_threshold = models.PositiveIntegerField(null=True, blank=True)
     zone_admin_level = models.PositiveSmallIntegerField(null=True, blank=True)
     hexagons_per_zone = models.PositiveIntegerField(null=True, blank=True)
+    is_visible = models.BooleanField(default=False)
+    rewards_awarded_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
