@@ -1,6 +1,6 @@
 -r requirements.txt
-pytest==8.3.5
+pytest==9.0.3
 pytest-django==4.9.0
-pytest-cov==6.1.0
+pytest-cov==7.1.0
 bandit==1.8.3
 django-upgrade==1.25.0
