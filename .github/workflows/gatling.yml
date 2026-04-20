@@ -47,6 +47,9 @@ jobs:
       - name: Prepare CI settings
         run: cp biketory/settings.dist biketory/settings_ci.py
 
+      - name: Install system dependencies
+        run: apt-get update -qq && apt-get install -y --no-install-recommends lsb-release
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
