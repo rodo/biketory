@@ -12,6 +12,7 @@ import static io.gatling.javaapi.core.CoreDsl.*;
  * 4. Authenticated browsing (leaderboard, zone leaders, profile, friends, traces)
  * 5. Upload + stats page verification
  * 6. Upload + stats API verification
+ * 7. Challenge goal threshold (upload → laurel wreath verification)
  */
 public class AllSimulation extends BaseSimulation {
 
@@ -19,6 +20,7 @@ public class AllSimulation extends BaseSimulation {
     private static final String USER1 = "perf_" + RUN_ID + "_u1";
     private static final String USER2 = "perf_" + RUN_ID + "_u2";
     private static final String AUTH_USER = "perf_" + RUN_ID + "_auth";
+    private static final String CHAL_USER = "perf_" + RUN_ID + "_chal";
     private static final String PASSWORD = "P@ss_" + RUN_ID + "!";
 
     {
@@ -48,6 +50,10 @@ public class AllSimulation extends BaseSimulation {
                                                 verifyStatsApiScenario()
                                                         .injectOpen(atOnceUsers(1))
                                         )
+                        )
+                        .andThen(
+                                challengeGoalScenario(CHAL_USER, PASSWORD)
+                                        .injectOpen(atOnceUsers(1))
                         )
         )
                 .protocols(httpProtocol)

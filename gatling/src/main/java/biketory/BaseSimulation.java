@@ -297,6 +297,135 @@ public abstract class BaseSimulation extends Simulation {
         return sumAllDataValues(json);
     }
 
+    // -- Challenge chains ---------------------------------------------------------
+
+    protected ChainBuilder browseChallenges() {
+        return exec(
+                http("GET /challenges/")
+                        .get("/challenges/")
+                        .check(status().is(200))
+                        .check(css("a.challenge-card", "href")
+                                .findAll()
+                                .optional()
+                                .saveAs("challengeUrls"))
+        )
+        .doIf(session -> session.contains("challengeUrls"))
+        .then(
+                foreach("#{challengeUrls}", "challengeUrl").on(
+                        exec(
+                                http("GET challenge detail")
+                                        .get("#{challengeUrl}")
+                                        .check(status().is(200))
+                                        .check(css("form[action*='/join/']", "action")
+                                                .optional()
+                                                .saveAs("joinAction"))
+                                        .check(css("form[action*='/join/'] input[name='csrfmiddlewaretoken']", "value")
+                                                .optional()
+                                                .saveAs("csrfToken"))
+                        )
+                        .doIf(session -> session.contains("joinAction"))
+                        .then(
+                                exec(
+                                        http("POST join challenge")
+                                                .post("#{joinAction}")
+                                                .disableFollowRedirect()
+                                                .header("Referer", baseUrl + "#{challengeUrl}")
+                                                .formParam("csrfmiddlewaretoken", "#{csrfToken}")
+                                                .check(status().find().in(200, 302))
+                                )
+                        )
+                        .pause(1)
+                )
+        );
+    }
+
+    // -- Challenge goal scenario --------------------------------------------------
+
+    protected ScenarioBuilder challengeGoalScenario(String username, String password) {
+        return scenario("Challenge goal threshold")
+                .exec(session -> session
+                        .set("email", username + "@test.biketory.local")
+                        .set("password", password)
+                        .set("gpxFile", "user1_hexagons_12.gpx"))
+                // Step 1 — Register + Login
+                .exec(register())
+                .pause(1, 2)
+                .exec(login())
+                .pause(1, 2)
+                // Step 2 — Browse challenges + join all
+                .exec(browseChallenges())
+                .pause(1, 2)
+                // Step 3 — Upload trace (12 hexagons > goal_threshold=5)
+                .exec(uploadGpx())
+                .pause(1, 2)
+                // Step 4 — GET trace detail
+                .exec(
+                        http("GET trace detail")
+                                .get("#{traceUrl}")
+                                .check(status().is(200))
+                )
+                // Extract UUID for polling
+                .exec(session -> {
+                    String url = session.getString("traceUrl");
+                    String uuid = url.replaceAll(".*/traces/([0-9a-f-]+)/.*", "$1")
+                                      .replaceAll(".*/traces/([0-9a-f-]+)/?$", "$1");
+                    return session.set("traceUuid", uuid);
+                })
+                // Step 5 — Poll trace status until analyzed
+                .asLongAs(session -> !"analyzed".equals(session.getString("traceStatus")))
+                .on(
+                        exec(
+                                http("Poll trace status")
+                                        .get("/api/traces/#{traceUuid}/status/")
+                                        .check(status().is(200))
+                                        .check(jsonPath("$.status").saveAs("traceStatus"))
+                        )
+                        .pause(2)
+                )
+                // Step 6 — Wait for challenge leaderboard computation
+                .pause(5)
+                // Step 7 — Verify challenge detail: laurel wreath + leaderboard row
+                .exec(
+                        http("GET /challenges/ (verify)")
+                                .get("/challenges/")
+                                .check(status().is(200))
+                                .check(css("a.challenge-card", "href")
+                                        .findAll()
+                                        .optional()
+                                        .saveAs("challengeUrls"))
+                )
+                .doIf(session -> session.contains("challengeUrls"))
+                .then(
+                        foreach("#{challengeUrls}", "challengeUrl").on(
+                                exec(
+                                        http("GET challenge detail (verify goal)")
+                                                .get("#{challengeUrl}")
+                                                .check(status().is(200))
+                                                .check(css(".goal-met-msg").exists())
+                                                .check(css("#lb-body tr.current-user").exists())
+                                )
+                                .pause(1)
+                        )
+                )
+                // Step 8 — Verify dashboard
+                .exec(
+                        http("GET /dashboard/ (verify challenge)")
+                                .get("/dashboard/")
+                                .check(status().is(200))
+                                .check(css(".challenge-card").exists())
+                                .check(css(".challenge-score").exists())
+                )
+                .pause(1)
+                // Step 9 — Verify trace detail
+                .exec(
+                        http("GET trace detail (verify challenge)")
+                                .get("#{traceUrl}")
+                                .check(status().is(200))
+                                .check(css(".challenge-card").exists())
+                                .check(css(".trace-points-value").exists())
+                );
+    }
+
     // -- Referral feeders & scenario ----------------------------------------------
 
     private static final String REF_PWD = "P@ss_ref_test!";

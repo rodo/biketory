@@ -59,47 +59,7 @@ public class FullUserJourneySimulation extends BaseSimulation {
                 );
     }
 
-    // -- Step 2: Challenges — list + join all active challenges -------------------
-
-    private ChainBuilder browseChallenges() {
-        return exec(
-                http("GET /challenges/")
-                        .get("/challenges/")
-                        .check(status().is(200))
-                        .check(css("a.challenge-card", "href")
-                                .findAll()
-                                .optional()
-                                .saveAs("challengeUrls"))
-        )
-        .doIf(session -> session.contains("challengeUrls"))
-        .then(
-                foreach("#{challengeUrls}", "challengeUrl").on(
-                        exec(
-                                http("GET challenge detail")
-                                        .get("#{challengeUrl}")
-                                        .check(status().is(200))
-                                        .check(css("form[action*='/join/']", "action")
-                                                .optional()
-                                                .saveAs("joinAction"))
-                                        .check(css("form[action*='/join/'] input[name='csrfmiddlewaretoken']", "value")
-                                                .optional()
-                                                .saveAs("csrfToken"))
-                        )
-                        .doIf(session -> session.contains("joinAction"))
-                        .then(
-                                exec(
-                                        http("POST join challenge")
-                                                .post("#{joinAction}")
-                                                .disableFollowRedirect()
-                                                .header("Referer", baseUrl + "#{challengeUrl}")
-                                                .formParam("csrfmiddlewaretoken", "#{csrfToken}")
-                                                .check(status().find().in(200, 302))
-                                )
-                        )
-                        .pause(1)
-                )
-        );
-    }
+    // -- Step 2: Challenges — uses browseChallenges() from BaseSimulation --------
 
     // -- Step 3: Upload GPX + trace detail ---------------------------------------
 
