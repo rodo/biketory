@@ -13,7 +13,7 @@ BaseSimulation (abstraite)
 ├── AuthenticatedBrowsingSimulation     — navigation authentifiée (leaderboard, zones, profil…)
 ├── UploadAndStatsSimulation            — upload GPX + vérification stats pages
 ├── UploadAndStatsApiSimulation         — upload GPX + vérification cohérence API stats
-├── AllSimulation                       — enchaîne les 6 scénarios ci-dessus
+├── AllSimulation                       — enchaîne les 7 scénarios ci-dessus
 ├── MassUploadSimulation               — 100 utilisateurs upload GPX (indépendant)
 ├── ReferralSimulation                 — flow complet de parrainage (indépendant)
 └── FullUserJourneySimulation          — parcours utilisateur complet (indépendant)
@@ -21,11 +21,12 @@ BaseSimulation (abstraite)
 
 `BaseSimulation` centralise toute la logique partagée : configuration HTTP,
 feeders (`registrationFeeder`, `uploadFeeder`, `referralFeeder`, `refereeFeeder`),
-chains réutilisables (`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`) et
-factory methods de scénarios (`publicBrowsingScenario()`, `statsApiScenario()`,
-`registrationScenario()`, `authenticatedBrowsingScenario()`,
+chains réutilisables (`register()`, `login()`, `uploadGpx()`, `fetchCsrf()`,
+`browseChallenges()`) et factory methods de scénarios (`publicBrowsingScenario()`,
+`statsApiScenario()`, `registrationScenario()`, `authenticatedBrowsingScenario()`,
 `uploadScenario()`, `verifyStatsScenario()`, `verifyStatsApiScenario()`,
-`referralSponsorPhase()`, `referralRefereePhase()`, `referralVerifyPhase()`).
+`challengeGoalScenario()`, `referralSponsorPhase()`, `referralRefereePhase()`,
+`referralVerifyPhase()`).
 
 Les sous-classes ne contiennent que le `setUp()` avec injection et assertions.
 
@@ -192,8 +193,11 @@ Identique à UploadAndStatsSimulation (register, login, upload GPX, trace detail
 
 **Fichier :** `src/main/java/biketory/AllSimulation.java`
 
-Enchaîne séquentiellement les 6 scénarios ci-dessus via `andThen()`.
+Enchaîne séquentiellement les 7 scénarios ci-dessus via `andThen()`.
 C'est la simulation à utiliser en CI pour tout valider en une seule étape.
+
+**Prérequis :** `python manage.py create_test_challenge` doit être exécuté avant
+le lancement pour créer le challenge `visit_hexagons` utilisé par le scénario 7.
 
 **Ordre d'exécution :**
 
@@ -202,8 +206,9 @@ C'est la simulation à utiliser en CI pour tout valider en une seule étape.
 3. Registration — `atOnceUsers(2)`
 4. AuthenticatedBrowsing — `atOnceUsers(1)`
 5. Upload — `atOnceUsers(2)` puis Verify stats (pages) — `atOnceUsers(1)` puis Verify stats API — `atOnceUsers(1)`
+6. Challenge goal threshold — `atOnceUsers(1)`
 
-**Assertions :** p95 < 5s, succès > 95 %
+**Assertions :** p95 < 5s, succès = 100 %
 
 ---
 
@@ -275,6 +280,32 @@ Les tokens de parrainage sont partagés entre les phases via une
 ```bash
 mvn gatling:test -Dgatling.simulationClass=biketory.ReferralSimulation -DbaseUrl=http://localhost:8000
 ```
+
+---
+
+### ChallengeGoalScenario (dans AllSimulation)
+
+Scénario end-to-end vérifiant le parcours complet d'un challenge avec seuil
+(`goal_threshold`) : inscription, upload d'une trace, et vérification de la
+couronne de laurier (`.goal-met-msg`) et des scores sur 3 pages.
+
+**Prérequis :** `python manage.py create_test_challenge` (crée un challenge
+`visit_hexagons` avec `goal_threshold=5`). Le worker procrastinate doit tourner
+pour que le leaderboard soit recalculé après l'upload.
+
+**Étapes :**
+
+1. `POST /register/` + `POST /accounts/login/` — Création de compte + connexion
+2. `GET /challenges/` — Liste des challenges, pour chaque : `GET detail` + `POST join`
+3. `POST /upload/` — Upload de `user1_hexagons_12.gpx` (12 hexagons > seuil de 5)
+4. `GET /traces/<uuid>/` — Détail de la trace
+5. Poll `/api/traces/<uuid>/status/` — Attente de l'analyse (status = analyzed)
+6. Pause 5s — Attente du calcul du leaderboard challenge
+7. `GET /challenges/<pk>/` — Vérifie `.goal-met-msg` (laurel wreath) et `#lb-body tr.current-user`
+8. `GET /dashboard/` — Vérifie `.challenge-card` et `.challenge-score`
+9. `GET /traces/<uuid>/` — Vérifie `.challenge-card` et `.trace-points-value`
+
+**Injection :** `atOnceUsers(1)` (dans AllSimulation)
 
 ---
 

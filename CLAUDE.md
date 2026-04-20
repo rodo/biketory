@@ -28,6 +28,22 @@ python manage.py runserver
 - **gpxpy** — GPX file parsing
 - **Leaflet.js** + **Turf.js** — frontend map (loaded via CDN)
 
+## Rules
+
+   * Strict Globalization: CSS and JS must reside in global files rather than template-specific blocks.
+
+   * Consolidation: Prioritize globalizing code to ensure the same files serve all templates.
+
+
+   * Protected Branch: main cannot be modified directly.
+
+   * Feature Branches: All development must occur on branches prefixed with feature/.
+
+   * Workflow: Check out main and branch off using git checkout -b feature/<name>.
+
+   * Strict Rule: Never commit or push directly to the main branch.
+
+
 ## Project structure
 
 ```
@@ -113,6 +129,7 @@ geozones/          Geographic zones application
     load_geozones.py               Load zones from media/src/ GeoJSON files
     compute_zone_leaderboard.py    Compute per-zone leaderboard entries
 ```
+
 
 ## Models
 
@@ -200,6 +217,9 @@ python manage.py load_dataset [--path <file>] [--name <name>]
 
 # Defer challenge leaderboard recomputation task
 python manage.py compute_challenge_leaderboards
+
+# Create a superuser + visit_hexagons challenge for Gatling tests
+python manage.py create_test_challenge --email <email> --password <password>
 
 ```
 
@@ -313,15 +333,3 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { ... });
 ## Test fixtures
 
 Les traces GPX de test sont dans `trace_samples/`. Le document `doc/trace_samples.md` liste chaque fixture et les tests qui l'utilisent. **Ce document doit être mis à jour** à chaque ajout, suppression ou modification d'une fixture ou d'un test qui en dépend.
-
-## Git workflow
-
-La branche `main` est protégée sur GitHub. Toujours créer une nouvelle branche
-avant de modifier des fichiers :
-
-```bash
-git checkout main
-git checkout -b feature/<nom>
-```
-
-Ne jamais commiter ni pusher directement sur `main`.

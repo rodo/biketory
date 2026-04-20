@@ -15,6 +15,9 @@ jobs:
     name: All Gatling scenarios
     runs-on: ubuntu-latest
 
+    container:
+      image: ghcr.io/osgeo/gdal:ubuntu-small-latest
+
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -51,19 +54,17 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-dev.txt
 
-      - name: Install GDAL system dependency
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends gdal-bin libgdal-dev
-
       - name: Install Python dependencies
         run: pip install -r requirements-dev.txt
 
       - name: Run migrations
         run: python manage.py migrate --no-input
 
+      - name: Create test challenge
+        run: python manage.py create_test_challenge --email admin@test.biketory.local --password "P@ss_test!"
+
       - name: Start procrastinate worker
-        run: python manage.py procrastinate worker -q analyze,badges,tiles &
+        run: python manage.py procrastinate worker &
 
       - name: Start Django server
         run: |
